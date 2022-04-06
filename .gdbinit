@@ -1,4 +1,5 @@
 break jsAssertFail
+break jsExceptionHere
 break jsError
 define jsvTrace
   print jsvTrace($arg0, 0)

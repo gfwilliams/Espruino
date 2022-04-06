@@ -62,7 +62,8 @@ void jswrap_net_kill() {
 
 /*JSON{
   "type" : "class",
-  "class" : "url"
+  "class" : "url",
+  "memberOf" : "global"
 }
 This class helps to convert URLs into Objects of information ready for
 http.request/get

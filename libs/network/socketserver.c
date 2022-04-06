@@ -28,6 +28,7 @@ extern const unsigned char jswSymbolIndex_httpCRq;
 extern const unsigned char jswSymbolIndex_httpSRs;
 extern const unsigned char jswSymbolIndex_httpSRq;
 extern const unsigned char jswSymbolIndex_Server;
+extern const unsigned char jswSymbolIndex_dgramSocket;
 extern const unsigned char jswSymbolIndex_Socket;
 
 
@@ -921,13 +922,13 @@ JsVar *clientRequestNew(SocketType socketType, JsVar *options, JsVar *callback) 
   if (!arr) return 0;
   JsVar *req, *res = 0;
   if ((socketType&ST_TYPE_MASK)==ST_HTTP) {
-    res = jspNewObject(0, "httpCRs");
+    res = jspNewHiddenObject(jswSymbolIndex_httpCRs);
     if (!res) { jsvUnLock(arr); return 0; } // out of memory?
-    req = jspNewObject(0, "httpCRq");
+    res = jspNewHiddenObject(jswSymbolIndex_httpCRq);
   } else if ((socketType&ST_TYPE_MASK)==ST_UDP) {
-    req = jspNewObject(0, "dgramSocket");
+    req = jspNewHiddenObject(jswSymbolIndex_dgramSocket);
   } else {
-    req = jspNewObject(0, "Socket");
+    req = jspNewHiddenObject(jswSymbolIndex_Socket);
   }
   if (req) { // out of memory?
    socketSetType(req, socketType);
