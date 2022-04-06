@@ -90,8 +90,12 @@ typedef struct {
 /// Do a binary search of the symbol table list
 JsVar *jswBinarySearch(const JswSymList *symbolsPtr, JsVar *parent, const char *name);
 
-/** If 'name' is something that belongs to an internal function, execute it.  */
-JsVar *jswFindBuiltInFunction(JsVar *parent, const char *name);
+// For instances of builtins like Pin, String, etc, search in X.prototype
+JsVar *jswFindInObjectProto(JsVar *parent, const char *name);
+
+/** If 'name' is something that belongs to an internal function, execute it.
+ * parentInstance is the actual object ('this'), but parent may be a prototype of another object */
+JsVar *jswFindBuiltIn(JsVar *parentInstance, JsVar *parent, const char *name);
 
 /// Given an object, return the list of symbols for it
 const JswSymList *jswGetSymbolListForObject(JsVar *parent);
@@ -127,9 +131,9 @@ void jswKill();
 bool jswOnCharEvent(IOEventFlags channel, char charData);
 
 /** If we get this in 'require', do we have the object for this
-  inside the interpreter already? If so, return the native function
-  pointer of the object's constructor */
-void *jswGetBuiltInLibrary(const char *name);
+  inside the interpreter already? If so, return a JsVar for the
+  native object representing it. */
+JsVar *jswGetBuiltInLibrary(const char *name);
 
 /** If we have a built-in JS module with the given name, return the module's contents - or 0.
  * These can be added using teh followinf in the Makefile/BOARD.py file:
@@ -149,5 +153,21 @@ const char *jswGetBuiltInLibraryNames();
 // resources, so just brute-force by handling every call pattern we use in a switch
 JsVar *jswCallFunctionHack(void *function, JsnArgumentType argumentSpecifier, JsVar *thisParam, JsVar **paramData, int paramCount);
 #endif
+
+const JswSymList *jswSymbolTable_Object_prototype;
+
+
+
+/** Given the index of some item in the symbol table, create a 'Native Object'
+ * that represents it. This is a JS object that can contain fields, but
+ * it is also tagged so that it also contains all the items in the relevant
+ * symbol table of built-in items.
+ *
+ * Takes an argument of the form: jswSymbolIndex_XYZ
+ */
+JsVar *jswCreateFromSymbolTable(int symbolIndex);
+
+extern const unsigned char jswSymbolIndex_AES;
+extern const unsigned char jswSymbolIndex_HASH;
 
 #endif // JSWRAPPER_H_

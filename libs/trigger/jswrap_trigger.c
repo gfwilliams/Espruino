@@ -20,7 +20,8 @@
 
 /*JSON{
   "type" : "class",
-  "class" : "Trig"
+  "class" : "Trig",
+  "memberOf" : "global"
 }
 This class exists in order to interface Espruino with fast-moving trigger
 wheels. Trigger wheels are physical discs with evenly spaced teeth cut into

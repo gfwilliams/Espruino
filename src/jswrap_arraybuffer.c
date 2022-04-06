@@ -29,6 +29,7 @@ interface ArrayLike<T> {
 /*JSON{
   "type" : "class",
   "class" : "ArrayBuffer",
+  "memberOf" : "global",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_ARRAYBUFFER",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -41,6 +42,7 @@ If you want to access arrays of differing types of data you may also find
 /*JSON{
   "type" : "class",
   "class" : "ArrayBufferView",
+  "memberOf" : "global",
   "typescript" : "ArrayBufferView<T = ArrayBuffer>"
 }
 This is the built-in JavaScript class that is the prototype for:
@@ -63,6 +65,7 @@ If you want to access arrays of differing types of data you may also find
 /*JSON{
   "type" : "class",
   "class" : "Uint8Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT8",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -79,6 +82,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Uint8ClampedArray",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==(ARRAYBUFFERVIEW_UINT8|ARRAYBUFFERVIEW_CLAMPED)",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -95,6 +99,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Int8Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT8",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -111,6 +116,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Uint16Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT16",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -127,6 +133,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Int16Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT16",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -160,6 +167,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Uint32Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -176,6 +184,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Int32Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -192,6 +201,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Float32Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_FLOAT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -208,6 +218,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Float64Array",
+  "memberOf" : "global",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_FLOAT64",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"

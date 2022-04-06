@@ -24,6 +24,7 @@
 /*JSON{
   "type" : "class",
   "class" : "Array",
+  "memberOf" : "global",
   "check" : "jsvIsArray(var)",
   "typescript" : "Array<T>"
 }

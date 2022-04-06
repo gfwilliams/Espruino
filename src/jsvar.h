@@ -27,6 +27,7 @@ worth having the small speed impact to allow more memory. */
 #define JSV_INLINEABLE
 #endif
 
+
 /** These flags are at the top of each JsVar and provide information about what it is, as
  * well as how many Locks it has. Everything is packed in as much as possible to allow us to
  * get down to within 2 bytes. */
@@ -194,6 +195,19 @@ typedef struct {
   JsVarRef lastChild : JSVARREF_BITS;
 } PACKED_FLAGS JsVarDataRef;
 
+/// Structure for each symbol in the list of built-in symbols
+typedef struct {
+  unsigned short strOffset;
+  void (*functionPtr)(void); // TODO: move to end to align to 4
+  unsigned short functionSpec; // JsnArgumentType
+} PACKED_FLAGS JswSymPtr;
+
+/// Information for each list of built-in symbols
+typedef struct {
+  const JswSymPtr *symbols;
+  unsigned char symbolCount;
+  const char *symbolChars;
+} PACKED_FLAGS JswSymList;
 
 /** Union that contains all the different types of data. This should all
  be JSVAR_DATA_STRING_MAX_LEN long.
@@ -205,12 +219,52 @@ typedef union {
     JsVarInt integer; ///< The contents of this variable if it is an int
     JsVarFloat floating; ///< The contents of this variable if it is a double
     JsVarDataArrayBufferView arraybuffer; ///< information for array buffer views.
+    const JswSymList *nativeObject; ///< A native object
     JsVarDataNative native; ///< A native function
     JsVarDataNativeStr nativeStr; ///< A native string (or flash string)
     JsVarDataRef ref; ///< References
 } PACKED_FLAGS JsVarData;
 
 
+/** This is the enum used to store how functions should be called
+ * by jsnative.c.
+ *
+ * The first set of JSWAT_MASK bits is the return value, then following
+ * is the first argument and so on:
+ *
+ * JSWAT_BOOL
+ *   => bool()
+ * JSWAT_BOOL | (JSWAT_INT<<(JSWAT_BITS)) | (JSWAT_JSVAR<<(JSWAT_BITS*2))
+ *   => bool(int, JsVar*)
+ *
+ * JSWAT_THIS_ARG means the function also takes 'this' as its first argument:
+ *
+ * JSWAT_THIS_ARG | JSWAT_BOOL
+ *   => bool(JsVar *parent);
+ */
+typedef enum {
+  JSWAT_FINISH = 0, // no argument
+  JSWAT_VOID = 0, // Only for return values
+  JSWAT_JSVAR, // standard variable
+  JSWAT_ARGUMENT_ARRAY, // a JsVar array containing all subsequent arguments
+  JSWAT_BOOL, // boolean
+  JSWAT_INT32, // 32 bit int
+  JSWAT_PIN, // A pin
+  JSWAT_JSVARFLOAT, // 64 bit float
+  JSWAT__LAST = JSWAT_JSVARFLOAT,
+  JSWAT_MASK = NEXT_POWER_2(JSWAT__LAST)-1,
+
+  // should this just be executed right away and the value returned? Used to encode constants in the symbol table
+  // We encode this by setting all bits in the last argument, but leaving the second-last argument as zero
+  JSWAT_EXECUTE_IMMEDIATELY = 0x7000,
+  JSWAT_EXECUTE_IMMEDIATELY_MASK = 0x7E00,
+
+  JSWAT_THIS_ARG    = 0x8000, // whether a 'this' argument should be tacked onto the start
+  JSWAT_ARGUMENTS_MASK = ~(JSWAT_MASK | JSWAT_THIS_ARG)
+} PACKED_FLAGS JsnArgumentType;
+
+// number of bits needed for each argument bit
+#define JSWAT_BITS GET_BIT_NUMBER(JSWAT_MASK+1)
 
 typedef struct JsVarStruct {
   /** The actual variable data, as well as references (see below). Put first so word aligned */
@@ -287,6 +341,8 @@ unsigned int jsvGetMemoryUsage(); ///< Get number of memory records (JsVars) use
 unsigned int jsvGetMemoryTotal(); ///< Get total amount of memory records
 bool jsvIsMemoryFull(); ///< Get whether memory is full or not
 bool jsvMoreFreeVariablesThan(unsigned int vars); ///< Return whether there are more free variables than the parameter (faster than checking no of vars used)
+  void (*functionPtr)(void);
+  JsnArgumentType functionSpec;
 void jsvShowAllocated(); ///< Show what is still allocated, for debugging memory problems
 /// Try and allocate more memory - only works if RESIZABLE_JSVARS is defined
 void jsvSetMemoryTotal(unsigned int jsNewVarCount);
@@ -333,6 +389,7 @@ void jsvMakeFunctionParameter(JsVar *v);
 void jsvAddFunctionParameter(JsVar *fn, JsVar *name, JsVar *value);
 
 void *jsvGetNativeFunctionPtr(const JsVar *function); ///< Get the actual pointer from a native function - this may not be the contents of varData.native.ptr
+JsnArgumentType jsvGetNativeFunctionSpec(const JsVar *function);
 
 /// Get a reference from a var - SAFE for null vars
 JSV_INLINEABLE JsVarRef jsvGetRef(JsVar *var);
@@ -394,6 +451,7 @@ bool jsvIsNumeric(const JsVar *v);
 bool jsvIsFunction(const JsVar *v);
 bool jsvIsFunctionReturn(const JsVar *v); ///< Is this a function with an implicit 'return' at the start?
 bool jsvIsFunctionParameter(const JsVar *v);
+extern ALWAYS_INLINE bool jsvIsNativeObject(const JsVar *v);
 bool jsvIsObject(const JsVar *v);
 bool jsvIsArray(const JsVar *v);
 bool jsvIsArrayBuffer(const JsVar *v);

@@ -20,7 +20,8 @@
 
 /*JSON{
   "type" : "class",
-  "class" : "Serial"
+  "class" : "Serial",
+  "memberOf" : "global"
 }
 This class allows use of the built-in USARTs
 
@@ -114,6 +115,7 @@ May return undefined if no device can be found.
 /*JSON{
   "type" : "object",
   "name" : "USB",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "ifdef" : "USB"
 }
@@ -122,6 +124,7 @@ The USB Serial port
 /*JSON{
   "type" : "object",
   "name" : "Serial1",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=1"
 }
@@ -130,6 +133,7 @@ The first Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "Serial2",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=2"
 }
@@ -138,6 +142,7 @@ The second Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "Serial3",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=3"
 }
@@ -146,6 +151,7 @@ The third Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "Serial4",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=4"
 }
@@ -154,6 +160,7 @@ The fourth Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "Serial5",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=5"
 }
@@ -162,6 +169,7 @@ The fifth Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "Serial6",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "USART_COUNT>=6"
 }
@@ -171,6 +179,7 @@ The sixth Serial (USART) port
 /*JSON{
   "type" : "object",
   "name" : "LoopbackA",
+  "memberOf" : "global",
   "instanceof" : "Serial"
 }
 A loopback serial device. Data sent to `LoopbackA` comes out of `LoopbackB` and
@@ -179,6 +188,7 @@ vice versa
 /*JSON{
   "type" : "object",
   "name" : "LoopbackB",
+  "memberOf" : "global",
   "instanceof" : "Serial"
 }
 A loopback serial device. Data sent to `LoopbackA` comes out of `LoopbackB` and

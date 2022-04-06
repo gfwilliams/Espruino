@@ -19,6 +19,7 @@ import re;
 import json;
 import sys;
 import os;
+import traceback;
 import importlib;
 # Local
 import pinutils;
@@ -172,6 +173,7 @@ def get_jsondata(is_for_document, parseArgs = True, boardObject = False):
     githash = get_git_hash()
     if len(githash)==0: githash="master"
 
+                  expr = expr.replace("!",  "not ")
     jsondatas = []
     for jswrap in jswraps:
       # ignore anything from archives

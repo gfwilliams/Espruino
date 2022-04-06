@@ -23,18 +23,10 @@
 
 /*JSON{
   "type" : "class",
-  "class" : "console"
+  "class" : "console",
+  "memberOf" : "global"
 }
 An Object that contains functions for writing to the interactive console
- */
-
-/*JSON{
-  "type" : "variable",
-  "name" : "global",
-  "generate_full" : "jsvLockAgain(execInfo.root)",
-  "return" : ["JsVar","The global scope"]
-}
-A reference to the global scope, where everything is defined.
  */
 
 /*JSON{

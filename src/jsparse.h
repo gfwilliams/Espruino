@@ -34,9 +34,6 @@ JsVar *jspGetConstructor(JsVar *object);
 /// Check that we have enough stack to recurse. Return true if all ok, error if not.
 bool jspCheckStackPosition();
 
-/// Create a new built-in object that jswrapper can use to check for built-in functions
-JsVar *jspNewBuiltin(const char *name);
-
 /// Create a new Class of the given instance and return its prototype (as a name 'prototype')
 NO_INLINE JsVar *jspNewPrototype(const char *instanceOf);
 
@@ -44,6 +41,8 @@ NO_INLINE JsVar *jspNewPrototype(const char *instanceOf);
  * If name!=0, added to root with name, and the name is returned
  * If name==0, not added to root and Object itself returned */
 JsVar *jspNewObject(const char *name, const char *instanceOf);
+/** Create a new object of the given instance. Should be one of jswSymbolIndex_XYZ  */
+NO_INLINE JsVar *jspNewHiddenObject(int tableIndex);
 
 /// if interrupting execution, this is set
 bool jspIsInterrupted();

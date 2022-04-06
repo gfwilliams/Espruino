@@ -64,6 +64,7 @@ volatile bool touchedFreeList = false;
 volatile JsVarRef jsVarFirstEmpty; ///< reference of first unused variable (variables are in a linked list)
 volatile MemBusyType isMemoryBusy; ///< Are we doing garbage collection or similar, so can't access memory?
 
+ALWAYS_INLINE bool jsvIsNativeObject(const JsVar *v) { return v && (v->flags&(JSV_NATIVE|JSV_VARTYPEMASK))==(JSV_NATIVE|JSV_OBJECT); }
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
@@ -1309,6 +1310,7 @@ void jsvAddFunctionParameter(JsVar *fn, JsVar *paramName, JsVar *value) {
 }
 
 void *jsvGetNativeFunctionPtr(const JsVar *function) {
+  assert(jsvIsNativeFunction(function) || jsvIsNativeObject(function));
   /* see descriptions in jsvar.h. If we have a child called JSPARSE_FUNCTION_CODE_NAME
    * then we execute code straight from that */
   JsVar *flatString = jsvFindChildFromString((JsVar*)function, JSPARSE_FUNCTION_CODE_NAME, 0);
@@ -1317,8 +1319,17 @@ void *jsvGetNativeFunctionPtr(const JsVar *function) {
     void *v = (void*)((size_t)function->varData.native.ptr + (char*)jsvGetFlatStringPointer(flatString));
     jsvUnLock(flatString);
     return v;
-  } else
+  } else {
+    if (jsvIsNativeObject(function))
+      return (void *)function->varData.nativeObject->functionPtr;
     return (void *)function->varData.native.ptr;
+  }
+}
+
+JsnArgumentType jsvGetNativeFunctionSpec(const JsVar *function) {
+  if (jsvIsNativeObject(function))
+    return (JsnArgumentType)function->varData.nativeObject->functionSpec;
+  return (JsnArgumentType)function->varData.native.argTypes;
 }
 
 
@@ -3823,7 +3834,8 @@ void _jsvTrace(JsVar *var, int indent, JsVar *baseVar, int level) {
   } else if (jsvIsName(var)) jsiConsolePrint("Name ");
 
   char endBracket = ' ';
-  if (jsvIsObject(var)) { jsiConsolePrint("Object { "); endBracket = '}'; }
+  if (jsvIsNativeObject(var)) { jsiConsolePrintf("Native Object 0x%x { ", var->varData.nativeObject); endBracket = '}'; }
+  else if (jsvIsObject(var)) { jsiConsolePrint("Object { "); endBracket = '}'; }
   else if (jsvIsGetterOrSetter(var)) { jsiConsolePrint("Getter/Setter { "); endBracket = '}'; }
   else if (jsvIsArray(var)) { jsiConsolePrintf("Array(%d) [ ", var->varData.integer); endBracket = ']'; }
   else if (jsvIsNativeFunction(var)) { jsiConsolePrintf("NativeFunction 0x%x (%d) { ", var->varData.native.ptr, var->varData.native.argTypes); endBracket = '}'; }

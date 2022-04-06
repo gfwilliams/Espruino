@@ -26,6 +26,7 @@
 /*JSON{
   "type" : "class",
   "class" : "Object",
+  "memberOf" : "global",
   "check" : "jsvIsObject(var)"
 }
 This is the built-in class for Objects
@@ -33,6 +34,7 @@ This is the built-in class for Objects
 /*JSON{
   "type" : "class",
   "class" : "Function",
+  "memberOf" : "global",
   "check" : "jsvIsFunction(var)"
 }
 This is the built-in class for Functions
@@ -755,6 +757,15 @@ JsVar *jswrap_object_assign(JsVar *args) {
 
 // --------------------------------------------------------------------------
 //                                                         Misc constructors
+
+/*JSON{
+  "type" : "class",
+  "class" : "Boolean",
+  "memberOf" : "global",
+  "check" : "jsvIsBoolean(var)"
+}
+This is the built-in class for Boolean values
+ */
 
 /*JSON{
   "type" : "constructor",

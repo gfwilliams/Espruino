@@ -40,7 +40,8 @@ after booting, `__FILE__` is not set.
 
 /*JSON{
   "type" : "class",
-  "class" : "E"
+  "class" : "E",
+  "memberOf" : "global"
 }
 This is the built-in JavaScript class for Espruino utility functions.
  */

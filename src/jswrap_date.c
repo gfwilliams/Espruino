@@ -219,7 +219,8 @@ static CalendarDate getCalendarDateFromDateVar(JsVar *date, bool forceGMT) {
 
 /*JSON{
   "type" : "class",
-  "class" : "Date"
+  "class" : "Date",
+  "memberOf" : "global"
 }
 The built-in class for handling Dates.
 

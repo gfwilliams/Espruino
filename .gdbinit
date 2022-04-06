@@ -8,6 +8,12 @@ define whereami
  print jslPrintTokenLineMarker(jsiConsolePrintString, 0, lex->tokenLastStart, 0)
 end
 define typeof
+  if (($arg0)->flags&(JSV_VARTYPEMASK|JSV_NATIVE))==(JSV_NATIVE|JSV_OBJECT)
+    printf "JSV_NATIVE_OBJECT\n"
+  end
+  if (($arg0)->flags&(JSV_VARTYPEMASK|JSV_NATIVE))==(JSV_NATIVE|JSV_FUNCTION)
+    printf "JSV_NATIVE_FUNCTION\n"
+  end
   if (($arg0)->flags&JSV_VARTYPEMASK)>=JSV_NAME_STRING_0 && (($arg0)->flags&JSV_VARTYPEMASK)<=JSV_NAME_STRING_MAX
     printf "JSV_NAME_STRING_%d\n", (($arg0)->flags&JSV_VARTYPEMASK)-JSV_NAME_STRING_0
   end

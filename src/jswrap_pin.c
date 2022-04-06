@@ -25,6 +25,7 @@
 /*JSON{
   "type"  : "class",
   "class" : "Pin",
+  "memberOf" : "global",
   "name"  : "Pin",
   "check" : "jsvIsPin(var)",
   "sortorder" : -1

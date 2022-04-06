@@ -21,6 +21,16 @@
 #include "jswrap_string.h"
 #include "jswrap_functions.h"
 
+// Objects that need to be instantiated
+extern const unsigned char jswSymbolIndex_httpSrv;
+extern const unsigned char jswSymbolIndex_httpCRs;
+extern const unsigned char jswSymbolIndex_httpCRq;
+extern const unsigned char jswSymbolIndex_httpSRs;
+extern const unsigned char jswSymbolIndex_httpSRq;
+extern const unsigned char jswSymbolIndex_Server;
+extern const unsigned char jswSymbolIndex_Socket;
+
+
 #define HTTP_NAME_SOCKETTYPE "type" // normal socket or HTTP
 #define HTTP_NAME_PORT "port"
 #define HTTP_NAME_SOCKET "sckt"
@@ -787,8 +797,8 @@ bool socketIdle(JsNetwork *net) {
       }
       if (theClient >= 0) { // We have a new connection
         if ((socketType&ST_TYPE_MASK) == ST_HTTP) {
-          JsVar *req = jspNewObject(0, "httpSRq");
-          JsVar *res = jspNewObject(0, "httpSRs");
+          JsVar *req = jspNewHiddenObject(jswSymbolIndex_httpSRq);
+          JsVar *res = jspNewHiddenObject(jswSymbolIndex_httpSRs);
           if (res && req) { // out of memory?
             socketSetType(req, ST_HTTP);
             JsVar *arr = socketGetArray(HTTP_ARRAY_HTTP_SERVER_CONNECTIONS, true);
@@ -810,7 +820,7 @@ bool socketIdle(JsNetwork *net) {
           jsvUnLock2(req, res);
         } else {
           // Normal sockets
-          JsVar *sock = jspNewObject(0, "Socket");
+          JsVar *sock = jspNewHiddenObject(jswSymbolIndex_Socket);
           if (sock) { // out of memory?
             socketSetType(sock, socketType);
             JsVar *arr = socketGetArray(HTTP_ARRAY_HTTP_CLIENT_CONNECTIONS, true);
@@ -841,7 +851,7 @@ bool socketIdle(JsNetwork *net) {
 // -----------------------------
 
 JsVar *serverNew(SocketType socketType, JsVar *callback) {
-  JsVar *server = jspNewObject(0, ((socketType&ST_TYPE_MASK)==ST_HTTP) ? "httpSrv" : "Server");
+  JsVar *server = jspNewHiddenObject(((socketType&ST_TYPE_MASK)==ST_HTTP) ? jswSymbolIndex_httpSrv : jswSymbolIndex_Server);
   if (!server) return 0; // out of memory
   socketSetType(server, socketType);
   jsvObjectSetChild(server, HTTP_NAME_ON_CONNECT, callback); // no unlock needed

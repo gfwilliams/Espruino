@@ -33,6 +33,7 @@
 static JsVar* pipeGetArray(bool create) {
   return jsvObjectGetChild(execInfo.hiddenRoot, "pipes", create ? JSV_ARRAY : 0);
 }
+  "memberOf" : "global",
 
 
 static void handlePipeClose(JsVar *arr, JsvObjectIterator *it, JsVar* pipe) {

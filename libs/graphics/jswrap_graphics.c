@@ -403,6 +403,7 @@ NO_INLINE void _jswrap_drawImageSimple(JsGraphics *gfx, int xPos, int yPos, GfxD
 /*JSON{
   "type" : "class",
   "class" : "Graphics",
+  "memberOf" : "global",
   "typescript" : "Graphics<IsBuffer extends boolean = boolean>"
 }
 This class provides Graphics operations that can be applied to a surface.

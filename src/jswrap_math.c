@@ -72,7 +72,8 @@ double jswrap_math_sin(double x) {
 
 /*JSON{
   "type" : "class",
-  "class" : "Math"
+  "class" : "Math",
+  "memberOf" : "global"
 }
 This is a standard JavaScript class that contains useful Maths routines
 */

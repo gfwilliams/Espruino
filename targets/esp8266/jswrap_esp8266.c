@@ -163,7 +163,7 @@ void jswrap_ESP8266_printLog() {
   "ifdef"    : "ESP8266",
   "name"     : "readLog",
   "generate" : "esp8266_logGetLine",
-  "returns"  : "String with one line from the log, up to 128 characters long"
+  "return"  : ["JsVar", "String with one line from the log, up to 128 characters long"]
 }
 Returns one line from the log or up to 128 characters.
  */

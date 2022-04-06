@@ -16,6 +16,7 @@
 import pinutils;
 info = {
  'name'            : "ESP8266",
+ 'espruino_page_link' : 'ESP8266_12',
  'espruino_page_link' : 'EspruinoESP8266',
  'default_console' : "EV_SERIAL1",
  'default_console_baudrate' : "115200",
