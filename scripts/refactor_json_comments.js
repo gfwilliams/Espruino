@@ -1,12 +1,14 @@
 #!/usr/bin/node
-/* This was designed to be run once over Espruino 
- *  ... hence it has probably already been run.
- * 
+/*  This was designed to be RUN ONCE over Espruino in order to refactor JSON
+ *  comments into a more sensible form (no mention of static/etc)
+ *
+ *  IT HAS ALREADY BEEN RUN AND SHOULD NOT BE RUN OVER THE FILES AGAIN
+ *
  *  It scans over all old-style JSON elements, reads them in,
  *  formats them, and then spits them out with the description after.
- *  
+ *
  *  This will hopefully encourage more verbose descriptions!
- */  
+ */
 
 var fs = require("fs");
 var common = require("./common.js");
@@ -63,6 +65,7 @@ function refactorJSON(json) {
   var newJSON;
 
   switch (json["type"]) {
+    case "hwinit":
     case "init":
     case "idle":
     case "kill":
@@ -93,7 +96,7 @@ function refactorJSON(json) {
         copyFields.push("not_real_object"); // do we really want this??
         newJSON = {
           type : "object",
-          name : json["class"]          
+          name : json["class"]
         };
         if (json["memberOf"])
           newJSON["memberOf"] = json["memberOf"];
@@ -109,7 +112,7 @@ function refactorJSON(json) {
         newJSON = {
           type : "object",
           name : json["name"],
-          instanceOf : json["instanceof"]                    
+          instanceOf : json["instanceof"]
         };
         if (json["memberOf"])
           newJSON["memberOf"] = json["memberOf"];
@@ -231,8 +234,8 @@ function refactorJSON(json) {
     if (newJSON["if"]) error(json, "IF already defined");
     newJSON["if"] = "!defined("+json["ifndef"]+")";
   }
-   
-  if (!newJSON) error(json, "No new JSON");     
+
+  if (!newJSON) error(json, "No new JSON");
   return newJSON;
 }
 
@@ -243,14 +246,14 @@ function refactorFile(filename) {
   if (jsonBlocks) jsonBlocks.forEach(function(jsonBlock) {
     // parse it
     var block = splitJSONBlock(jsonBlock);
-    var json = JSON.parse(block.json); 
+    var json = JSON.parse(block.json);
     json = refactorJSON(json);
      // now reconstruct
     var newBlock = "/*JSON" + formatJSON(json);
     if (block.description!==undefined)
       newBlock += "\n" + block.description.trim() + "\n";
     newBlock += "*/";
-    
+
    // console.log(newBlock);
 
     // nasty:

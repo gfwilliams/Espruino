@@ -23,8 +23,8 @@ basedir = scriptdir+"/../"
 sys.path.append(basedir+"scripts");
 sys.path.append(basedir+"boards");
 import importlib;
-from inspect import currentframe, getframeinfo
 import common;
+from inspect import currentframe, getframeinfo
 from collections import OrderedDict;
 
 if len(sys.argv)<2 or sys.argv[len(sys.argv)-2][:2]!="-B" or sys.argv[len(sys.argv)-1][:2]!="-F":
@@ -109,6 +109,11 @@ def getTestFor(className, static):
     if className=="Function": return "jsvIsFunction(parent)"
     return getConstructorTestFor(className, "constructorPtr");
 
+# Dump the current position in this file
+def getCurrentFilePos():
+  cf = currentframe()
+  return "build_jswrapper.py:"+str(cf.f_back.f_lineno)
+
 def toArgumentType(argName):
   if argName=="": return "JSWAT_VOID";
   if argName=="JsVar": return "JSWAT_JSVAR";
@@ -139,16 +144,9 @@ def toCBox(argName):
   if argName=="int": return "jsvNewFromInteger";
   if argName=="float": return "jsvNewFromFloat";
   FATAL_ERROR("toCBox: Unknown argument name "+argName+"\n")
-      print(json.dumps(sym, sort_keys=True, indent=2))
 
 def toCUnbox(argName):
   if argName=="JsVar": return "";
-  if name in constructors: 
-    tab["constructorPtr"]="(void (*)(void))"+constructors[name]["generate"]
-    tab["constructorSpec"]=getArgumentSpecifier(constructors[name])
-  else:
-    tab["constructorPtr"]="0"
-    tab["constructorSpec"]="0"
   if argName=="bool": return "jsvGetBool";
   if argName=="pin": return "jshGetPinFromVar";
   if argName=="int32": return "jsvGetInteger";
@@ -156,6 +154,9 @@ def toCUnbox(argName):
   if argName=="float": return "jsvGetFloat";
   FATAL_ERROR("toCUnbox: Unknown argument name "+argName+"\n")
 
+
+def hasThis(func):
+  return func["type"]=="property" or func["type"]=="method"
 
 def getParams(func):
   params = []
@@ -173,7 +174,7 @@ def getArgumentSpecifier(jsondata):
   params = getParams(jsondata)
   result = getResult(jsondata);
   s = [ toArgumentType(result[0]) ]
-  if jsondata["thisParam"]: s.append("JSWAT_THIS_ARG");
+  if hasThis(jsondata): s.append("JSWAT_THIS_ARG");
   # Either it's a variable/property, in which case we need to execute the native function in order to return the correct info
   if jsondata["type"]=="variable" or common.is_property(jsondata):
     s.append("JSWAT_EXECUTE_IMMEDIATELY")
@@ -202,25 +203,11 @@ def getCDeclaration(jsondata, name):
   for param in params:
     s.append(toCType(param[1]));
   return toCType(result[0])+" "+name+"("+",".join(s)+")";
+
 def codeOutSymbolTable(builtin):
   codeName = builtin["name"]
   # sort by name
-    if jsondata["name"] in classes:
-      print("ERROR: "+jsondata["name"]+" is defined twice");
-      exit(1);
   builtin["functions"] = sorted(builtin["functions"], key=lambda n: n["name"]);
-    # Also create a fake variable for the class prototype to make sure it'll exist
-    jsondatas.append({ 
-        "type":"variable", 
-        "static":True,
-        "name":"i_am_just_a_placeholder",         
-        "class":jsondata["name"]+".prototype",
-        "filename":"jswrapper.c"
-      });
-    if not "generate" in jsondata and not "generate_full" in jsondata:
-      jsondata["thisParam"] = False
-      jsondata["return"] = ["JsVar"]
-      jsondata["generate_full"] = "jswCreateFromSymbolTable(jswSymbolIndex_"+jsondata["name"].replace(".","_")+")"
   # output tables
   listSymbols = []
   listChars = ""
@@ -230,31 +217,6 @@ def codeOutSymbolTable(builtin):
 
     if builtin["name"]=="global" and symName in libraries:
       continue # don't include libraries on global namespace
-  if jsondata["type"]=="class":
-    else:
-      print("ERROR: duplicate constructor "+jsondata["name"])
-      exit(1)
-    if "instanceof" in jsondata:
-      jsondatas.append({ 
-        "type":"variable", 
-        "static":True,
-        "name":"__proto__", 
-        "class":jsondata["name"],
-        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+jsondata["instanceof"].replace(".","_")+"_prototype)",
-        "return" : ["JsVar"],
-        "filename" : jsondata["filename"]
-      })
-    if "prototype" in jsondata:
-      jsondatas.append({ 
-        "type":"variable", 
-        "static":True,
-        "name":"__proto__",         
-        "class":jsondata["name"]+".prototype",
-        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+jsondata["prototype"].replace(".","_")+"_prototype)",
-        "return" : ["JsVar"],
-        "filename" : jsondata["filename"]
-      })
-
     if "generate" in sym:
       listSymbols.append("{"+", ".join([str(strLen), getArgumentSpecifier(sym), "(void (*)(void))"+sym["generate"]])+"}")
       listChars = listChars + symName + "\\0";
@@ -263,7 +225,14 @@ def codeOutSymbolTable(builtin):
       print (codeName + "." + symName+" not included in Symbol Table because no 'generate'")
   builtin["symbolTableChars"] = "\""+listChars+"\"";
   builtin["symbolTableCount"] = str(len(listSymbols));
-  codeOut("static const JswSymPtr jswSymbols_"+codeName+"[] FLASH_SECT = {\n  "+",\n  ".join(listSymbols)+"\n};");
+  builtin["symbolListName"] = "jswSymbols_"+codeName;
+  if name in constructors:
+    builtin["constructorPtr"]="(void (*)(void))"+constructors[name]["generate"]
+    builtin["constructorSpec"]=getArgumentSpecifier(constructors[name])
+  else:
+    builtin["constructorPtr"]="0"
+    builtin["constructorSpec"]="0"
+  codeOut("static const JswSymPtr "+builtin["symbolListName"]+"[] FLASH_SECT = {\n  "+",\n  ".join(listSymbols)+"\n};");
 
 def codeOutBuiltins(indent, builtin):
   codeOut(indent+"jswBinarySearch(&jswSymbolTables["+builtin["indexName"]+"], parent, name);");
@@ -283,29 +252,9 @@ def removeBlacklistForWrapper(blacklistfile,datas):
 				for black in blacklist:
 					if jsondata["class"] == black["class"]:
 						if(jsondata["name"] == black["name"] or black["name"] == "*"):
-        "return" : ["JsVar"],
 							toremove.append(idx)
 							print("Removing "+black["class"]+"."+black["name"]+" due to blacklist wildcard")
 # extension by jumjum
-# If we have a 'prototype', make sure it's linked back
-# into the original class
-for sym in symbolTables:
-  if sym[-10:]==".prototype":
-    className = sym[:-10]
-    if not "prototype" in symbolTables[className]["functions"]:      
-      j = { 
-        "type":"variable", 
-        "thisParam":False,
-        "name":"prototype", 
-        "memberOf":className,
-        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+className+"_prototype)",
-        "return" : ["JsVar"],
-        "filename" : classes[className]["filename"]
-      } 
-      symbolTables[className]["functions"].append(j)
-      jsondatas.append(j)
- 
-
 		else:
 			if "name" in jsondata:
 				for black in blacklist:
@@ -326,7 +275,7 @@ for sym in symbolTables:
 						if black["name"] == "*":
 						  toremove.append(idx)
 						  print("Removing "+black["class"]+" due to blacklist wildcard")
-    
+
 #  end extension by jumjum
 	return delete_by_indices( datas, toremove)
 # ------------------------------------------------------------------------------------------------------
@@ -346,42 +295,158 @@ if 'BLACKLIST' in os.environ:
 includes = common.get_includes_from_jsondata(jsondatas)
 
 # work out what we have actually got
-classes = []
+classes = {}      # list of class names
+constructors = {}
+objectChecks = {} # class name -> the check for this class Type
+
+for jsondata in jsondatas:
+
+  if not "type" in jsondata:
+    print("ERROR: no type for "+json.dumps(jsondata, sort_keys=True, indent=2))
+    exit(1)
+
+  if jsondata["type"] in ["idle","kill","init","include"]: continue
+
+  if not "name" in jsondata:
+    print("WARNING: no name for "+json.dumps(jsondata, sort_keys=True, indent=2))
+
+  if jsondata["type"]=="object":
+    if "check" in jsondata:
+      objectChecks[jsondata["name"]] = jsondata["check"]
+    if jsondata["name"] in classes:
+      print("ERROR: "+jsondata["name"]+" is defined twice");
+      exit(1);
+    classes[jsondata["name"]] = jsondata
+
+  if jsondata["type"] in ["function","variable","constructor"]:
+    if not "thisParam" in jsondata: jsondata["thisParam"] = False
+
+  if not "instanceOf" in jsondata:
+    print("WARNING: No instanceOf for "+jsondata["name"])
+
+  if jsondata["type"]=="constructor":
+    if not jsondata["name"] in constructors:
+      constructors[jsondata["name"]] = jsondata
+    else:
+      print("ERROR: duplicate constructor "+jsondata["name"])
+      exit(1)
+
+  if jsondata["type"]=="object":
+    if "instanceOf" in jsondata:
+      jsondatas.append({
+        "autogenerated":getCurrentFilePos(),
+        "type":"variable",
+        "thisParam":False,
+        "name":"__proto__",
+        "memberOf":jsondata["name"],
+        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+jsondata["instanceOf"].replace(".","_")+"_prototype)",
+        "return" : ["JsVar"],
+        "filename" : jsondata["filename"]
+      });
+    if not "generate" in jsondata and not "generate_full" in jsondata:
+      jsondata["autogenerated"] = getCurrentFilePos()
+      jsondata["thisParam"] = False
+      jsondata["return"] = ["JsVar"]
+      jsondata["generate_full"] = "jswCreateFromSymbolTable(jswSymbolIndex_"+jsondata["name"].replace(".","_")+")"
+
+# Add basic classes if we have prototypes for classes, but not the class itself
+for className in classes:
+  if className[-10:]==".prototype" and not className[:-10] in classes:
+    print("Auto-creating class for "+className[:-10]);
+    classes[className[:-10]] = {
+        "autogenerated":getCurrentFilePos(),
+        "type":"object", "name": className[:-10],
+        "filename" : classes[className]["filename"],
+      };
+
+
+print("Finding Libraries")
+libraries = []
+for jsondata in jsondatas:
+  if jsondata["type"]=="library":
+    print(" - Found library "+jsondata["name"])
+    libraries.append(jsondata["name"])
+
+
+print("Creating Symbol Tables")
+symbolTables = {}
+# Add main types
+for className in classes:
+  symbolTables[className] = { "autogenerated":getCurrentFilePos(), "type" : "object", "name" : className, "functions" : [] }
+for libName in libraries:
+#  if libName in symbolTables:
+#    print("ERROR: Name conflict for "+libName+" while adding Library");
+#    print("Existing: "+json.dumps(symbolTables[libName], sort_keys=True, indent=2))
+#    exit(1);
+  # ... we know there will already be a 'class' for the library name...
+  symbolTables[libName] = { "autogenerated":getCurrentFilePos(), "type" : "library", "name" : libName, "functions" : [] }
+
+# Now populate with prototypes
+for className in classes:
+  if className[-10:]==".prototype":
+    jsondatas.append({
+        "autogenerated":getCurrentFilePos(),
+        "type":"variable",
+        "thisParam":False,
+        "name":"prototype",
+        "memberOf":className[:-10],
+        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+className.replace(".","_")+")",
         "return" : ["JsVar"],
         "filename" : classes[className]["filename"]
     })
     if "memberOf" in classes[className]:
-      print("ERROR: Class "+className+" CAN'T BE a member of anything because it's a prototype ("+classes[className]["filename"]+")");  
+      print("ERROR: Class "+className+" CAN'T BE a member of anything because it's a prototype ("+classes[className]["filename"]+")");
       exit(1);
   elif "memberOf" in classes[className]:
-    jsondatas.append({ 
-        "type":"variable", 
-        "static":True,
-        "name":className, 
-        "class":classes[className]["memberOf"],
+    if not className in classes:
+      j = {
+        "autogenerated":getCurrentFilePos(),
+        "type":"variable",
+        "thisParam":False,
+        "name":className,
+        "memberOf":classes[className]["memberOf"],
         "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+className+")",
         "return" : ["JsVar"],
-constructors = []
-for jsondata in jsondatas:
-  if "class" in jsondata :
-    if not jsondata["class"] in classes:
-      classes.append(jsondata["class"])
-  if jsondata["type"]=="constructor":
-    if not jsondata["name"] in constructors:
-      constructors.append(jsondata["name"])
-    if not "return" in jsondata:
-      FATAL_ERROR("Constructors MUST return something: "+jsondata["name"]+":"+jsondata["filename"]+"\n");
+        "filename" : classes[className]["filename"]
+      }
+      classes[className] = j
+      jsondatas.append(j)
   else:
     print("WARNING: Class "+className+" is not a member of anything ("+classes[className]["filename"]+")");
-# Add constructors if we need them
-for className in classes:
-  if not className in constructors:
-    jsondatas.append({
-        "type":"constructor", "class": className,  "name": className,
-        "generate_full" : "NULL", # return undefined means 'new X' uses the object that was returned, which is correct
-        "filename" : "jswrapper.c",
-        "return" : [ "JsVar", "" ]
-    });
+
+try:
+  for j in jsondatas:
+    if "memberOf" in j:
+      if not j["memberOf"] in symbolTables:
+        symbolTables[j["memberOf"]] = { "autogenerated":getCurrentFilePos(), "type" : "object", "name" : j["memberOf"], "functions" : [] }
+      symbolTables[j["memberOf"]]["functions"].append(j);
+    else: print("no member: "+json.dumps(j, sort_keys=True, indent=2))
+except:
+  print("Unexpected error:", sys.exc_info())
+  print(json.dumps(j, sort_keys=True, indent=2))
+  exit(1)
+
+# If we have a 'prototype', make sure it's linked back
+# into the original class
+for sym in symbolTables:
+  if sym[-10:]==".prototype":
+    className = sym[:-10]
+    if not "prototype" in symbolTables[className]["functions"]:
+      j = {
+        "autogenerated":getCurrentFilePos(),
+        "type":"variable",
+        "thisParam":False,
+        "name":"prototype",
+        "memberOf":className,
+        "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_"+className+"_prototype)",
+        "return" : ["JsVar"],
+        "filename" : classes[className]["filename"]
+      }
+      symbolTables[className]["functions"].append(j)
+      jsondatas.append(j)
+
+#print(json.dumps(symbolTables, sort_keys=True, indent=2))
+#exit(1)
 
 # ------------------------------------------------------------------------------------------------------
 #print(json.dumps(tree, sort_keys=True, indent=2))
@@ -398,9 +463,6 @@ codeOut('#include "jsparse.h"');
 for include in includes:
   codeOut('#include "'+include+'"');
 codeOut('');
-#codeOut('// -----------------------------------------------------------------------------------------');
-#codeOut('');
-codeOut('');
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('// --------------------------------------------------------------- SYMBOL TABLE INDICES    ');
 codeOut('// -----------------------------------------------------------------------------------------');
@@ -414,58 +476,56 @@ for name in symbolTables:
   idx = idx + 1
 
 codeOut('');
+codeOut("""
+JsVar *jswCreateFromSymbolTable(int tableIndex) {
+  JsVar *v = jsvNewWithFlags(JSV_OBJECT | JSV_NATIVE);
+  if (v) v->varData.nativeObject = &jswSymbolTables[tableIndex];
+  return v;
+}
+
+""");
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('// ----------------------------------------------------------------- AUTO-GENERATED WRAPPERS');
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('');
 
 for jsondata in jsondatas:
-  # Include 'inline' C declarations
-  if ("generate_full" in jsondata) or (jsondata["type"]=="object"):
-    gen_name = "gen_jswrap"  
-    if "class" in jsondata: gen_name = gen_name + "_" + jsondata["class"].replace(".","_");
+  if ("generate_full" in jsondata):
+    gen_name = "gen_jswrap"
+    if "memberOf" in jsondata: gen_name = gen_name + "_" + jsondata["memberOf"].replace(".","_");
     gen_name = gen_name + "_" + jsondata["name"].replace(".","_");
+
     jsondata["generate"] = gen_name
-
     s = [ ]
-    if jsondata["type"]=="object": # TODO: this isn't right now...
-      jsondata["generate_full"] = "jspNewObject(\""+jsondata["name"]+"\", \""+jsondata["instanceof"]+"\") /* needs JSWAT_EXECUTE_IMMEDIATELY */";
-      params = []
-      result = ["JsVar"]
-    else:
-      params = getParams(jsondata)
-      result = getResult(jsondata);
-      if not jsondata["static"]: s.append("JsVar *parent");
-      for param in params:
-        s.append(toCType(param[1])+" "+param[0]);
 
+    params = getParams(jsondata)
+    result = getResult(jsondata);
+    if jsondata["thisParam"]: s.append("JsVar *parent");
+    for param in params:
+      s.append(toCType(param[1])+" "+param[0]);
+
+    codeOut("/* "+json.dumps(jsondata, sort_keys=True, indent=2).replace("*/","").replace("/*","")+" */")
     codeOut("static "+toCType(result[0])+" "+jsondata["generate"]+"("+", ".join(s)+") {");
     if result[0]:
       codeOut("  return "+jsondata["generate_full"]+";");
     else:
       codeOut("  "+jsondata["generate_full"]+";");
-for className in objectChecks.keys():
-  if className!="Function": # FIXME: This breaks `function Foo();Foo.prototype.toString=something;`
-    codeOut("  if ("+objectChecks[className]+") return jswSymbolIndex_"+className+";")
     codeOut("}");
     codeOut('');
   # Include JavaScript functions
-codeOut('')
-codeOut('')
-
   if ("generate_js" in jsondata):
-    gen_name = "gen_jswrap"  
+    gen_name = "gen_jswrap"
     if "class" in jsondata: gen_name = gen_name + "_" + jsondata["class"];
     gen_name = gen_name + "_" + jsondata["name"];
     jsondata["generate"] = gen_name
-    
+
     s = [ ]
     params = getParams(jsondata)
     result = getResult(jsondata)
     if hasThis(jsondata): s.append("JsVar *parent")
     for param in params:
       if param[1]!="JsVar": FATAL_ERROR("All arguments to generate_js must be JsVars");
-      s.append(toCType(param[1])+" "+param[0]);   
+      s.append(toCType(param[1])+" "+param[0]);
 
     js = "";
     with open(basedir+jsondata["generate_js"], 'r') as file:
@@ -497,6 +557,32 @@ codeOut('// --------------------------------------------------------------------
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('');
 
+# For the ESP8266 we want to put the structures into flash, we need a fresh section 'cause the
+# .irom.literal section used elsewhere has different readability attributes, sigh
+codeOut("#ifdef ESP8266\n#define FLASH_SECT __attribute__((section(\".irom.literal2\"))) __attribute__((aligned(4)))");
+codeOut("#else\n#define FLASH_SECT\n#endif\n");
+
+print("Outputting Symbol Tables")
+for name in symbolTables:
+  codeOutSymbolTable(symbolTables[name]);
+codeOut('');
+codeOut('');
+
+codeOut('const JswSymList jswSymbolTables[] = {');
+for name in symbolTables:
+  tab = symbolTables[name]
+  codeOut("  {"+", ".join([tab["symbolListName"], tab["symbolTableCount"], tab["symbolTableChars"], tab["constructorPtr"], tab["constructorSpec"]])+"}, // "+tab["indexName"]+", "+name);
+codeOut('};');
+codeOut('');
+codeOut('// -----------------------------------------------------------------------------------------');
+codeOut('// ------------------------------------------------------------------ symbols for debugging ');
+codeOut('');
+for name in symbolTables:
+  tab = symbolTables[name]
+  codeOut("  const JswSymList *jswSymbolTable_"+name.replace(".","_")+" = &jswSymbolTables["+tab["index"]+"]; // "+tab["indexName"]);
+codeOut('');
+codeOut('// -----------------------------------------------------------------------------------------');
+codeOut('// -----------------------------------------------------------------------------------------');
 
 # In jswBinarySearch we used to use READ_FLASH_UINT16 for sym->strOffset and sym->functionSpec for ESP8266 
 # (where unaligned reads broke) but despite being packed, the structure JswSymPtr is still always an multiple
@@ -549,7 +635,6 @@ print("Classifying Functions")
 builtins = OrderedDict()
 for jsondata in jsondatas:
   if "name" in jsondata:
-    #print(json.dumps(jsondata, sort_keys=True, indent=2))
     jsondata["static"] = not (jsondata["type"]=="property" or jsondata["type"]=="method")
 
     testCode = "!parent"
@@ -569,11 +654,6 @@ for jsondata in jsondatas:
       print("Adding "+testCode+" to builtins ("+className+")")
       builtins[testCode] = { "name" : builtinName, "className" : className, "isProto" : isProto, "functions" : [] }
     builtins[testCode]["functions"].append(jsondata);
-
-# For the ESP8266 we want to put the structures into flash, we need a fresh section 'cause the
-# .irom.literal section used elsewhere has different readability attributes, sigh
-codeOut("#ifdef ESP8266\n#define FLASH_SECT __attribute__((section(\".irom.literal2\"))) __attribute__((aligned(4)))");
-codeOut("#else\n#define FLASH_SECT\n#endif\n");
 
 print("Outputting Symbol Tables")
 idx = 0
@@ -612,7 +692,6 @@ codeOut('}')
 
 codeOut('')
 codeOut('')
-
 
 codeOut('JsVar *jswFindBuiltInFunction(JsVar *parent, const char *name) {')
 codeOut('  JsVar *v;')
@@ -661,67 +740,76 @@ codeOut('      return jsvNewFromPin(pin);')
 codeOut('    #endif')
 if "!parent" in builtins:
   codeOutBuiltins("    return ", builtins["!parent"])
+codeOut('int jswGetSymbolIndexForObject(JsVar *var) {')
+codeOut('  if (jsvIsRoot(var)) {');
+codeOut('    return jswSymbolIndex_global;');
 codeOut('  }');
-
-codeOut('  return 0;')
+codeOut('  if (jsvIsNativeObject(var)) {');
+codeOut('    assert(var->varData.nativeObject);');
+codeOut('    return (int)(var->varData.nativeObject-jswSymbolTables);'); # fixme - why not store int??
+codeOut('  }');
+for className in objectChecks.keys():
+  if className!="Function": # FIXME: This breaks `function Foo();Foo.prototype.toString=something;`
+    codeOut("  if ("+objectChecks[className]+") return jswSymbolIndex_"+className+";")
+codeOut("  return -1;")
 codeOut('}')
 
 codeOut('')
 codeOut('')
 
-codeOut('const JswSymList *jswGetSymbolListForObject(JsVar *parent) {')
-nativeTestStr = "jsvIsNativeFunction(parent) && ";
-codeOut("  if (jsvIsNativeFunction(parent)) {");
-for className in builtins:
-  builtin = builtins[className]
-  if not className in ["parent","!parent"] and not builtin["isProto"] and className.startswith(nativeTestStr):
-    codeOut("    if ("+className[len(nativeTestStr):]+") return &jswSymbolTables["+builtin["indexName"]+"];");
-codeOut("  }");
-for className in builtins:
-  builtin = builtins[className]
-  if not className in ["parent","!parent"] and not builtin["isProto"] and not className.startswith(nativeTestStr):
-    codeOut("  if ("+className+") return &jswSymbolTables["+builtin["indexName"]+"];");
-codeOut("  if (parent==execInfo.root) return &jswSymbolTables[jswSymbolIndex_global];");
-codeOut("  return 0;")
+codeOut('int jswGetSymbolIndexForObjectProto(JsVar *var) {')
+codeOut('  // Instantiated objects, so we should point to the prototypes of the object itself');
+codeOut(' //FIXME - see build_jswrapper.py')
+for className in objectChecks.keys():
+  if not className=="global": # we did 'global' above
+    if (className+".prototype") in symbolTables:
+      codeOut("  if ("+objectChecks[className]+") return jswSymbolIndex_"+className+"_prototype;")
+codeOut("  return -1;")
 codeOut('}')
 
-codeOut('')
-codeOut('')
+codeOut("""
 
-codeOut('const JswSymList *jswGetSymbolListForObjectProto(JsVar *parent) {')
-codeOut('  if (jsvIsNativeFunction(parent)) {')
-for className in builtins:
-  builtin = builtins[className]
-  if builtin["isProto"] and not "constructorPtr" in className and not className in ["parent","!parent"] :
-    check = className
-    for jsondata in jsondatas:
-      if jsondata["type"]=="constructor" and jsondata["name"]==builtin["className"]:
-        check = "(void*)parent->varData.native.ptr==(void*)"+jsondata["generate"]
 
-    codeOut("    if ("+check+") return &jswSymbolTables["+builtin["indexName"]+"];");
-codeOut('  }')
-codeOut('  JsVar *constructor = jsvIsObject(parent)?jsvSkipNameAndUnLock(jsvFindChildFromString(parent, JSPARSE_CONSTRUCTOR_VAR, false)):0;')
-codeOut('  if (constructor && jsvIsNativeFunction(constructor)) {')
-codeOut('    const JswSymList *l = jswGetSymbolListForConstructorProto(constructor);')
-codeOut('    jsvUnLock(constructor);')
-codeOut('    if (l) return l;')
-codeOut('  }')
-nativeCheck = "jsvIsNativeFunction(parent) && "
-for className in builtins:
-  if className!="parent" and  className!="!parent" and not "constructorPtr" in className and not className.startswith(nativeCheck):
-    codeOut('  if ('+className+") return &jswSymbolTables["+builtins[className]["indexName"]+"];");
-codeOut("  return &jswSymbolTables["+builtins["parent"]["indexName"]+"];")
-codeOut('}')
+const JswSymList *jswGetSymbolListForObject(JsVar *var) {
+  int symIdx = jswGetSymbolIndexForObject(var);
+  return (symIdx>=0) ? &jswSymbolTables[symIdx] : 0;
+}
 
-codeOut('')
-codeOut('')
+
+const JswSymList *jswGetSymbolListForObjectProto(JsVar *var) {
+  int symIdx = jswGetSymbolIndexForObjectProto(var);
+  return (symIdx>=0) ? &jswSymbolTables[symIdx] : 0;
+}
+
+// For instances of builtins like Pin, String, etc, search in X.prototype
+JsVar *jswFindInObjectProto(JsVar *parent, const char *name) {
+  int symIdx = jswGetSymbolIndexForObjectProto(parent);
+  if (symIdx>=0) return jswBinarySearch(&jswSymbolTables[symIdx], parent, name);
+  return 0;
+}
+
+JsVar *jswFindBuiltIn(JsVar *parentInstance, JsVar *parent, const char *name) {
+  if (jsvIsRoot(parent)) {
+    // Check to see whether we're referencing a pin? Should really be in symbol table...
+    Pin pin = jshGetPinFromString(name);
+    if (pin != PIN_UNDEFINED) {
+      return jsvNewFromPin(pin);
+    }
+  }
+  int symIdx = jswGetSymbolIndexForObject(parent);
+  if (symIdx>=0) return jswBinarySearch(&jswSymbolTables[symIdx], parentInstance, name);
+  return 0;
+}
+
+""");
+
 
 builtinChecks = []
 for jsondata in jsondatas:
   if "memberOf" in jsondata:
     if not jsondata["memberOf"] in libraries and jsondata["memberOf"].find(".")<0:
       check = 'strcmp(name, "'+jsondata["memberOf"]+'")==0';
-      if not check in builtinChecks :
+      if not check in builtinChecks:
         builtinChecks.append(check)
 
 
@@ -733,9 +821,9 @@ codeOut('')
 codeOut('')
 
 
-codeOut('void *jswGetBuiltInLibrary(const char *name) {')
+codeOut('JsVar *jswGetBuiltInLibrary(const char *name) {')
 for lib in libraries:
-  codeOut('  if (strcmp(name, "'+lib+'")==0) return (void*)gen_jswrap_'+lib+'_'+lib+';');
+  codeOut('  if (strcmp(name, "'+lib+'")==0) return jswCreateFromSymbolTable(jswSymbolIndex_'+lib+');');
 codeOut('  return 0;')
 codeOut('}')
 
@@ -860,7 +948,7 @@ for jsondata in jsondatas:
       result = getResult(jsondata);
       pTypes = []
       pValues = []
-      if hasThis(jsondata): 
+      if hasThis(jsondata):
         pTypes.append("JsVar*")
         pValues.append("thisParam")
       cmd = "";
@@ -869,7 +957,7 @@ for jsondata in jsondatas:
       n = 0
       for param in params:
         pTypes.append(toCType(param[1]));
-        if param[1]=="JsVarArray": 
+        if param[1]=="JsVarArray":
           cmdstart =  "      JsVar *argArray = (paramCount>"+str(n)+")?jsvNewArray(&paramData["+str(n)+"],paramCount-"+str(n)+"):jsvNewEmptyArray();\n";
           pValues.append("argArray");
           cmdend = "      jsvUnLock(argArray);\n\n";
@@ -879,16 +967,16 @@ for jsondata in jsondatas:
 
       codeOut("    case "+argSpec+": {");
       codeOut("      JsVar *result = 0;");
-      if cmdstart:  codeOut(cmdstart); 
+      if cmdstart:  codeOut(cmdstart);
       cmd = "(("+toCType(result[0])+"(*)("+",".join(pTypes)+"))function)("+",".join(pValues)+")";
       if result[0]: codeOut("      result = "+toCBox(result[0])+"("+cmd+");");
       else: codeOut("      "+cmd+";");
-      if cmdend:  codeOut(cmdend); 
+      if cmdend:  codeOut(cmdend);
       codeOut("      return result;");
       codeOut("    }");
 
 
-      
+
 
 #((uint32_t (*)(size_t,size_t,size_t,size_t))function)(argData[0],argData[1],argData[2],argData[3]);
 codeOut('  default: jsExceptionHere(JSET_ERROR,"Unknown argspec %d",argumentSpecifier);')

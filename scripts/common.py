@@ -19,7 +19,6 @@ import re;
 import json;
 import sys;
 import os;
-import traceback;
 import importlib;
 # Local
 import pinutils;
@@ -91,7 +90,7 @@ if "check_output" not in dir( subprocess ):
 #         "check" : "jsvIsFoo(var)", // for classes - this is code that returns true if 'var' is of the given type
 #         "ifndef" : "SAVE_ON_FLASH", // if the given preprocessor macro is defined, don't implement this
 #         "ifdef" : "USE_LCD_FOO", // if the given preprocessor macro isn't defined, don't implement this
-#         "#if" : "A>2", // add a #if statement in the generated C file (ONLY if type==object)
+#         "if" : "A>2", // add a #if statement in the generated C file (ONLY if type==object)
 #         "patch" : true, // if true, this isn't a complete JSON, but just updates another with the same class+name
 #         "sortorder" : 0 // default to 0, but all items are sorted by this first, so especially with jswrap_X_init/etc we can ensure the ordering is correct
 #}*/
@@ -173,7 +172,6 @@ def get_jsondata(is_for_document, parseArgs = True, boardObject = False):
     githash = get_git_hash()
     if len(githash)==0: githash="master"
 
-                  expr = expr.replace("!",  "not ")
     jsondatas = []
     for jswrap in jswraps:
       # ignore anything from archives
@@ -226,11 +224,11 @@ def get_jsondata(is_for_document, parseArgs = True, boardObject = False):
             if ("#ifdef" in jsondata) or ("#ifndef" in jsondata):
               sys.stderr.write( "'#ifdef' where 'ifdef' should be used in " + jsonstring + " - "+str(sys.exc_info()[0]) + "\n" )
               exit(1)
-            if ("if" in jsondata):
-              sys.stderr.write( "'if' where '#if' should be used in " + jsonstring + " - "+str(sys.exc_info()[0]) + "\n" )
-              exit(1)
             if ("#if" in jsondata):
-              expr = jsondata["#if"]
+              sys.stderr.write( "'#if' where 'if' should be used in " + jsonstring + " - "+str(sys.exc_info()[0]) + "\n" )
+              exit(1)
+            if ("if" in jsondata):
+              expr = jsondata["if"]
               for defn in defines:
                 expr = expr.replace("defined("+defn+")", "True");
                 if defn.find('=')!=-1:
@@ -245,10 +243,10 @@ def get_jsondata(is_for_document, parseArgs = True, boardObject = False):
               try:
                 r = eval(expr)
               except:
-                print("WARNING: error evaluating '"+expr+"' - from '"+jsondata["#if"]+"'")
+                print("WARNING: error evaluating '"+expr+"' - from '"+jsondata["if"]+"'")
                 r = True
               if not r:
-                print(dropped_prefix+" because of #if "+jsondata["#if"]+ " -> "+expr)
+                print(dropped_prefix+" because of #if "+jsondata["if"]+ " -> "+expr)
                 drop = True
           if not drop and "patch" in jsondata:
             targetjsondata = [x for x in jsondatas if x["type"]==jsondata["type"] and x["class"]==jsondata["class"] and x["name"]==jsondata["name"]][0]
