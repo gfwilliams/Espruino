@@ -156,7 +156,7 @@ def toCUnbox(argName):
 
 
 def hasThis(func):
-  return func["type"]=="property" or func["type"]=="method"
+  return func["type"]=="property" or func["type"]=="method" or func.get("thisParam")
 
 def getParams(func):
   params = []
