@@ -225,7 +225,7 @@ def codeOutSymbolTable(builtin):
       print (codeName + "." + symName+" not included in Symbol Table because no 'generate'")
   builtin["symbolTableChars"] = "\""+listChars+"\"";
   builtin["symbolTableCount"] = str(len(listSymbols));
-  builtin["symbolListName"] = "jswSymbols_"+codeName;
+  builtin["symbolListName"] = "jswSymbols_"+codeName.replace(".prototype", "_prototype");
   if name in constructors:
     builtin["constructorPtr"]="(void (*)(void))"+constructors[name]["generate"]
     builtin["constructorSpec"]=getArgumentSpecifier(constructors[name])
