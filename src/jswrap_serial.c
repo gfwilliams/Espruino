@@ -197,6 +197,7 @@ vice versa
 /*JSON{
   "type" : "object",
   "name" : "Telnet",
+  "memberOf" : "global",
   "instanceof" : "Serial",
   "#if" : "defined(USE_TELNET)"
 }

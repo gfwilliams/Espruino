@@ -269,8 +269,9 @@ static JsVar *matchhere(char *regexp, JsvStringIterator *txtIt, matchInfo info) 
 
 /*JSON{
   "type" : "class",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "RegExp"
+  "class" : "RegExp",
+  "memberOf" : "global",
+  "ifndef" : "SAVE_ON_FLASH"
 }
 The built-in class for handling Regular Expressions
 

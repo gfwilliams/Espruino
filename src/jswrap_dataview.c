@@ -22,6 +22,7 @@
 /*JSON{
   "type" : "class",
   "class" : "DataView",
+  "memberOf" : "global",
   "ifndef" : "SAVE_ON_FLASH"
 }
 This class helps

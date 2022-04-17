@@ -33,6 +33,7 @@
 /*JSON{
   "type" : "class",
   "class" : "Promise",
+  "memberOf" : "global",
   "typescript": "Promise<T>",
   "ifndef" : "SAVE_ON_FLASH"
 }

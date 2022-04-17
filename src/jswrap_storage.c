@@ -584,6 +584,7 @@ JsVar *jswrap_storage_open(JsVar *name, JsVar *modeVar) {
 /*JSON{
   "type" : "class",
   "class" : "StorageFile",
+  "memberOf" : "global",
   "ifndef" : "SAVE_ON_FLASH"
 }
 
