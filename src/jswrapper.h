@@ -19,6 +19,7 @@
 #include "jsvar.h"
 #include "jsdevices.h"
 
+/**
 #ifndef USE_FLASH_MEMORY
 #define PACKED_JSW_SYM PACKED_FLAGS
 #else
@@ -46,6 +47,7 @@ typedef struct {
   const char *symbolChars;
   unsigned char symbolCount;
 } PACKED_JSW_SYM JswSymList;
+*/
 
 /// Do a binary search of the symbol table list
 JsVar *jswBinarySearch(const JswSymList *symbolsPtr, JsVar *parent, const char *name);

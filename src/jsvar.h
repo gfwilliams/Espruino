@@ -195,36 +195,17 @@ typedef struct {
   JsVarRef lastChild : JSVARREF_BITS;
 } PACKED_FLAGS JsVarDataRef;
 
-/// Structure for each symbol in the list of built-in symbols
-typedef struct {
-  unsigned short strOffset;
-  void (*functionPtr)(void); // TODO: move to end to align to 4
-  unsigned short functionSpec; // JsnArgumentType
-} PACKED_FLAGS JswSymPtr;
-
-/// Information for each list of built-in symbols
-typedef struct {
-  const JswSymPtr *symbols;
-  unsigned char symbolCount;
-  const char *symbolChars;
-} PACKED_FLAGS JswSymList;
-
-/** Union that contains all the different types of data. This should all
- be JSVAR_DATA_STRING_MAX_LEN long.
- */
-typedef union {
-    char str[JSVAR_DATA_STRING_MAX_LEN]; ///< The contents of this variable if it is a string
-    /* NOTE: For str above, we INTENTIONALLY OVERFLOW str (and hence data) in the case of STRING_EXTS
-     * to overwrite 3 references in order to grab another 6 bytes worth of string data */
-    JsVarInt integer; ///< The contents of this variable if it is an int
-    JsVarFloat floating; ///< The contents of this variable if it is a double
-    JsVarDataArrayBufferView arraybuffer; ///< information for array buffer views.
-    const JswSymList *nativeObject; ///< A native object
-    JsVarDataNative native; ///< A native function
-    JsVarDataNativeStr nativeStr; ///< A native string (or flash string)
-    JsVarDataRef ref; ///< References
-} PACKED_FLAGS JsVarData;
-
+#ifndef USE_FLASH_MEMORY
+#define PACKED_JSW_SYM PACKED_FLAGS
+#else
+// On the esp8266 we put the JswSym* structures into flash and thus must make word-sized aligned
+// reads. Telling the compiler to pack the structs defeats that, so we have to take it out.
+#define PACKED_JSW_SYM
+#endif
+#if defined(__arm64__)
+#undef PACKED_JSW_SYM
+#define PACKED_JSW_SYM __attribute__((aligned(2)))
+#endif
 
 /** This is the enum used to store how functions should be called
  * by jsnative.c.
@@ -263,8 +244,37 @@ typedef enum {
   JSWAT_ARGUMENTS_MASK = 0xFFFF ^ (JSWAT_MASK | JSWAT_THIS_ARG) ///< mask for the arguments (excluding return type)
 } PACKED_FLAGS JsnArgumentType;
 
-// number of bits needed for each argument bit
-#define JSWAT_BITS GET_BIT_NUMBER(JSWAT_MASK+1)
+/// Structure for each symbol in the list of built-in symbols
+typedef struct {
+  unsigned short strOffset;
+  JsnArgumentType functionSpec;
+  void (*functionPtr)(void);
+} PACKED_JSW_SYM JswSymPtr;
+
+/// Information for each list of built-in symbols
+typedef struct {
+  const JswSymPtr *symbols;
+  unsigned char symbolCount;
+  const char *symbolChars;
+  void (*functionPtr)(void);
+  JsnArgumentType functionSpec;
+} PACKED_JSW_SYM JswSymList;
+
+/** Union that contains all the different types of data. This should all
+ be JSVAR_DATA_STRING_MAX_LEN long.
+ */
+typedef union {
+    char str[JSVAR_DATA_STRING_MAX_LEN]; ///< The contents of this variable if it is a string
+    /* NOTE: For str above, we INTENTIONALLY OVERFLOW str (and hence data) in the case of STRING_EXTS
+     * to overwrite 3 references in order to grab another 6 bytes worth of string data */
+    JsVarInt integer; ///< The contents of this variable if it is an int
+    JsVarFloat floating; ///< The contents of this variable if it is a double
+    JsVarDataArrayBufferView arraybuffer; ///< information for array buffer views.
+    const JswSymList *nativeObject; ///< A native object
+    JsVarDataNative native; ///< A native function
+    JsVarDataNativeStr nativeStr; ///< A native string (or flash string)
+    JsVarDataRef ref; ///< References
+} PACKED_FLAGS JsVarData;
 
 typedef struct JsVarStruct {
   /** The actual variable data, as well as references (see below). Put first so word aligned */
@@ -273,6 +283,12 @@ typedef struct JsVarStruct {
   /** the flags determine the type of the variable - int/double/string/etc. */
   volatile JsVarFlags flags;
 } PACKED_FLAGS JsVar;
+
+
+// number of bits needed for each argument bit
+#define JSWAT_BITS GET_BIT_NUMBER(JSWAT_MASK+1)
+
+
 
 /* We have a few different types:
  *
@@ -341,8 +357,6 @@ unsigned int jsvGetMemoryUsage(); ///< Get number of memory records (JsVars) use
 unsigned int jsvGetMemoryTotal(); ///< Get total amount of memory records
 bool jsvIsMemoryFull(); ///< Get whether memory is full or not
 bool jsvMoreFreeVariablesThan(unsigned int vars); ///< Return whether there are more free variables than the parameter (faster than checking no of vars used)
-  void (*functionPtr)(void);
-  JsnArgumentType functionSpec;
 void jsvShowAllocated(); ///< Show what is still allocated, for debugging memory problems
 /// Try and allocate more memory - only works if RESIZABLE_JSVARS is defined
 void jsvSetMemoryTotal(unsigned int jsNewVarCount);
