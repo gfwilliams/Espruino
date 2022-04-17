@@ -67,7 +67,6 @@ JS.
   "type" : "staticproperty",
   "class" : "crypto",
   "name" : "AES",
-  "generate_full" : "jswCreateFromSymbolTable(jswSymbolIndex_AES)",
   "return" : ["JsVar"],
   "return_object" : "AES",
   "ifdef" : "USE_AES"
