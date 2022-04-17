@@ -1,7 +1,7 @@
 /*
- * This file is part of Espruino, a JavaScript interpreter for Microcontrollers
+ * THIS FILE IS PART OF ESPRUINO, A JAVASCRIPT INTERPRETER FOR MICROCONTROLLERS
  *
- * Copyright (C) 2013 Gordon Williams <gw@pur3.co.uk>
+ * Copyright (C) 2013 GORDON WILLIAMS <GW@PUR3.CO.UK>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
