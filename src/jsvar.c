@@ -1321,14 +1321,14 @@ void *jsvGetNativeFunctionPtr(const JsVar *function) {
     return v;
   } else {
     if (jsvIsNativeObject(function))
-      return (void *)function->varData.nativeObject->functionPtr;
+      return (void *)function->varData.nativeObject->symbols->functionPtr;
     return (void *)function->varData.native.ptr;
   }
 }
 
 JsnArgumentType jsvGetNativeFunctionSpec(const JsVar *function) {
   if (jsvIsNativeObject(function))
-    return (JsnArgumentType)function->varData.nativeObject->functionSpec;
+    return (JsnArgumentType)function->varData.nativeObject->symbols->functionSpec;
   return (JsnArgumentType)function->varData.native.argTypes;
 }
 
