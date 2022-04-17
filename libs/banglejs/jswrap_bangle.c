@@ -4148,7 +4148,8 @@ bool jswrap_banglejs_idle() {
 }
 
 /*JSON{
-  "type" : "EV_SERIAL1",
+  "type" : "hwinit",
+  "name" : "EV_SERIAL1",
   "generate" : "jswrap_banglejs_gps_character",
   "#if" : "defined(BANGLEJS_F18) || defined(DTNO1_F5)  || defined(BANGLEJS_Q3)"
 }*/
