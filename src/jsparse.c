@@ -929,29 +929,26 @@ NO_INLINE JsVar *jspeFunctionCall(JsVar *function, JsVar *functionName, JsVar *t
 
 // Find a variable (or built-in function) based on the current scopes
 JsVar *jspGetNamedVariable(const char *tokenName) {
-  JsVar *a = JSP_SHOULD_EXECUTE ? jspeiFindInScopes(tokenName) : 0;
-  if (JSP_SHOULD_EXECUTE && !a) {
-    /* Special case! We haven't found the variable, so check out
-     * and see if it's one of our builtins...  */
-    if (jswIsBuiltInObject(tokenName)) {
-      // Check if we have a built-in function for it
-      // OPT: Could we instead have jswIsBuiltInObjectWithoutConstructor?
-      JsVar *obj = jswFindBuiltInFunction(0, tokenName);
-      // If not, make one
-      if (!obj)
-        obj = jspNewBuiltin(tokenName);
-      if (obj) { // not out of memory
-        a = jsvAddNamedChild(execInfo.root, obj, tokenName);
-        jsvUnLock(obj);
-      }
-    } else {
-      a = jswFindBuiltInFunction(0, tokenName);
-      if (!a) {
-        /* Variable doesn't exist! JavaScript says we should create it
-         * (we won't add it here. This is done in the assignment operator)*/
-        a = jsvNewNameFromString(tokenName);
-      }
-    }
+  if (!JSP_SHOULD_EXECUTE) return 0;
+
+  JsVar *a = jspeiFindInScopes(tokenName);
+  if (a) return a;
+
+  a = jswFindBuiltIn(execInfo.root, execInfo.root, tokenName);
+  // Variable exists - we just need to give it a
+  if (a) {
+    // Get rid of existing name
+    a = jsvSkipNameAndUnLock(a); // FIXME is this ever a name?
+    // create a 'New Child' name, so we can add it to global
+    // scope if we assign to it
+    JsVar *nameVar = jsvNewFromString(tokenName);
+    JsVar *newChild = jsvCreateNewChild(execInfo.root, nameVar, a);
+    jsvUnLock2(nameVar, a);
+    return newChild;
+  } else {
+    /* Variable doesn't exist! JavaScript says we should create it
+     * (we won't add it here. This is done in the assignment operator)*/
+    a = jsvMakeIntoVariableName(jsvNewFromString(tokenName), 0);
   }
   return a;
 }
