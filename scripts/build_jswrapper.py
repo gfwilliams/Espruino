@@ -476,14 +476,6 @@ for name in symbolTables:
   idx = idx + 1
 
 codeOut('');
-codeOut("""
-JsVar *jswCreateFromSymbolTable(int tableIndex) {
-  JsVar *v = jsvNewWithFlags(JSV_OBJECT | JSV_NATIVE);
-  if (v) v->varData.nativeObject = &jswSymbolTables[tableIndex];
-  return v;
-}
-
-""");
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('// ----------------------------------------------------------------- AUTO-GENERATED WRAPPERS');
 codeOut('// -----------------------------------------------------------------------------------------');
@@ -587,6 +579,14 @@ codeOut('// --------------------------------------------------------------------
 # In jswBinarySearch we used to use READ_FLASH_UINT16 for sym->strOffset and sym->functionSpec for ESP8266 
 # (where unaligned reads broke) but despite being packed, the structure JswSymPtr is still always an multiple
 # of 2 in length so they will always be halfword aligned.
+codeOut("""
+JsVar *jswCreateFromSymbolTable(int tableIndex) {
+  JsVar *v = jsvNewWithFlags(JSV_OBJECT | JSV_NATIVE);
+  if (v) v->varData.nativeObject = &jswSymbolTables[tableIndex];
+  return v;
+}
+
+""");
 codeOut("""
 // Binary search coded to allow for JswSyms to be in flash on the esp8266 where they require
 // word accesses
