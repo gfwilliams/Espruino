@@ -150,6 +150,7 @@ Arrays of this type include all the methods from
 /*JSON{
   "type" : "class",
   "class" : "Uint24Array",
+  "memberOf" : "global",
   "ifndef" : "SAVE_ON_FLASH",
   "prototype" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT24",
