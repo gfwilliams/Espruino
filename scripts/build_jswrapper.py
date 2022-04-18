@@ -851,9 +851,8 @@ codeOut("/** Given the name of a Basic Object, eg, Uint8Array, String, etc. Retu
 codeOut('const char *jswGetBasicObjectPrototypeName(const char *objectName) {')
 for jsondata in jsondatas:
   if "type" in jsondata and jsondata["type"]=="object":
-    if "prototype" in jsondata:
-      #print json.dumps(jsondata, sort_keys=True, indent=2)
-      codeOut("  if (!strcmp(objectName, \""+jsondata["name"]+"\")) return \""+jsondata["prototype"]+"\";")
+    if "instanceOf" in jsondata:
+      codeOut("  if (!strcmp(objectName, \""+jsondata["name"]+"\")) return \""+jsondata["instanceOf"]+"\";")
 codeOut('  return strcmp(objectName,"Object") ? "Object" : 0;')
 codeOut('}')
 
