@@ -1056,7 +1056,7 @@ JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
 
   // If not found and is the prototype (on a function), create it
   if (!child &&
-      (jsvIsFunction(object) || (jsvIsNativeObject(object) && object->varData.nativeObject->symbols->functionPtr)) &&
+      (jsvIsFunction(object) || (jsvIsNativeObject(object) && object->varData.nativeObject->functionPtr)) &&
       strcmp(name, JSPARSE_PROTOTYPE_VAR)==0) {
     JsVar *proto = jsvNewWithFlags(JSV_OBJECT);
     // make sure it has a 'constructor' variable that points to the object it was part of
