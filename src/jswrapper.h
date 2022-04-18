@@ -71,12 +71,6 @@ bool jswIsBuiltInObject(const char *name);
 /** Given a variable, return the basic object name of it */
 const char *jswGetBasicObjectName(JsVar *var);
 
-/** Given the name of a Basic Object, eg, Uint8Array, String, etc. Return the prototype object's name - or 0.
- * For instance jswGetBasicObjectPrototypeName("Object")==0, jswGetBasicObjectPrototypeName("Integer")=="Object",
- * jswGetBasicObjectPrototypeName("Uint8Array")=="ArrayBufferView"
- *  */
-const char *jswGetBasicObjectPrototypeName(const char *name);
-
 /** Tasks to run on Idle. Returns true if either one of the tasks returned true (eg. they're doing something and want to avoid sleeping) */
 bool jswIdle();
 

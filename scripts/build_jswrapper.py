@@ -847,18 +847,6 @@ codeOut('')
 codeOut('')
 
 
-codeOut("/** Given the name of a Basic Object, eg, Uint8Array, String, etc. Return the prototype object's name - or 0. */")
-codeOut('const char *jswGetBasicObjectPrototypeName(const char *objectName) {')
-for jsondata in jsondatas:
-  if "type" in jsondata and jsondata["type"]=="object":
-    if "instanceOf" in jsondata:
-      codeOut("  if (!strcmp(objectName, \""+jsondata["name"]+"\")) return \""+jsondata["instanceOf"]+"\";")
-codeOut('  return strcmp(objectName,"Object") ? "Object" : 0;')
-codeOut('}')
-
-codeOut('')
-codeOut('')
-
 codeOut("/** Tasks to run on Idle. Returns true if either one of the tasks returned true (eg. they're doing something and want to avoid sleeping) */")
 codeOut('bool jswIdle() {')
 codeOut('  bool wasBusy = false;')
