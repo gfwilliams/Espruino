@@ -116,7 +116,7 @@ const char *jswGetBuiltInLibraryNames();
 JsVar *jswCallFunctionHack(void *function, JsnArgumentType argumentSpecifier, JsVar *thisParam, JsVar **paramData, int paramCount);
 #endif
 
-const JswSymList *jswSymbolTable_Object_prototype;
+extern const JswSymList *jswSymbolTable_Object_prototype;
 
 
 

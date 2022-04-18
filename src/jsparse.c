@@ -139,57 +139,6 @@ JsVar *jspFindPrototypeFor(const char *className) {
   return proto;
 }
 
-/** Here we assume that we have already looked in the parent itself -
- * and are now going down looking at the stuff it inherited */
-JsVar *jspeiFindChildFromStringInParents(JsVar *parent, const char *name) {
-  if (jsvIsObject(parent)) {
-    // If an object, look for an 'inherits' var
-    JsVar *inheritsFrom = jsvObjectGetChildIfExists(parent, JSPARSE_INHERITS_VAR);
-
-    // if there's no inheritsFrom, just default to 'Object.prototype'
-    if (!inheritsFrom)
-      inheritsFrom = jspFindPrototypeFor("Object");
-
-    if (inheritsFrom && inheritsFrom!=parent) {
-      // we have what it inherits from (this is ACTUALLY the prototype var)
-      // https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Object/proto
-      JsVar *child = jsvFindChildFromString(inheritsFrom, name, false);
-      if (!child)
-        child = jspeiFindChildFromStringInParents(inheritsFrom, name);
-      jsvUnLock(inheritsFrom);
-      if (child) return child;
-    } else
-      jsvUnLock(inheritsFrom);
-  } else { // Not actually an object - but might be an array/string/etc
-    const char *objectName = jswGetBasicObjectName(parent);
-    while (objectName) {
-      JsVar *objName = jsvFindChildFromString(execInfo.root, objectName, false);
-      if (objName) {
-        JsVar *result = 0;
-        JsVar *obj = jsvSkipNameAndUnLock(objName);
-        // could be something the user has made - eg. 'Array=1'
-        if (jsvHasChildren(obj)) {
-          // We have found an object with this name - search for the prototype var
-          JsVar *proto = jsvObjectGetChildIfExists(obj, JSPARSE_PROTOTYPE_VAR);
-          if (proto) {
-            result = jsvFindChildFromString(proto, name, false);
-            jsvUnLock(proto);
-          }
-        }
-        jsvUnLock(obj);
-        if (result) return result;
-      }
-      /* We haven't found anything in the actual object, we should check the 'Object' itself
-        eg, we tried 'String', so now we should try 'Object'. Built-in types don't have room for
-        a prototype field, so we hard-code it */
-      objectName = jswGetBasicObjectPrototypeName(objectName);
-    }
-  }
-
-  // no luck!
-  return 0;
-}
-
 JsVar *jspeiGetScopesAsVar() {
   if (!execInfo.scopesVar) return 0; // no scopes!
   // If just one element, return it (no array)
