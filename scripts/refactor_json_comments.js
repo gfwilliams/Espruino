@@ -70,7 +70,8 @@ function refactorJSON(json) {
     case "idle":
     case "kill":
         checkField(json, "generate");
-        copyFields.push("generate");
+        expectedFields.push("class","sortorder");
+        copyFields.push("generate","class","sortorder");
         newJSON = {
           type : json["type"]
         };
@@ -156,8 +157,8 @@ function refactorJSON(json) {
     case "staticmethod":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name");
-        copyFields.push("generate","generate_full","params","return","return_object");
+        expectedFields.push("class","name","generate_js","patch");
+        copyFields.push("generate","generate_full","generate_js","patch","params","return","return_object");
         newJSON = {
           type : "function",
           name : json["name"],
@@ -180,8 +181,8 @@ function refactorJSON(json) {
 
     case "variable":
         checkField(json, "name");
-        expectedFields.push("name");
-        copyFields.push("generate","generate_full","return","return_object");
+        expectedFields.push("name","generate_js","no_docs");
+        copyFields.push("generate","generate_full","generate_js","no_docs","return","return_object");
         newJSON = {
           type : "variable",
           name : json["name"],
