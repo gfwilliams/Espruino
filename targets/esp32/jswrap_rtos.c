@@ -19,7 +19,8 @@
 
 /*JSON{
   "type"    : "class",
-  "class"   : "Queue"
+  "class"   : "Queue",
+  "memberOf" : "global"
 }
 A class to support some simple Queue handling for RTOS queues
 */
