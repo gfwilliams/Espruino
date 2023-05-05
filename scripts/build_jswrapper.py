@@ -367,7 +367,6 @@ for jsondata in jsondatas:
     print(" - Found library "+jsondata["name"])
     libraries.append(jsondata["name"])
 
-
 print("Creating Symbol Tables")
 symbolTables = {}
 # Add main types
@@ -618,128 +617,9 @@ JsVar *jswBinarySearch(const JswSymList *symbolsPtr, JsVar *parent, const char *
 
 """);
 
-codeOut('// -----------------------------------------------------------------------------------------');
-codeOut('// -----------------------------------------------------------------------------------------');
-codeOut('// -----------------------------------------------------------------------------------------');
-codeOut('');
-codeOut('');
-
-print("Finding Libraries")
-libraries = []
-for jsondata in jsondatas:
-  if jsondata["type"]=="library":
-    print("Found library "+jsondata["class"])
-    libraries.append(jsondata["class"])
-
-print("Classifying Functions")
-builtins = OrderedDict()
-for jsondata in jsondatas:
-  if "name" in jsondata:
-    jsondata["static"] = not (jsondata["type"]=="property" or jsondata["type"]=="method")
-
-    testCode = "!parent"
-    builtinName = "global"
-    className = "global"
-    isProto = False
-    if not jsondata["type"]=="constructor":
-      if "class" in jsondata:
-        testCode = getTestFor(jsondata["class"], jsondata["static"])
-        className = jsondata["class"]
-        builtinName = className
-        if not jsondata["static"]:
-          isProto = True
-          builtinName = builtinName+"_proto";
-
-    if not testCode in builtins:
-      print("Adding "+testCode+" to builtins ("+className+")")
-      builtins[testCode] = { "name" : builtinName, "className" : className, "isProto" : isProto, "functions" : [] }
-    builtins[testCode]["functions"].append(jsondata);
-
-print("Outputting Symbol Tables")
-idx = 0
-for b in builtins:
-  builtin = builtins[b]
-  codeOutSymbolTable(builtin);
-  builtins[b]["indexName"] = "jswSymbolIndex_"+builtin["name"];
-  codeOut("static const unsigned char "+builtin["indexName"]+" = "+str(idx)+";");
-  idx = idx + 1
-codeOut('');
-codeOut('');
-
-# output the strings, possibly with __attribute__ to put them into flash
-for b in builtins:
-  builtin = builtins[b]
-  codeOut("FLASH_STR(jswSymbols_"+builtin["name"]+"_str, " + builtin["symbolTableChars"] +");");
-codeOut('');
-# output the symbol table array referencing the above strings
-codeOut('const JswSymList jswSymbolTables[] FLASH_SECT = {');
-for b in builtins:
-  builtin = builtins[b]
-  codeOut("  {"+", ".join(["jswSymbols_"+builtin["name"], "jswSymbols_"+builtin["name"]+"_str", builtin["symbolTableCount"]])+"},");
-codeOut('};');
-
-codeOut('');
-codeOut('');
-
-codeOut('const JswSymList *jswGetSymbolListForConstructorProto(JsVar *constructor) {')
-codeOut('  void *constructorPtr = constructor->varData.native.ptr;')
-for className in builtins:
-  builtin = builtins[className]
-  if builtin["isProto"] and "constructorPtr" in className:
-    codeOut("  if ("+className+") return &jswSymbolTables["+builtin["indexName"]+"];");
-codeOut('  return 0;')
-codeOut('}')
-
 codeOut('')
 codeOut('')
 
-codeOut('JsVar *jswFindBuiltInFunction(JsVar *parent, const char *name) {')
-codeOut('  JsVar *v;')
-codeOut('  if (parent && !jsvIsRoot(parent)) {')
-
-codeOut('    // ------------------------------------------ INSTANCE + STATIC METHODS')
-nativeCheck = "jsvIsNativeFunction(parent) && "
-codeOut('    if (jsvIsNativeFunction(parent)) {')
-codeOut('      const JswSymList *l = jswGetSymbolListForObject(parent);')
-codeOut('      if (l) {');
-codeOut('        v = jswBinarySearch(l, parent, name);')
-codeOut('        if (v) return v;');
-codeOut('      }')
-codeOut('    }')
-for className in builtins:
-  if className!="parent" and  className!="!parent" and not "constructorPtr" in className and not className.startswith(nativeCheck):
-    codeOut('    if ('+className+') {')
-    codeOutBuiltins("      v = ", builtins[className])
-    codeOut('      if (v) return v;');
-    codeOut("    }")
-codeOut('    // ------------------------------------------ INSTANCE METHODS WE MUST CHECK CONSTRUCTOR FOR')
-codeOut('    JsVar *proto = jsvIsObject(parent)?jsvSkipNameAndUnLock(jsvFindChildFromString(parent, JSPARSE_INHERITS_VAR, false)):0;')
-codeOut('    JsVar *constructor = jsvIsObject(proto)?jsvSkipNameAndUnLock(jsvFindChildFromString(proto, JSPARSE_CONSTRUCTOR_VAR, false)):0;')
-codeOut('    jsvUnLock(proto);')
-codeOut('    if (constructor && jsvIsNativeFunction(constructor)) {')
-codeOut('      const JswSymList *l = jswGetSymbolListForConstructorProto(constructor);')
-codeOut('      jsvUnLock(constructor);')
-codeOut('      if (l) {');
-codeOut('        v = jswBinarySearch(l, parent, name);')
-codeOut('        if (v) return v;');
-codeOut('      }')
-codeOut('    } else {')
-codeOut('      jsvUnLock(constructor);')
-codeOut('    }')
-codeOut('    // ------------------------------------------ METHODS ON OBJECT')
-if "parent" in builtins:
-  codeOutBuiltins("    v = ", builtins["parent"])
-  codeOut('    if (v) return v;');
-codeOut('  } else { /* if (!parent) */')
-codeOut('    // ------------------------------------------ FUNCTIONS')
-codeOut('    #ifndef ESPR_EMBED')
-codeOut('    // Handle pin names - eg LED1 or D5 (this is hardcoded in build_jsfunctions.py)')
-codeOut('    Pin pin = jshGetPinFromString(name);')
-codeOut('    if (pin != PIN_UNDEFINED) ')
-codeOut('      return jsvNewFromPin(pin);')
-codeOut('    #endif')
-if "!parent" in builtins:
-  codeOutBuiltins("    return ", builtins["!parent"])
 codeOut('int jswGetSymbolIndexForObject(JsVar *var) {')
 codeOut('  if (jsvIsRoot(var)) {');
 codeOut('    return jswSymbolIndex_global;');
@@ -790,11 +670,13 @@ JsVar *jswFindInObjectProto(JsVar *parent, const char *name) {
 
 JsVar *jswFindBuiltIn(JsVar *parentInstance, JsVar *parent, const char *name) {
   if (jsvIsRoot(parent)) {
+    #ifndef ESPR_EMBED
     // Check to see whether we're referencing a pin? Should really be in symbol table...
     Pin pin = jshGetPinFromString(name);
     if (pin != PIN_UNDEFINED) {
       return jsvNewFromPin(pin);
     }
+    #endif
   }
   int symIdx = jswGetSymbolIndexForObject(parent);
   if (symIdx>=0) return jswBinarySearch(&jswSymbolTables[symIdx], parentInstance, name);
