@@ -497,7 +497,7 @@ NO_INLINE JsVar *jspeFunctionCall(JsVar *function, JsVar *functionName, JsVar *t
      *   a) args were pre-parsed and we have to populate the function
      *   b) we parse our own args, which is possibly better
      */
-    if (jsvIsNativeFunction(function)) { // ------------------------------------- NATIVE
+    if (jsvIsNativeFunction(function) || jsvIsNativeObject(function)) { // ------------------------------------- NATIVE
       unsigned int argPtrSize = 0;
       int boundArgs = 0;
       // Add 'bound' parameters if there were any
