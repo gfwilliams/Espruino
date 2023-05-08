@@ -93,7 +93,7 @@ function refactorJSON(json) {
         break;
     case "class":
         checkField(json, "class");
-        expectedFields.push("class","memberOf", "prototype","library");
+        expectedFields.push("class","name","typescript","memberOf","prototype","library","sortorder");
         copyFields.push("not_real_object"); // do we really want this??
         newJSON = {
           type : "object",
@@ -121,7 +121,7 @@ function refactorJSON(json) {
     case "event":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name");
+        expectedFields.push("class","name","typescript");
         copyFields.push("params");
         newJSON = {
           type : "event",
@@ -134,7 +134,7 @@ function refactorJSON(json) {
         checkField(json, "class");
         checkField(json, "name");
         if (json["name"] != json["class"]) error(json, "Constructor name/class don't match");
-        expectedFields.push("class","name");
+        expectedFields.push("class","name","typescript");
         copyFields.push("generate","generate_full","params","return","return_object");
         newJSON = {
           type : "constructor",
@@ -144,7 +144,7 @@ function refactorJSON(json) {
 
     case "function":
         checkField(json, "name");
-        expectedFields.push("name","memberOf");
+        expectedFields.push("name","memberOf","typescript");
         copyFields.push("generate","generate_full","params","return","return_object");
         newJSON = {
           type : "function",
@@ -169,8 +169,8 @@ function refactorJSON(json) {
     case "method":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name");
-        copyFields.push("generate","generate_full","params","return","return_object");
+        expectedFields.push("class","name","sortorder");
+        copyFields.push("typescript","generate","generate_full","params","return","return_object");
         newJSON = {
           type : "function",
           name : json["name"],
@@ -181,7 +181,7 @@ function refactorJSON(json) {
 
     case "variable":
         checkField(json, "name");
-        expectedFields.push("name","generate_js","no_docs");
+        expectedFields.push("name","typescript","generate_js","no_docs");
         copyFields.push("generate","generate_full","generate_js","no_docs","return","return_object");
         newJSON = {
           type : "variable",
@@ -194,7 +194,7 @@ function refactorJSON(json) {
     case "staticproperty":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name");
+        expectedFields.push("class","name","typescript");
         copyFields.push("generate","generate_full","return","return_object");
         newJSON = {
           type : "variable",
@@ -206,7 +206,7 @@ function refactorJSON(json) {
     case "property":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name");
+        expectedFields.push("class","name","typescript");
         copyFields.push("generate","generate_full","return","return_object");
         newJSON = {
           type : "variable",
