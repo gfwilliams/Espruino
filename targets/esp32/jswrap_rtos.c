@@ -20,6 +20,7 @@
 /*JSON{
   "type"    : "class",
   "class"   : "Queue",
+  "name"    : "Queue",
   "memberOf" : "global"
 }
 A class to support some simple Queue handling for RTOS queues
@@ -86,7 +87,9 @@ void jswrap_Queue_log(JsVar *parent) {
 
 /*JSON{
   "type"    : "class",
-  "class"   : "Task"
+  "class"   : "Task",
+  "name"    : "Task",
+  "memberOf" : "global"
 }
 A class to support some simple Task handling for RTOS tasks
 */
@@ -174,7 +177,9 @@ void jswrap_Task_log(JsVar *parent) {
 
 /*JSON{
   "type"  : "class",
-  "class"  : "Timer"
+  "class" : "Timer",
+  "name"  : "Timer",
+  "memberOf" : "global"
 }
 A class to handle Timer on base of ESP32 Timer
 */

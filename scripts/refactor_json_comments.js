@@ -157,7 +157,7 @@ function refactorJSON(json) {
     case "staticmethod":
         checkField(json, "class");
         checkField(json, "name");
-        expectedFields.push("class","name","generate_js","patch");
+        expectedFields.push("class","name","typescript","generate_js","patch","sortorder");
         copyFields.push("generate","generate_full","generate_js","patch","params","return","return_object");
         newJSON = {
           type : "function",
