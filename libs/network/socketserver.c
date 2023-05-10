@@ -21,17 +21,6 @@
 #include "jswrap_string.h"
 #include "jswrap_functions.h"
 
-// Objects that need to be instantiated
-extern const unsigned char jswSymbolIndex_httpSrv;
-extern const unsigned char jswSymbolIndex_httpCRs;
-extern const unsigned char jswSymbolIndex_httpCRq;
-extern const unsigned char jswSymbolIndex_httpSRs;
-extern const unsigned char jswSymbolIndex_httpSRq;
-extern const unsigned char jswSymbolIndex_Server;
-extern const unsigned char jswSymbolIndex_dgramSocket;
-extern const unsigned char jswSymbolIndex_Socket;
-
-
 #define HTTP_NAME_SOCKETTYPE "type" // normal socket or HTTP
 #define HTTP_NAME_PORT "port"
 #define HTTP_NAME_SOCKET "sckt"
@@ -798,8 +787,8 @@ bool socketIdle(JsNetwork *net) {
       }
       if (theClient >= 0) { // We have a new connection
         if ((socketType&ST_TYPE_MASK) == ST_HTTP) {
-          JsVar *req = jspNewHiddenObject(jswSymbolIndex_httpSRq);
-          JsVar *res = jspNewHiddenObject(jswSymbolIndex_httpSRs);
+          JsVar *req = jspNewObject(0, "httpSRq");
+          JsVar *res = jspNewObject(0, "httpSRs");
           if (res && req) { // out of memory?
             socketSetType(req, ST_HTTP);
             JsVar *arr = socketGetArray(HTTP_ARRAY_HTTP_SERVER_CONNECTIONS, true);
@@ -821,7 +810,7 @@ bool socketIdle(JsNetwork *net) {
           jsvUnLock2(req, res);
         } else {
           // Normal sockets
-          JsVar *sock = jspNewHiddenObject(jswSymbolIndex_Socket);
+          JsVar *sock = jspNewObject(0, "Socket");
           if (sock) { // out of memory?
             socketSetType(sock, socketType);
             JsVar *arr = socketGetArray(HTTP_ARRAY_HTTP_CLIENT_CONNECTIONS, true);
@@ -852,7 +841,7 @@ bool socketIdle(JsNetwork *net) {
 // -----------------------------
 
 JsVar *serverNew(SocketType socketType, JsVar *callback) {
-  JsVar *server = jspNewHiddenObject(((socketType&ST_TYPE_MASK)==ST_HTTP) ? jswSymbolIndex_httpSrv : jswSymbolIndex_Server);
+  JsVar *server = jspNewObject(0, ((socketType&ST_TYPE_MASK)==ST_HTTP) ? "httpSrv" : "Server");
   if (!server) return 0; // out of memory
   socketSetType(server, socketType);
   jsvObjectSetChild(server, HTTP_NAME_ON_CONNECT, callback); // no unlock needed
@@ -922,13 +911,13 @@ JsVar *clientRequestNew(SocketType socketType, JsVar *options, JsVar *callback) 
   if (!arr) return 0;
   JsVar *req, *res = 0;
   if ((socketType&ST_TYPE_MASK)==ST_HTTP) {
-    res = jspNewHiddenObject(jswSymbolIndex_httpCRs);
+    res = jspNewObject(0, "httpCRs");
     if (!res) { jsvUnLock(arr); return 0; } // out of memory?
-    res = jspNewHiddenObject(jswSymbolIndex_httpCRq);
+    req = jspNewObject(0, "httpCRq");
   } else if ((socketType&ST_TYPE_MASK)==ST_UDP) {
-    req = jspNewHiddenObject(jswSymbolIndex_dgramSocket);
+    req = jspNewObject(0, "dgramSocket");
   } else {
-    req = jspNewHiddenObject(jswSymbolIndex_Socket);
+    req = jspNewObject(0, "Socket");
   }
   if (req) { // out of memory?
    socketSetType(req, socketType);
