@@ -36,8 +36,8 @@ page for more information on how to use it.
 
 /*JSON{
   "type" : "class",
-  "library" : "http",
-  "class" : "httpSrv"
+  "class" : "httpSrv",
+  "memberOf" : "global"
 }
 The HTTP server created by `require('http').createServer`
 */
@@ -45,8 +45,8 @@ The HTTP server created by `require('http').createServer`
 
 /*JSON{
   "type" : "class",
-  "library" : "http",
-  "class" : "httpSRq"
+  "class" : "httpSRq",
+  "memberOf" : "global"
 }
 The HTTP server request
 */
@@ -141,8 +141,8 @@ Pipe this to a stream (an object with a 'write' method)
 
 /*JSON{
   "type" : "class",
-  "library" : "http",
-  "class" : "httpSRs"
+  "class" : "httpSRs",
+  "memberOf" : "global"
 }
 The HTTP server response
 */
@@ -164,8 +164,8 @@ Called when the connection closes.
 
 /*JSON{
   "type" : "class",
-  "library" : "http",
-  "class" : "httpCRq"
+  "class" : "httpCRq",
+  "memberOf" : "global"
 }
 The HTTP client request, returned by `http.request()` and `http.get()`.
 */
@@ -190,8 +190,8 @@ with a `code` field and a `message` field.
 
 /*JSON{
   "type" : "class",
-  "library" : "http",
-  "class" : "httpCRs"
+  "class" : "httpCRs",
+  "memberOf" : "global"
 }
 The HTTP client response, passed to the callback of `http.request()` an
 `http.get()`.

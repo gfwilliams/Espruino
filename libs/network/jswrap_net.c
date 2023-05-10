@@ -229,15 +229,15 @@ page for more information on how to use it.
 
 /*JSON{
   "type" : "class",
-  "library" : "net",
-  "class" : "Server"
+  "class" : "Server",
+  "memberOf" : "global"
 }
 The socket server created by `require('net').createServer`
 */
 /*JSON{
   "type" : "class",
-  "library" : "net",
-  "class" : "Socket"
+  "class" : "Socket",
+  "memberOf" : "global"
 }
 An actual socket connection - allowing transmit/receive of TCP data
 */
@@ -477,8 +477,8 @@ JsVar *jswrap_dgram_createSocket(JsVar *type, JsVar *callback) {
 
 /*JSON{
   "type" : "class",
-  "library" : "dgram",
-  "class" : "dgramSocket"
+  "class" : "dgramSocket",
+  "memberOf" : "global"
 }
 An actual socket connection - allowing transmit/receive of TCP data
 */
