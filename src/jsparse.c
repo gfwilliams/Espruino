@@ -1000,6 +1000,7 @@ JsVar *jspGetNamedFieldInProtoChain(JsVar *objectInstance, JsVar *objectName, Js
  * passing a char* rather than a JsVar it's because we're looking up via
  * a symbol rather than a variable. To handle these use jspGetVarNamedField  */
 JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
+  jsiConsolePrintf("jspGetNamedField> %s\n", name);
   JsVar *object = jsvSkipName(objectName);
   JsVar *child = jspGetNamedFieldInProtoChain(object, objectName, object, name, returnName);
 
@@ -1015,6 +1016,7 @@ JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
     jsvUnLock(proto);
   }
   jsvUnLock(object);
+  jsiConsolePrintf("jspGetNamedField< %s %x\n", name, child);
   // FIXME below
   if (returnName) return child;
   else return jsvSkipNameAndUnLock(child);
@@ -3006,12 +3008,14 @@ NO_INLINE JsVar *jspeStatement() {
 /// Create a new Class of the given instance and return its prototype (as a name 'prototype')
 NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
   JsVar *objFuncName = jsvFindChildFromString(execInfo.root, instanceOf, true);
+  jsiConsolePrintf("jspNewPrototype: jsvFindChildFromString %s %x\n", instanceOf, objFuncName);
   if (!objFuncName) // out of memory
     return 0;
 
   JsVar *objFunc = jsvSkipName(objFuncName);
   if (!objFunc) {
     objFunc = jswFindBuiltIn(execInfo.root, execInfo.root, instanceOf);
+    jsiConsolePrintf("jspNewPrototype: jswFindBuiltIn %s %x\n", instanceOf, objFunc);
     if (!objFunc) { // out of memory
       jsvUnLock(objFuncName);
       return 0;
@@ -3022,6 +3026,7 @@ NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
   }
 
   JsVar *prototypeName = jspGetNamedField(objFunc, JSPARSE_PROTOTYPE_VAR, true);
+  jsiConsolePrintf("jspNewPrototype: getNamedField %s %x\n", JSPARSE_PROTOTYPE_VAR, prototypeName);
   jspEnsureIsPrototype(objFunc, prototypeName); // make sure it's an object
   jsvUnLock2(objFunc, objFuncName);
 
@@ -3033,6 +3038,7 @@ NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
  * If name==0, not added to root and Object itself returned */
 NO_INLINE JsVar *jspNewObject(const char *name, const char *instanceOf) {
   JsVar *prototypeName = jspNewPrototype(instanceOf);
+  jsiConsolePrintf("jspNewObject: jspNewPrototype %s %x\n", instanceOf, prototypeName);
 
   JsVar *obj = jsvNewObject();
   if (!obj) { // out of memory
@@ -3058,6 +3064,7 @@ NO_INLINE JsVar *jspNewObject(const char *name, const char *instanceOf) {
 
   if (name) {
     JsVar *objName = jsvFindChildFromString(execInfo.root, name, true);
+    jsiConsolePrintf("jspNewObject %s %x\n", name, objName);
     if (objName) jsvSetValueOfName(objName, obj);
     jsvUnLock(obj);
     if (!objName) { // out of memory
