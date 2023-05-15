@@ -557,9 +557,7 @@ NO_INLINE JsVar *jspeFunctionCall(JsVar *function, JsVar *functionName, JsVar *t
             argPtr = newArgPtr;
             argPtrSize = newArgPtrSize;
           }
-          JsVar *arg = jspeAssignmentExpression();
-          argPtr[argCount++] = jsvSkipNameWithParent(arg, true, 0);
-          jsvUnLock(arg);
+          argPtr[argCount++] = jsvSkipNameWithParentAndUnLock(jspeAssignmentExpression(), true, 0);
           if (lex->tk!=')') JSP_MATCH_WITH_CLEANUP_AND_RETURN(',',jsvUnLockMany((unsigned)argCount, argPtr);jsvUnLock(thisVar);, 0);
         }
 
@@ -1028,8 +1026,8 @@ JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
     jsvUnLock(object);
     return child;
   }
-  JsVar *c = jsvSkipNameWithParent(child, false, object);
-  jsvUnLock2(object, child);
+  JsVar *c = jsvSkipNameWithParentAndUnLock(child, false, object);
+  jsvUnLock(object);
   return c;
 }
 
@@ -1059,7 +1057,7 @@ JsVar *jspGetVarNamedField(JsVar *object, JsVar *nameVar, bool returnName) {
       char name[JSLEX_MAX_TOKEN_LENGTH];
       size_t l = jsvGetString(nameVar, name, JSLEX_MAX_TOKEN_LENGTH);
       // try and find it in parents
-      // TODO: jspGetNamedField will do a jsvFindChildFromVar again (we had a special jspGetNamedFieldInParents before real_proto_chain branch)
+      // TODO: jspGetNamedField will do a jsvFindChildFromVar again (we had a special jspGetNamedFieldInParents before real_proto_chain branchgit gui)
       if (l==strlen(name)) // FIXME - quick hack to stop us searching if the name contains \0 so the search won't work
         child = jspGetNamedField(object, name, returnName);
     }
@@ -2849,7 +2847,7 @@ NO_INLINE JsVar *jspeStatementReturn() {
   JSP_ASSERT_MATCH(LEX_R_RETURN);
   if (lex->tk != ';' && lex->tk != '}') {
     // we only want the value, so skip the name if there was one
-    result = jsvSkipNameAndUnLock(jspeExpression());
+    result = jsvSkipNameWithParentAndUnLock(jspeExpression(),true,0);
   }
   if (JSP_SHOULD_EXECUTE) {
     JsVar *resultVar = jspeiFindInScopes(JSPARSE_RETURN_VAR);
@@ -3053,8 +3051,6 @@ NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
  * If name==0, not added to root and Object itself returned */
 NO_INLINE JsVar *jspNewObject(const char *name, const char *instanceOf) {
   JsVar *prototypeName = jspNewPrototype(instanceOf);
-  jsiConsolePrintf("jspNewObject: jspNewPrototype %s %x\n", instanceOf, prototypeName);
-
   JsVar *obj = jsvNewObject();
   if (!obj) { // out of memory
     jsvUnLock(prototypeName);
@@ -3078,7 +3074,6 @@ NO_INLINE JsVar *jspNewObject(const char *name, const char *instanceOf) {
 
   if (name) {
     JsVar *objName = jsvFindChildFromString(execInfo.root, name, true);
-    jsiConsolePrintf("jspNewObject %s %x\n", name, objName);
     if (objName) jsvSetValueOfName(objName, obj);
     jsvUnLock(obj);
     if (!objName) { // out of memory

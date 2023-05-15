@@ -2404,6 +2404,18 @@ JsVar *jsvSkipNameWithParent(JsVar *a, bool repeat, JsVar *parent) {
   return pa;
 }
 
+/** If a is a name skip it and go to what it points to - and so on (if repeat=true).
+ * ALWAYS locks - so must unlock what it returns. It MAY
+ * return 0. Throws a ReferenceError if variable is not defined,
+ * but you can check if it will with jsvIsReferenceError.
+ * If a 'getter' needs to be executed, 'parent' is the object that
+ * gets used unless a NewChild overwrites it */
+JsVar *jsvSkipNameWithParentAndUnLock(JsVar *a, bool repeat, JsVar *parent) {
+  JsVar *pa = jsvSkipNameWithParent(a, repeat, parent);
+  jsvUnLock(a);
+  return pa;
+}
+
 /** If a is a name skip it and go to what it points to - and so on
  * ALWAYS locks - so must unlock what it returns. It MAY
  * return 0. Throws a ReferenceError if variable is not defined,
