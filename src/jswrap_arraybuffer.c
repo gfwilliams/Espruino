@@ -27,8 +27,8 @@ interface ArrayLike<T> {
 */
 
 /*JSON{
-  "type" : "class",
-  "class" : "ArrayBuffer",
+  "type" : "object",
+  "name" : "ArrayBuffer",
   "memberOf" : "global",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_ARRAYBUFFER",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
@@ -37,13 +37,12 @@ This is the built-in JavaScript class for array buffers.
 
 If you want to access arrays of differing types of data you may also find
 `DataView` useful.
- */
+*/
 
 /*JSON{
-  "type" : "class",
-  "class" : "ArrayBufferView",
-  "memberOf" : "global",
-  "typescript" : "ArrayBufferView<T = ArrayBuffer>"
+  "type" : "object",
+  "name" : "ArrayBufferView",
+  "memberOf" : "global"
 }
 This is the built-in JavaScript class that is the prototype for:
 
@@ -63,10 +62,10 @@ If you want to access arrays of differing types of data you may also find
 */
 
 /*JSON{
-  "type" : "class",
-  "class" : "Uint8Array",
+  "type" : "object",
+  "name" : "Uint8Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT8",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -78,12 +77,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Uint8ClampedArray",
+  "type" : "object",
+  "name" : "Uint8ClampedArray",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==(ARRAYBUFFERVIEW_UINT8|ARRAYBUFFERVIEW_CLAMPED)",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -95,12 +94,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Int8Array",
+  "type" : "object",
+  "name" : "Int8Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT8",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -112,12 +111,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Uint16Array",
+  "type" : "object",
+  "name" : "Uint16Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT16",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -129,12 +128,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Int16Array",
+  "type" : "object",
+  "name" : "Int16Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT16",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -146,15 +145,15 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Uint24Array",
+  "type" : "object",
+  "name" : "Uint24Array",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT24",
-  "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
+  "not_real_object" : "Don't treat this as a real object - it's handled differently internally",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 This is the built-in JavaScript class for a typed array of 24 bit unsigned
 integers.
@@ -164,12 +163,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Uint32Array",
+  "type" : "object",
+  "name" : "Uint32Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_UINT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -181,12 +180,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Int32Array",
+  "type" : "object",
+  "name" : "Int32Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_INT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -198,12 +197,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Float32Array",
+  "type" : "object",
+  "name" : "Float32Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_FLOAT32",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -215,12 +214,12 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 /*JSON{
-  "type" : "class",
-  "class" : "Float64Array",
+  "type" : "object",
+  "name" : "Float64Array",
   "memberOf" : "global",
-  "prototype" : "ArrayBufferView",
+  "instanceOf" : "ArrayBufferView",
   "check" : "jsvIsArrayBuffer(var) && var->varData.arraybuffer.type==ARRAYBUFFERVIEW_FLOAT64",
   "not_real_object" : "Don't treat this as a real object - it's handled differently internally"
 }
@@ -232,22 +231,20 @@ arrays store data in a map, which is inefficient for non-sparse arrays).
 
 Arrays of this type include all the methods from
 [ArrayBufferView](/Reference#ArrayBufferView)
- */
+*/
 
 
 /*JSON{
   "type" : "constructor",
-  "class" : "ArrayBuffer",
   "name" : "ArrayBuffer",
   "generate" : "jswrap_arraybuffer_constructor",
   "params" : [
     ["byteLength","int","The length in Bytes"]
   ],
-  "return" : ["JsVar","An ArrayBuffer object"],
-  "typescript" : "new(byteLength: number): ArrayBuffer;"
+  "return" : ["JsVar","An ArrayBuffer object"]
 }
 Create an Array Buffer object
- */
+*/
 JsVar *jswrap_arraybuffer_constructor(JsVarInt byteLength) {
   if (byteLength < 0) {
     jsExceptionHere(JSET_ERROR, "Invalid length for ArrayBuffer\n");
@@ -273,14 +270,15 @@ JsVar *jswrap_arraybuffer_constructor(JsVarInt byteLength) {
 }
 
 /*JSON{
-  "type" : "property",
-  "class" : "ArrayBuffer",
+  "type" : "variable",
   "name" : "byteLength",
+  "memberOf" : "ArrayBuffer.prototype",
+  "thisParam" : true,
   "generate_full" : "(JsVarInt)(parent->varData.arraybuffer.length)",
   "return" : ["int","The Length in bytes"]
 }
 The length, in bytes, of the `ArrayBuffer`
- */
+*/
 
 
 /*
@@ -293,7 +291,6 @@ The length, in bytes, of the `ArrayBuffer`
 
 /*JSON{
   "type" : "constructor",
-  "class" : "Uint8Array",
   "name" : "Uint8Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_UINT8, arr, byteOffset, length)",
   "params" : [
@@ -302,21 +299,15 @@ The length, in bytes, of the `ArrayBuffer`
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Uint8Array;",
-    "new(array: ArrayLike<number>): Uint8Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Uint8Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Uint8ClampedArray",
   "name" : "Uint8ClampedArray",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_UINT8|ARRAYBUFFERVIEW_CLAMPED, arr, byteOffset, length)",
   "params" : [
@@ -325,12 +316,7 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Uint8ClampedArray;",
-    "new(array: ArrayLike<number>): Uint8ClampedArray;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Uint8ClampedArray;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
@@ -339,10 +325,9 @@ rather than referenced.
 
 Clamped arrays clamp their values to the allowed range, rather than 'wrapping'.
 e.g. after `a[0]=12345;`, `a[0]==255`.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Int8Array",
   "name" : "Int8Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_INT8, arr, byteOffset, length)",
   "params" : [
@@ -351,21 +336,15 @@ e.g. after `a[0]=12345;`, `a[0]==255`.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Int8Array;",
-    "new(array: ArrayLike<number>): Int8Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Int8Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Uint16Array",
   "name" : "Uint16Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_UINT16, arr, byteOffset, length)",
   "params" : [
@@ -374,21 +353,15 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Uint16Array;",
-    "new(array: ArrayLike<number>): Uint16Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Uint16Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Int16Array",
   "name" : "Int16Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_INT16, arr, byteOffset, length)",
   "params" : [
@@ -397,23 +370,16 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Int16Array;",
-    "new(array: ArrayLike<number>): Int16Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Int16Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Uint24Array",
   "name" : "Uint24Array",
-  "ifndef" : "SAVE_ON_FLASH",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_UINT24, arr, byteOffset, length)",
   "params" : [
     ["arr","JsVar","The array or typed array to base this off, or an integer which is the array length"],
@@ -422,20 +388,15 @@ rather than referenced.
   ],
   "return" : ["JsVar","A typed array"],
   "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Uint24Array;",
-    "new(array: ArrayLike<number>): Uint24Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Uint24Array;"
-  ]
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Uint32Array",
   "name" : "Uint32Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_UINT32, arr, byteOffset, length)",
   "params" : [
@@ -444,21 +405,15 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Uint32Array;",
-    "new(array: ArrayLike<number>): Uint32Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Uint32Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Int32Array",
   "name" : "Int32Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_INT32, arr, byteOffset, length)",
   "params" : [
@@ -467,21 +422,15 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Int32Array;",
-    "new(array: ArrayLike<number>): Int32Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Int32Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Float32Array",
   "name" : "Float32Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_FLOAT32, arr, byteOffset, length)",
   "params" : [
@@ -490,21 +439,15 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Float32Array;",
-    "new(array: ArrayLike<number>): Float32Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Float32Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Float64Array",
   "name" : "Float64Array",
   "generate_full" : "jswrap_typedarray_constructor(ARRAYBUFFERVIEW_FLOAT64, arr, byteOffset, length)",
   "params" : [
@@ -513,18 +456,13 @@ rather than referenced.
     ["length","int","The length (ONLY IF the first argument was an ArrayBuffer)"]
   ],
   "return" : ["JsVar","A typed array"],
-  "return_object" : "ArrayBufferView",
-  "typescript" : [
-    "new(length: number): Float64Array;",
-    "new(array: ArrayLike<number>): Float64Array;",
-    "new(buffer: ArrayBuffer, byteOffset?: number, length?: number): Float64Array;"
-  ]
+  "return_object" : "ArrayBufferView"
 }
 Create a typed array based on the given input. Either an existing Array Buffer,
 an Integer as a Length, or a simple array. If an `ArrayBufferView` (e.g.
 `Uint8Array` rather than `ArrayBuffer`) is given, it will be completely copied
 rather than referenced.
- */
+*/
 
 JsVar *jswrap_typedarray_constructor(JsVarDataArrayBufferViewType type, JsVar *arr, JsVarInt byteOffset, JsVarInt length) {
   JsVar *arrayBuffer = 0;
@@ -581,42 +519,43 @@ JsVar *jswrap_typedarray_constructor(JsVarDataArrayBufferViewType type, JsVar *a
 
 
 /*JSON{
-  "type" : "property",
-  "class" : "ArrayBufferView",
+  "type" : "variable",
   "name" : "buffer",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate_full" : "jsvLock(jsvGetFirstChild(parent))",
   "return" : ["JsVar","An ArrayBuffer object"],
-  "return_object" : "ArrayBuffer",
-  "typescript" : "readonly buffer: T;"
+  "return_object" : "ArrayBuffer"
 }
 The buffer this view references
- */
+*/
 /*JSON{
-  "type" : "property",
-  "class" : "ArrayBufferView",
+  "type" : "variable",
   "name" : "byteLength",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate_full" : "(JsVarInt)(parent->varData.arraybuffer.length * JSV_ARRAYBUFFER_GET_SIZE(parent->varData.arraybuffer.type))",
-  "return" : ["int","The Length"],
-  "typescript" : "readonly byteLength: number;"
+  "return" : ["int","The Length"]
 }
 The length, in bytes, of the `ArrayBufferView`
- */
+*/
 /*JSON{
-  "type" : "property",
-  "class" : "ArrayBufferView",
+  "type" : "variable",
   "name" : "byteOffset",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate_full" : "parent->varData.arraybuffer.byteOffset",
-  "return" : ["int","The byte Offset"],
-  "typescript" : "readonly byteOffset: number;"
+  "return" : ["int","The byte Offset"]
 }
 The offset, in bytes, to the first byte of the view within the backing
 `ArrayBuffer`
- */
+*/
 
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "set",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_arraybufferview_set",
   "params" : [
     ["arr","JsVar","Floating point index to access"],
@@ -625,7 +564,7 @@ The offset, in bytes, to the first byte of the view within the backing
   "typescript" : "set(arr: ArrayLike<number>, offset: number): void"
 }
 Copy the contents of `array` into this one, mapping `this[x+offset]=array[x];`
- */
+*/
 void jswrap_arraybufferview_set(JsVar *parent, JsVar *arr, int offset) {
   if (!(jsvIsString(arr) || jsvIsArray(arr) || jsvIsArrayBuffer(arr))) {
     jsExceptionHere(JSET_ERROR, "Expecting first argument to be an array, not %t", arr);
@@ -676,9 +615,10 @@ void jswrap_arraybufferview_set(JsVar *parent, JsVar *arr, int offset) {
 
 // 'special' ArrayBufferView.map as it needs to return an ArrayBuffer
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "map",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_arraybufferview_map",
   "params" : [
     ["function","JsVar","Function used to map one item to another"],
@@ -693,7 +633,7 @@ Return an array which is made from the following: ```A.map(function) =
 
  **Note:** This returns an `ArrayBuffer` of the same type it was called on. To
  get an `Array`, use `Array.map`, e.g. `[].map.call(myArray, x=>x+1)`
- */
+*/
 JsVar *jswrap_arraybufferview_map(JsVar *parent, JsVar *funcVar, JsVar *thisVar) {
   if (!jsvIsArrayBuffer(parent)) {
     jsExceptionHere(JSET_ERROR, "ArrayBufferView.map can only be called on an ArrayBufferView");
@@ -746,10 +686,10 @@ JsVar *jswrap_arraybufferview_map(JsVar *parent, JsVar *funcVar, JsVar *thisVar)
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "subarray",
-    "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_arraybufferview_subarray",
   "params" : [
     ["begin","int","Element to begin at, inclusive. If negative, this is from the end of the array. The entire array is included if this isn't specified"],
@@ -757,11 +697,12 @@ JsVar *jswrap_arraybufferview_map(JsVar *parent, JsVar *funcVar, JsVar *thisVar)
   ],
   "return" : ["JsVar","An `ArrayBufferView` of the same type as this one, referencing the same data"],
   "return_object" : "ArrayBufferView",
-  "typescript" : "subarray(begin?: number, end?: number): T;"
+  "typescript" : "subarray(begin?: number, end?: number): T;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Returns a smaller part of this array which references the same data (it doesn't
 copy it).
- */
+*/
 JsVar *jswrap_arraybufferview_subarray(JsVar *parent, JsVarInt begin, JsVar *endVar) {
   if (!jsvIsArrayBuffer(parent)) {
     jsExceptionHere(JSET_ERROR, "ArrayBufferView.subarray can only be called on an ArrayBufferView");
@@ -799,9 +740,10 @@ JsVar *jswrap_arraybufferview_subarray(JsVar *parent, JsVarInt begin, JsVar *end
 // -----------------------------------------------------------------------------------------------------
 
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "indexOf",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_indexOf",
   "params" : [
     ["value","JsVar","The value to check for"],
@@ -811,26 +753,28 @@ JsVar *jswrap_arraybufferview_subarray(JsVar *parent, JsVarInt begin, JsVar *end
   "typescript" : "indexOf(value: number, startIndex?: number): number;"
 }
 Return the index of the value in the array, or `-1`
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "includes",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_includes",
   "params" : [
     ["value","JsVar","The value to check for"],
     ["startIndex","int","[optional] the index to search from, or 0 if not specified"]
   ],
   "return" : ["bool","`true` if the array includes the value, `false` otherwise"],
-  "typescript" : "includes(value: number, startIndex?: number): boolean;"
+  "typescript" : "includes(value: number, startIndex?: number): boolean;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return `true` if the array includes the value, `false` otherwise
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "join",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_join",
   "params" : [
     ["separator","JsVar","The separator"]
@@ -840,22 +784,23 @@ Return `true` if the array includes the value, `false` otherwise
 }
 Join all elements of this array together into one string, using 'separator'
 between them. e.g. ```[1,2,3].join(' ')=='1 2 3'```
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "sort",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_arraybufferview_sort",
   "params" : [
     ["var","JsVar","A function to use to compare array elements (or undefined)"]
   ],
   "return" : ["JsVar","This array object"],
   "return_object" : "ArrayBufferView",
-  "typescript" : "sort(compareFn?: (a: number, b: number) => number): this;"
+  "typescript" : "sort(compareFn?: (a: number, b: number) => number): this;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Do an in-place quicksort of the array
- */
+*/
 static JsVarFloat _jswrap_arraybufferview_sort_float(JsVarFloat a, JsVarFloat b) {
   return a-b;
 }
@@ -881,9 +826,10 @@ JsVar *jswrap_arraybufferview_sort(JsVar *array, JsVar *compareFn) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "forEach",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_forEach",
   "params" : [
     ["function","JsVar","Function to be executed"],
@@ -892,29 +838,30 @@ JsVar *jswrap_arraybufferview_sort(JsVar *array, JsVar *compareFn) {
   "typescript" : "forEach(callbackfn: (value: number, index: number, array: T) => void, thisArg?: any): void;"
 }
 Executes a provided function once per array element.
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "reduce",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_reduce",
   "params" : [
     ["callback","JsVar","Function used to reduce the array"],
     ["initialValue","JsVar","if specified, the initial value to pass to the function"]
   ],
   "return" : ["JsVar","The value returned by the last function called"],
-  "typescript" : "reduce(callbackfn: (previousValue: number, currentValue: number, currentIndex: number, array: T) => number, initialValue?: number): number;"
+  "typescript" : "reduce(callbackfn: (previousValue: number, currentValue: number, currentIndex: number, array: T) => number, initialValue?: number): number;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Execute `previousValue=initialValue` and then `previousValue =
 callback(previousValue, currentValue, index, array)` for each element in the
 array, and finally return previousValue.
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "fill",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_fill",
   "params" : [
     ["value","JsVar","The value to fill the array with"],
@@ -923,73 +870,78 @@ array, and finally return previousValue.
   ],
   "return" : ["JsVar","This array"],
   "return_object" : "ArrayBufferView",
-  "typescript" : "fill(value: number, start?: number, end?: number): T;"
+  "typescript" : "fill(value: number, start?: number, end?: number): T;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Fill this array with the given value, for every index `>= start` and `< end`
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "filter",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_filter",
   "params" : [
     ["function","JsVar","Function to be executed"],
     ["thisArg","JsVar","[optional] If specified, the function is called with 'this' set to thisArg"]
   ],
   "return" : ["JsVar","An array containing the results"],
-  "typescript" : "filter(predicate: (value: number, index: number, array: T) => any, thisArg?: any): T;"
+  "typescript" : "filter(predicate: (value: number, index: number, array: T) => any, thisArg?: any): T;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return an array which contains only those elements for which the callback
 function returns 'true'
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "find",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_find",
   "params" : [
     ["function","JsVar","Function to be executed"]
   ],
   "return" : ["JsVar","The array element where `function` returns `true`, or `undefined`"],
-  "typescript" : "find(predicate: (value: number, index: number, obj: T) => boolean, thisArg?: any): number | undefined;"
+  "typescript" : "find(predicate: (value: number, index: number, obj: T) => boolean, thisArg?: any): number | undefined;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return the array element where `function` returns `true`, or `undefined` if it
 doesn't returns `true` for any element.
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "findIndex",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_findIndex",
   "params" : [
     ["function","JsVar","Function to be executed"]
   ],
   "return" : ["JsVar","The array element's index where `function` returns `true`, or `-1`"],
-  "typescript" : "findIndex(predicate: (value: number, index: number, obj: T) => boolean, thisArg?: any): number;"
+  "typescript" : "findIndex(predicate: (value: number, index: number, obj: T) => boolean, thisArg?: any): number;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return the array element's index where `function` returns `true`, or `-1` if it
 doesn't returns `true` for any element.
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "reverse",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_reverse",
   "return" : ["JsVar","This array"],
   "return_object" : "ArrayBufferView",
-  "typescript" : "reverse(): T"
+  "typescript" : "reverse(): T",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Reverse the contents of this `ArrayBufferView` in-place
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "ArrayBufferView",
+  "type" : "function",
   "name" : "slice",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "ArrayBufferView.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_array_slice",
   "params" : [
     ["start","int","Start index"],
@@ -997,9 +949,10 @@ Reverse the contents of this `ArrayBufferView` in-place
   ],
   "return" : ["JsVar","A new array"],
   "return_object" : "Array",
-  "typescript" : "slice(start?: number, end?: number): number[];"
+  "typescript" : "slice(start?: number, end?: number): number[];",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return a copy of a portion of this array (in a new array).
 
  **Note:** This currently returns a normal `Array`, not an `ArrayBuffer`
- */
+*/

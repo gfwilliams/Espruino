@@ -41,9 +41,8 @@ const int STORAGEFILE_CHUNKSIZE =
 
 /*JSON{
   "type" : "library",
-  "class" : "Storage"
+  "name" : "Storage"
 }
-
 This module allows you to read and write part of the nonvolatile flash memory of
 your device using a filesystem-like API.
 
@@ -67,50 +66,51 @@ characters. However in 2v04 and earlier the max length is 8.
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "eraseAll",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_eraseAll"
 }
 Erase the flash storage area. This will remove all files created with
 `require("Storage").write(...)` as well as any code saved with `save()` or
 `E.setBootCode()`.
- */
+*/
 void jswrap_storage_eraseAll() {
   jsfEraseAll();
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "erase",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_erase",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"]
-  ],
-  "typescript" : "erase(name: string): void;"
+  ]
 }
 Erase a single file from the flash storage area.
 
 **Note:** This function should be used with normal files, and not `StorageFile`s
 created with `require("Storage").open(filename, ...)`
- */
+*/
 void jswrap_storage_erase(JsVar *name) {
   jsfEraseFile(jsfNameFromVar(name));
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "read",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_read",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"],
     ["offset","int","[optional] The offset in bytes to start from"],
     ["length","int","[optional] The length to read in bytes (if <=0, the entire file is read)"]
   ],
-  "return" : ["JsVar","A string of data, or `undefined` if the file is not found"],
-  "typescript" : "read(name: string, offset?: number, length?: number): string | undefined;"
+  "return" : ["JsVar","A string of data, or `undefined` if the file is not found"]
 }
 Read a file from the flash storage area that has been written with
 `require("Storage").write(...)`.
@@ -132,17 +132,17 @@ JsVar *jswrap_storage_read(JsVar *name, int offset, int length) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "readJSON",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_readJSON",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"],
     ["noExceptions","bool","If true and the JSON is not valid, just return `undefined` - otherwise an `Exception` is thrown"]
   ],
   "return" : ["JsVar","An object containing parsed JSON from the file, or undefined"],
-  "typescript" : "readJSON(name: string, noExceptions: ShortBoolean): any;"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Read a file from the flash storage area that has been written with
 `require("Storage").write(...)`, and parse JSON in it into a JavaScript object.
@@ -166,16 +166,16 @@ JsVar *jswrap_storage_readJSON(JsVar *name, bool noExceptions) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "readArrayBuffer",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_readArrayBuffer",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"]
   ],
   "return" : ["JsVar","An ArrayBuffer containing data from the file, or undefined"],
-  "typescript" : "readArrayBuffer(name: string): ArrayBuffer | undefined;"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Read a file from the flash storage area that has been written with
 `require("Storage").write(...)`, and return the raw binary data as an
@@ -199,9 +199,10 @@ JsVar *jswrap_storage_readArrayBuffer(JsVar *name) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "write",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_write",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"],
@@ -209,8 +210,7 @@ JsVar *jswrap_storage_readArrayBuffer(JsVar *name) {
     ["offset","int","[optional] The offset within the file to write"],
     ["size","int","[optional] The size of the file (if a file is to be created that is bigger than the data)"]
   ],
-  "return" : ["bool","True on success, false on failure"],
-  "typescript" : "write(name: string | ArrayBuffer | ArrayBufferView | number[] | object, data: any, offset?: number, size?: number): boolean;"
+  "return" : ["bool","True on success, false on failure"]
 }
 Write/create a file in the flash storage area. This is nonvolatile and will not
 disappear when the device resets or power is lost.
@@ -263,17 +263,17 @@ bool jswrap_storage_write(JsVar *name, JsVar *data, JsVarInt offset, JsVarInt _s
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "writeJSON",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_writeJSON",
   "params" : [
     ["name","JsVar","The filename - max 28 characters (case sensitive)"],
     ["data","JsVar","The JSON data to write"]
   ],
   "return" : ["bool","True on success, false on failure"],
-  "typescript" : "writeJSON(name: string, data: any): boolean;"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Write/create a file in the flash storage area. This is nonvolatile and will not
 disappear when the device resets or power is lost.
@@ -294,16 +294,16 @@ bool jswrap_storage_writeJSON(JsVar *name, JsVar *data) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "list",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_list",
   "params" : [
     ["regex","JsVar","[optional] If supplied, filenames are checked against this regular expression (with `String.match(regexp)`) to see if they match before being returned"],
     ["filter","JsVar","[optional] If supplied, File Types are filtered based on this: `{sf:true}` or `{sf:false}` for whether to show StorageFile"]
   ],
-  "return" : ["JsVar","An array of filenames"],
-  "typescript" : "list(regex?: RegExp, filter?: { sf: boolean }): string[];"
+  "return" : ["JsVar","An array of filenames"]
 }
 List all files in the flash storage area. An array of Strings is returned.
 
@@ -323,7 +323,7 @@ require("Storage").list(undefined, {sf:false})
 
 **Note:** This will output system files (e.g. saved code) as well as files that
 you may have written.
- */
+*/
 JsVar *jswrap_storage_list(JsVar *regex, JsVar *filter) {
   JsfFileFlags containing = 0;
   JsfFileFlags notContaining = 0;
@@ -340,16 +340,16 @@ JsVar *jswrap_storage_list(JsVar *regex, JsVar *filter) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "hash",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_hash",
   "params" : [
     ["regex","JsVar","[optional] If supplied, filenames are checked against this regular expression (with `String.match(regexp)`) to see if they match before being hashed"]
   ],
   "return" : ["int","A hash of the files matching"],
-  "typescript" : "hash(regex: RegExp): number;"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 List all files in the flash storage area matching the specified regex (ignores
 StorageFiles), and then hash their filenames *and* file locations.
@@ -368,17 +368,18 @@ require("Storage").hash(/\.boot\.js$/)
 **Note:** This function is used by Bangle.js as a way to cache files. For
 instance the bootloader will add all `.boot.js` files together into a single
 `.boot0` file, but it needs to know quickly whether anything has changed.
- */
+*/
 JsVarInt jswrap_storage_hash(JsVar *regex) {
   return jsfHashFiles(regex, 0, JSFF_STORAGEFILE);
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "compact",
-  "generate" : "jswrap_storage_compact"
+  "memberOf" : "Storage",
+  "thisParam" : false,
+  "generate" : "jswrap_storage_compact",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 The Flash Storage system is journaling. To make the most of the limited write
 cycles of Flash memory, Espruino marks deleted/replaced files as garbage/trash files and
@@ -393,48 +394,51 @@ that memory (e.g. functions that have their code stored in flash) then they may
 become garbled when compaction happens. To avoid this, call `eraseFiles` before
 uploading data that you intend to reference to ensure that uploaded files are
 right at the start of flash and cannot be compacted further.
- */
+*/
 void jswrap_storage_compact() {
   jsfCompact();
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifdef" : "DEBUG",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "debug",
-  "generate" : "jswrap_storage_debug"
+  "memberOf" : "Storage",
+  "thisParam" : false,
+  "generate" : "jswrap_storage_debug",
+  "if" : "defined(DEBUG)"
 }
 This writes information about all blocks in flash memory to the console - and is
 only useful for debugging flash storage.
- */
+*/
 void jswrap_storage_debug() {
   jsfDebugFiles();
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "getFree",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_getFree",
-  "return" : ["int","The amount of free bytes"]
+  "return" : ["int","The amount of free bytes"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return the amount of free bytes available in Storage. Due to fragmentation there
 may be more bytes available, but this represents the maximum size of file that
 can be written.
- */
+*/
 int jswrap_storage_getFree() {
   return (int)jsfGetStorageStats(0,true).free;
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "getStats",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_getStats",
-  "return" : ["JsVar","An object containing info about the current Storage system"]
+  "return" : ["JsVar","An object containing info about the current Storage system"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Returns:
 
@@ -448,7 +452,7 @@ Returns:
   trashCount // How many trash files do we have? (can be cleared with .compact)
 }
 ```
- */
+*/
 JsVar *jswrap_storage_getStats() {
   JsVar *o = jsvNewObject();
   if (!o) return NULL;
@@ -463,15 +467,16 @@ JsVar *jswrap_storage_getStats() {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "optimise",
-  "generate" : "jswrap_storage_optimise"
+  "memberOf" : "Storage",
+  "thisParam" : false,
+  "generate" : "jswrap_storage_optimise",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Writes a lookup table for files into Bangle.js's storage. This allows any file
 stored up to that point to be accessed quickly.
- */
+*/
 void jswrap_storage_optimise() {
 #ifdef ESPR_STORAGE_FILENAME_TABLE
   jsfCreateFileTable();
@@ -479,10 +484,10 @@ void jswrap_storage_optimise() {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Storage",
+  "type" : "function",
   "name" : "open",
+  "memberOf" : "Storage",
+  "thisParam" : false,
   "generate" : "jswrap_storage_open",
   "params" : [
     ["name","JsVar","The filename - max **27** characters (case sensitive)"],
@@ -490,7 +495,7 @@ void jswrap_storage_optimise() {
   ],
   "return" : ["JsVar","An object containing {read,write,erase}"],
   "return_object" : "StorageFile",
-  "typescript" : "open(name: string, mode: \"r\" | \"w\" | \"a\"): StorageFile;"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Open a file in the Storage area. This can be used for appending data
 (normal read/write operations only write the entire file).
@@ -498,7 +503,6 @@ Open a file in the Storage area. This can be used for appending data
 Please see `StorageFile` for more information (and examples).
 
 **Note:** These files write through immediately - they do not need closing.
-
 */
 JsVar *jswrap_storage_open(JsVar *name, JsVar *modeVar) {
   char mode = 0;
@@ -582,12 +586,11 @@ JsVar *jswrap_storage_open(JsVar *name, JsVar *modeVar) {
 }
 
 /*JSON{
-  "type" : "class",
-  "class" : "StorageFile",
+  "type" : "object",
+  "name" : "StorageFile",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
-
 These objects are created from `require("Storage").open` and allow Storage items
 to be read/written.
 
@@ -712,16 +715,17 @@ JsVar *jswrap_storagefile_read_internal(JsVar *f, int len) {
   return result;
 }
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "read",
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_storagefile_read",
   "params" : [
     ["len","int","How many bytes to read"]
   ],
   "return" : ["JsVar","A String, or undefined "],
-  "return_object" : "String"
+  "return_object" : "String",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Read 'len' bytes of data from the file, and return a String containing those
 bytes.
@@ -734,13 +738,14 @@ JsVar *jswrap_storagefile_read(JsVar *f, int len) {
   return jswrap_storagefile_read_internal(f,len);
 }
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "readLine",
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_storagefile_readLine",
   "return" : ["JsVar","A line of data"],
-  "return_object" : "String"
+  "return_object" : "String",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Read a line of data from the file (up to and including `"\n"`)
 */
@@ -748,12 +753,13 @@ JsVar *jswrap_storagefile_readLine(JsVar *f) {
   return jswrap_storagefile_read_internal(f,-1);
 }
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "getLength",
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_storagefile_getLength",
-  "return" : ["int","The current length in bytes of the file"]
+  "return" : ["int","The current length in bytes of the file"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Return the length of the current file.
 
@@ -813,15 +819,16 @@ int jswrap_storagefile_getLength(JsVar *f) {
 
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "write",
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_storagefile_write",
   "params" : [
     ["data","JsVar","The data to write. This should not include `'\\xFF'` (character code 255)"]
   ],
-  "typescript" : "write(data: string): void;"
+  "typescript" : "write(data: string): void;",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Append the given data to a file. You should not attempt to append `"\xFF"`
 (character code 255).
@@ -921,11 +928,12 @@ void jswrap_storagefile_write(JsVar *f, JsVar *_data) {
 }
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "erase",
-  "generate" : "jswrap_storagefile_erase"
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
+  "generate" : "jswrap_storagefile_erase",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Erase this file
 */
@@ -950,16 +958,17 @@ void jswrap_storagefile_erase(JsVar *f) {
 
 
 /*JSON{
-  "type" : "method",
-  "class" : "StorageFile",
+  "type" : "function",
   "name" : "pipe",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "StorageFile.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_pipe",
   "params" : [
     ["destination","JsVar","The destination file/stream that will receive content from the source."],
     ["options","JsVar",["[optional] An object `{ chunkSize : int=32, end : bool=true, complete : function }`","chunkSize : The amount of data to pipe from source to destination at a time","complete : a function to call when the pipe activity is complete","end : call the 'end' function on the destination when the source is finished"]]
   ],
-  "typescript": "pipe(destination: any, options?: PipeOptions): void"
+  "typescript" : "pipe(destination: any, options?: PipeOptions): void",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Pipe this file to a stream (an object with a 'write' method)
 */

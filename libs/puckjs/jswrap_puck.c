@@ -591,30 +591,33 @@ void accel_off() {
 
 
 /*JSON{
-    "type": "class",
-    "class" : "Puck",
-    "ifdef" : "PUCKJS"
+  "type" : "object",
+  "name" : "Puck",
+  "if" : "defined(PUCKJS)"
 }
 Class containing [Puck.js's](http://www.puck-js.com) utility functions.
 */
 /*JSON{
   "type" : "variable",
   "name" : "FET",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "26",
-  "ifdef" : "PUCKJS",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(PUCKJS)"
 }
 On Puck.js V2 (not v1.0) this is the pin that controls the FET, for high-powered
 outputs.
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "mag",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_mag",
-  "return" : ["JsVar", "An Object `{x,y,z}` of magnetometer readings as integers" ]
+  "return" : ["JsVar","An Object `{x,y,z}` of magnetometer readings as integers"],
+  "if" : "defined(PUCKJS)"
 }
 Turn on the magnetometer, take a single reading, and then turn it off again.
 
@@ -657,12 +660,13 @@ JsVar *jswrap_puck_mag() {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "magTemp",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_magTemp",
-  "return" : ["float", "Temperature in degrees C" ]
+  "return" : ["float","Temperature in degrees C"],
+  "if" : "defined(PUCKJS)"
 }
 Turn on the magnetometer, take a single temperature reading from the MAG3110
 chip, and then turn it off again.
@@ -693,9 +697,9 @@ JsVarFloat jswrap_puck_magTemp() {
 
 /*JSON{
   "type" : "event",
-  "class" : "Puck",
   "name" : "mag",
-  "ifdef" : "PUCKJS"
+  "memberOf" : "Puck",
+  "if" : "defined(PUCKJS)"
 }
 Called after `Puck.magOn()` every time magnetometer data is sampled. There is
 one argument which is an object of the form `{x,y,z}` containing magnetometer
@@ -704,13 +708,13 @@ readings as integers (for more information see `Puck.mag()`).
 Check out [the Puck.js page on the
 magnetometer](http://www.espruino.com/Puck.js#on-board-peripherals) for more
 information.
- */
+*/
 
 /*JSON{
   "type" : "event",
-  "class" : "Puck",
   "name" : "accel",
-  "ifdef" : "PUCKJS"
+  "memberOf" : "Puck",
+  "if" : "defined(PUCKJS)"
 }
 Only on Puck.js v2.0
 
@@ -721,17 +725,18 @@ containing the data.
 The data is as it comes off the accelerometer and is not scaled to 1g. For more
 information see `Puck.accel()` or [the Puck.js page on the
 magnetometer](http://www.espruino.com/Puck.js#on-board-peripherals).
- */
+*/
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "magOn",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_magOn",
   "params" : [
-      ["samplerate","float","The sample rate in Hz, or undefined"]
-  ]
+    ["samplerate","float","The sample rate in Hz, or undefined"]
+  ],
+  "if" : "defined(PUCKJS)"
 }
 Turn the magnetometer on and start periodic sampling. Samples will then cause a
 'mag' event on 'Puck':
@@ -770,7 +775,6 @@ continue uninterrupted.
 Check out [the Puck.js page on the
 magnetometer](http://www.espruino.com/Puck.js#on-board-peripherals) for more
 information.
-
 */
 void jswrap_puck_magOn(JsVarFloat hz) {
   if (!PUCKJS_HAS_MAG) {
@@ -801,11 +805,12 @@ void jswrap_puck_magOn(JsVarFloat hz) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "magOff",
-  "ifdef" : "PUCKJS",
-  "generate" : "jswrap_puck_magOff"
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_magOff",
+  "if" : "defined(PUCKJS)"
 }
 Turn the magnetometer off
 */
@@ -826,15 +831,16 @@ void jswrap_puck_magOff() {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "magWr",
-    "generate" : "jswrap_puck_magWr",
-    "params" : [
-      ["reg","int",""],
-      ["data","int",""]
-    ],
-    "ifdef" : "PUCKJS"
+  "type" : "function",
+  "name" : "magWr",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_magWr",
+  "params" : [
+    ["reg","int",""],
+    ["data","int",""]
+  ],
+  "if" : "defined(PUCKJS)"
 }
 Writes a register on the LIS3MDL / MAX3110 Magnetometer. Can be used for
 configuring advanced functions.
@@ -852,15 +858,16 @@ void jswrap_puck_magWr(JsVarInt reg, JsVarInt data) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "magRd",
-    "generate" : "jswrap_puck_magRd",
-    "params" : [
-      ["reg","int",""]
-    ],
-    "return" : ["int",""],
-    "ifdef" : "PUCKJS"
+  "type" : "function",
+  "name" : "magRd",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_magRd",
+  "params" : [
+    ["reg","int",""]
+  ],
+  "return" : ["int",""],
+  "if" : "defined(PUCKJS)"
 }
 Reads a register from the LIS3MDL / MAX3110 Magnetometer. Can be used for
 configuring advanced functions.
@@ -904,12 +911,13 @@ void temp_off() {
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "getTemperature",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_getTemperature",
-  "return" : ["float", "Temperature in degrees C" ]
+  "return" : ["float","Temperature in degrees C"],
+  "if" : "defined(PUCKJS)"
 }
 On Puck.js v2.0 this will use the on-board PCT2075TP temperature sensor, but on
 Puck.js the less accurate on-chip Temperature sensor is used.
@@ -936,16 +944,16 @@ JsVarFloat jswrap_puck_getTemperature() {
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "accelOn",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_accelOn",
   "params" : [
-      ["samplerate","float","The sample rate in Hz, or `undefined` (default is 12.5 Hz)"]
-  ]
+    ["samplerate","float","The sample rate in Hz, or `undefined` (default is 12.5 Hz)"]
+  ],
+  "if" : "defined(PUCKJS)"
 }
-
 Accepted values are:
 
 * 1.6 Hz (no Gyro) - 40uA (2v05 and later firmware)
@@ -976,7 +984,6 @@ information.
 
 **Note:** Puck.js cannot currently read every sample from the
 accelerometer at sample rates above 208Hz.
-
 */
 void puck_accelHandler(bool state, IOEventFlags flags) {
   jshHadEvent(); // ensure we leave sleep to go to the idle loop
@@ -1006,11 +1013,12 @@ void jswrap_puck_accelOn(JsVarFloat hz) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "accelOff",
-  "ifdef" : "PUCKJS",
-  "generate" : "jswrap_puck_accelOff"
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_accelOff",
+  "if" : "defined(PUCKJS)"
 }
 Turn the accelerometer off after it has been turned on by `Puck.accelOn()`.
 
@@ -1034,12 +1042,13 @@ void jswrap_puck_accelOff() {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "accel",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_accel",
-  "return" : ["JsVar", "An Object `{acc:{x,y,z}, gyro:{x,y,z}}` of accelerometer/gyro readings" ]
+  "return" : ["JsVar","An Object `{acc:{x,y,z}, gyro:{x,y,z}}` of accelerometer/gyro readings"],
+  "if" : "defined(PUCKJS)"
 }
 Turn on the accelerometer, take a single reading, and then turn it off again.
 
@@ -1073,15 +1082,16 @@ JsVar *jswrap_puck_accel() {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "accelWr",
-    "generate" : "jswrap_puck_accelWr",
-    "params" : [
-      ["reg","int",""],
-      ["data","int",""]
-    ],
-    "ifdef" : "PUCKJS"
+  "type" : "function",
+  "name" : "accelWr",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_accelWr",
+  "params" : [
+    ["reg","int",""],
+    ["data","int",""]
+  ],
+  "if" : "defined(PUCKJS)"
 }
 Writes a register on the LSM6DS3TR-C Accelerometer. Can be used for configuring
 advanced functions.
@@ -1102,15 +1112,16 @@ void jswrap_puck_accelWr(JsVarInt reg, JsVarInt data) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "accelRd",
-    "generate" : "jswrap_puck_accelRd",
-    "params" : [
-      ["reg","int",""]
-    ],
-    "return" : ["int",""],
-    "ifdef" : "PUCKJS"
+  "type" : "function",
+  "name" : "accelRd",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_accelRd",
+  "params" : [
+    ["reg","int",""]
+  ],
+  "return" : ["int",""],
+  "if" : "defined(PUCKJS)"
 }
 Reads a register from the LSM6DS3TR-C Accelerometer. Can be used for configuring
 advanced functions.
@@ -1132,16 +1143,17 @@ int jswrap_puck_accelRd(JsVarInt reg) {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Puck",
+  "type" : "function",
   "name" : "IR",
-  "ifdef" : "PUCKJS",
+  "memberOf" : "Puck",
+  "thisParam" : false,
   "generate" : "jswrap_puck_IR",
   "params" : [
-      ["data","JsVar","An array of pulse lengths, in milliseconds"],
-      ["cathode","pin","[optional] pin to use for IR LED cathode - if not defined, the built-in IR LED is used"],
-      ["anode","pin","[optional] pin to use for IR LED anode - if not defined, the built-in IR LED is used"]
-  ]
+    ["data","JsVar","An array of pulse lengths, in milliseconds"],
+    ["cathode","pin","[optional] pin to use for IR LED cathode - if not defined, the built-in IR LED is used"],
+    ["anode","pin","[optional] pin to use for IR LED anode - if not defined, the built-in IR LED is used"]
+  ],
+  "if" : "defined(PUCKJS)"
 }
 Transmit the given set of IR pulses - data should be an array of pulse times in
 milliseconds (as `[on, off, on, off, on, etc]`).
@@ -1243,16 +1255,17 @@ void jswrap_puck_IR(JsVar *data, Pin cathode, Pin anode) {
 
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "capSense",
-    "ifdef" : "PUCKJS",
-    "generate" : "jswrap_puck_capSense",
-    "params" : [
-      ["tx","pin",""],
-      ["rx","pin",""]
-    ],
-    "return" : ["int", "Capacitive sense counter" ]
+  "type" : "function",
+  "name" : "capSense",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_capSense",
+  "params" : [
+    ["tx","pin",""],
+    ["rx","pin",""]
+  ],
+  "return" : ["int","Capacitive sense counter"],
+  "if" : "defined(PUCKJS)"
 }
 Capacitive sense - the higher the capacitance, the higher the number returned.
 
@@ -1279,12 +1292,13 @@ int jswrap_puck_capSense(Pin tx, Pin rx) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "light",
-    "ifdef" : "PUCKJS",
-    "generate" : "jswrap_puck_light",
-    "return" : ["float", "A light value from 0 to 1" ]
+  "type" : "function",
+  "name" : "light",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_light",
+  "return" : ["float","A light value from 0 to 1"],
+  "if" : "defined(PUCKJS)"
 }
 Return a light value based on the light the red LED is seeing.
 
@@ -1317,12 +1331,13 @@ JsVarFloat jswrap_puck_light() {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "ifdef" : "PUCKJS",
-    "name" : "getBatteryPercentage",
-    "generate" : "jswrap_espruino_getBattery",
-    "return" : ["int", "A percentage between 0 and 100" ]
+  "type" : "function",
+  "name" : "getBatteryPercentage",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_espruino_getBattery",
+  "return" : ["int","A percentage between 0 and 100"],
+  "if" : "defined(PUCKJS)"
 }
 DEPRECATED - Please use `E.getBattery()` instead.
 
@@ -1387,12 +1402,13 @@ static bool selftest_check_pin(Pin pin, char *err) {
 
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Puck",
-    "name" : "selfTest",
-    "ifdef" : "PUCKJS",
-    "generate" : "jswrap_puck_selfTest",
-    "return" : ["bool", "True if the self-test passed" ]
+  "type" : "function",
+  "name" : "selfTest",
+  "memberOf" : "Puck",
+  "thisParam" : false,
+  "generate" : "jswrap_puck_selfTest",
+  "return" : ["bool","True if the self-test passed"],
+  "if" : "defined(PUCKJS)"
 }
 Run a self-test, and return true for a pass. This checks for shorts between
 pins, so your Puck shouldn't have anything connected to it.
@@ -1404,7 +1420,6 @@ green is a pass.
 
 If the self test fails, it'll set the Puck.js Bluetooth advertising name to
 `Puck.js !ERR` where ERR is a 3 letter error code.
-
 */
 
 bool _jswrap_puck_selfTest(bool advertisePassOrFail) {
@@ -1641,7 +1656,9 @@ bool jswrap_puck_selfTest() {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_puck_init"
-}*/
+}
+
+*/
 void jswrap_puck_init() {
   // Set up I2C
   jshI2CInitInfo(&i2cMag);
@@ -1756,7 +1773,9 @@ void jswrap_puck_init() {
 /*JSON{
   "type" : "kill",
   "generate" : "jswrap_puck_kill"
-}*/
+}
+
+*/
 void jswrap_puck_kill() {
   if (mag_enabled) {
     mag_off();
@@ -1767,7 +1786,9 @@ void jswrap_puck_kill() {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_puck_idle"
-}*/
+}
+
+*/
 bool jswrap_puck_idle() {
   bool busy = false;
   /* jshPinWatch should mean that we wake up whenever a new

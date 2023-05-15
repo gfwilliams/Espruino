@@ -25,18 +25,20 @@
 #endif
 
 /*JSON{
-  "type" : "class",
-  "class" : "process",
+  "type" : "object",
+  "name" : "process",
   "memberOf" : "global"
 }
 This class contains information about Espruino itself
- */
+*/
 
 /*JSON{
   "type" : "event",
-  "class" : "process",
   "name" : "uncaughtException",
-  "params" : [["exception","JsVar","The uncaught exception"]]
+  "memberOf" : "process",
+  "params" : [
+    ["exception","JsVar","The uncaught exception"]
+  ]
 }
 This event is called when an exception gets thrown and isn't caught (e.g. it gets
 all the way back to the event loop).
@@ -62,14 +64,15 @@ console - which may make debugging difficult!
 */
 
 /*JSON{
-  "type" : "staticproperty",
-  "class" : "process",
+  "type" : "variable",
   "name" : "version",
+  "memberOf" : "process",
+  "thisParam" : false,
   "generate_full" : "jsvNewFromString(JS_VERSION)",
   "return" : ["JsVar","The version of Espruino"]
 }
 Returns the version of Espruino as a String
- */
+*/
 
 #ifndef SAVE_ON_FLASH
 /* NOTE: The order of these is very important, as 
@@ -97,9 +100,10 @@ const void * const exportPtrs[] = {
 #endif
 
 /*JSON{
-  "type" : "staticproperty",
-  "class" : "process",
+  "type" : "variable",
   "name" : "env",
+  "memberOf" : "process",
+  "thisParam" : false,
   "generate" : "jswrap_process_env",
   "return" : ["JsVar","An object"]
 }
@@ -167,9 +171,10 @@ JsVar *jswrap_process_env() {
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "process",
+  "type" : "function",
   "name" : "memory",
+  "memberOf" : "process",
+  "thisParam" : false,
   "generate" : "jswrap_process_memory",
   "params" : [
     ["gc","JsVar","[optional] A boolean. If `undefined` or `true` Garbage collection is performed, if `false` it is not"]
@@ -207,7 +212,7 @@ Memory units are specified in 'blocks', which are around 16 bytes each
 http://www.espruino.com/Performance for more information.
 
 **Note:** To find free areas of flash memory, see `require('Flash').getFree()`
- */
+*/
 JsVar *jswrap_process_memory(JsVar *gc) {
   JsSysTime time1, time2;
   int varsGCd = -1;

@@ -64,6 +64,8 @@ const Pin LCD_MOSI = 15;
 /*JSON{
   "type" : "variable",
   "name" : "BTNA",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "19",
   "return" : ["pin",""]
 }
@@ -72,6 +74,8 @@ The pin connected to the 'A' button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "BTNB",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "20",
   "return" : ["pin",""]
 }
@@ -80,6 +84,8 @@ The pin connected to the 'B' button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "BTNU",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "31",
   "return" : ["pin",""]
 }
@@ -88,6 +94,8 @@ The pin connected to the up button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "BTND",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "16",
   "return" : ["pin",""]
 }
@@ -96,6 +104,8 @@ The pin connected to the down button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "BTNL",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "17",
   "return" : ["pin",""]
 }
@@ -104,6 +114,8 @@ The pin connected to the left button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "BTNR",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "18",
   "return" : ["pin",""]
 }
@@ -112,6 +124,8 @@ The pin connected to the right button. Reads as `1` when pressed, `0` when not
 /*JSON{
   "type" : "variable",
   "name" : "CORNER1",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "25",
   "return" : ["pin",""]
 }
@@ -120,6 +134,8 @@ The pin connected to Corner #1
 /*JSON{
   "type" : "variable",
   "name" : "CORNER2",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "26",
   "return" : ["pin",""]
 }
@@ -128,6 +144,8 @@ The pin connected to Corner #2
 /*JSON{
   "type" : "variable",
   "name" : "CORNER3",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "27",
   "return" : ["pin",""]
 }
@@ -136,6 +154,8 @@ The pin connected to Corner #3
 /*JSON{
   "type" : "variable",
   "name" : "CORNER4",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "28",
   "return" : ["pin",""]
 }
@@ -144,6 +164,8 @@ The pin connected to Corner #4
 /*JSON{
   "type" : "variable",
   "name" : "CORNER5",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "29",
   "return" : ["pin",""]
 }
@@ -152,6 +174,8 @@ The pin connected to Corner #5
 /*JSON{
   "type" : "variable",
   "name" : "CORNER6",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "30",
   "return" : ["pin",""]
 }
@@ -161,20 +185,21 @@ The pin connected to Corner #6
 
 
 /*JSON{
-    "type": "class",
-    "class" : "Badge"
+  "type" : "object",
+  "name" : "Badge"
 }
 Class containing utility functions for accessing IO on the hexagonal badge
 */
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Badge",
-    "name" : "capSense",
-    "generate" : "jswrap_badge_capSense",
-    "params" : [
-      ["corner","int","The corner to use"]
-    ],
-    "return" : ["int", "Capacitive sense counter" ]
+  "type" : "function",
+  "name" : "capSense",
+  "memberOf" : "Badge",
+  "thisParam" : false,
+  "generate" : "jswrap_badge_capSense",
+  "params" : [
+    ["corner","int","The corner to use"]
+  ],
+  "return" : ["int","Capacitive sense counter"]
 }
 Capacitive sense - the higher the capacitance, the higher the number returned.
 
@@ -189,11 +214,12 @@ int jswrap_badge_capSense(int corner) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Badge",
-    "name" : "getBatteryPercentage",
-    "generate" : "jswrap_badge_getBatteryPercentage",
-    "return" : ["int", "A percentage between 0 and 100" ]
+  "type" : "function",
+  "name" : "getBatteryPercentage",
+  "memberOf" : "Badge",
+  "thisParam" : false,
+  "generate" : "jswrap_badge_getBatteryPercentage",
+  "return" : ["int","A percentage between 0 and 100"]
 }
 Return an approximate battery percentage remaining based on a normal CR2032
 battery (2.8 - 2.2v)
@@ -239,15 +265,17 @@ void badge_lcd_flip(JsVar *g) {
 
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Badge",
-    "name" : "setContrast",
-    "generate" : "jswrap_badge_setContrast",
-    "params" : [
-      ["c","float","Contrast between 0 and 1"]
-    ]
+  "type" : "function",
+  "name" : "setContrast",
+  "memberOf" : "Badge",
+  "thisParam" : false,
+  "generate" : "jswrap_badge_setContrast",
+  "params" : [
+    ["c","float","Contrast between 0 and 1"]
+  ]
 }
-Set the LCD's contrast*/
+Set the LCD's contrast
+*/
 void jswrap_badge_setContrast(JsVarFloat c) {
   if (c<0) c=0;
   if (c>1) c=1;
@@ -262,7 +290,9 @@ void jswrap_badge_setContrast(JsVarFloat c) {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_badge_init"
-}*/
+}
+
+*/
 void jswrap_badge_init() {
   // LCD Init 1
   jshPinOutput(LCD_CS,0);
@@ -332,7 +362,9 @@ void jswrap_badge_init() {
 /*JSON{
   "type" : "kill",
   "generate" : "jswrap_badge_kill"
-}*/
+}
+
+*/
 void jswrap_badge_kill() {
 
 }
@@ -340,7 +372,9 @@ void jswrap_badge_kill() {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_badge_idle"
-}*/
+}
+
+*/
 bool jswrap_badge_idle() {
   return false;
 }

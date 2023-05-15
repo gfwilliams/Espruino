@@ -15,8 +15,8 @@
  */
 
 /*JSON{
-   "type": "library",
-   "class": "Wifi"
+  "type" : "library",
+  "name" : "Wifi"
 }
 The Wifi library is designed to control the Wifi interface. It supports
 functionality such as connecting to wifi networks, getting network information,
@@ -56,8 +56,8 @@ On ESP32/ESP8266 if you want the connection to happen automatically at boot, add
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "associated",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
   ]
@@ -70,13 +70,12 @@ On ESP32/ESP8266 there is a `details` parameter which includes:
 * ssid - The SSID of the access point to which the association was established
 * mac - The BSSID/mac address of the access point
 * channel - The wifi channel used (an integer, typ 1..14)
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "disconnected",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
   ]
@@ -89,31 +88,29 @@ On ESP32/ESP8266 there is a `details` parameter which includes:
 * ssid - The SSID of the access point from which the association was lost
 * mac - The BSSID/mac address of the access point
 * reason - The reason for the disconnection (string)
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "auth_change",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
-  ]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 The 'auth_change' event is called when the authentication mode with the
 associated access point changes. The details include:
 
 * oldMode - The old auth mode (string: open, wep, wpa, wpa2, wpa_wpa2)
 * newMode - The new auth mode (string: open, wep, wpa, wpa2, wpa_wpa2)
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "dhcp_timeout",
-  "#if" : "defined(ESP32) || defined(ESP8266)"
+  "memberOf" : "Wifi",
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 The 'dhcp_timeout' event is called when a DHCP request to the connected access
 point fails and thus no IP address could be acquired (or renewed).
@@ -121,8 +118,8 @@ point fails and thus no IP address could be acquired (or renewed).
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "connected",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
   ]
@@ -138,65 +135,62 @@ On ESP32/ESP8266 there is a `details` parameter which includes:
 * ip - The IP address obtained as string
 * netmask - The network's IP range mask as string
 * gw - The network's default gateway as string
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "sta_joined",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
-  ]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 The 'sta_joined' event is called when a station establishes an association (i.e.
 connects) with the esp8266's access point. The details include:
 
 * mac - The MAC address of the station in string format (00:00:00:00:00:00)
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "sta_left",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
-  ]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 The 'sta_left' event is called when a station disconnects from the esp8266's
 access point (or its association times out?). The details include:
 
 * mac - The MAC address of the station in string format (00:00:00:00:00:00)
-
 */
 
 /*JSON{
   "type" : "event",
-  "class" : "Wifi",
   "name" : "probe_recv",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
+  "memberOf" : "Wifi",
   "params" : [
     ["details","JsVar","An object with event details"]
-  ]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 The 'probe_recv' event is called when a probe request is received from some
 station by the esp8266's access point. The details include:
 
 * mac - The MAC address of the station in string format (00:00:00:00:00:00)
 * rssi - The signal strength in dB of the probe request
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "disconnect",
+  "type" : "function",
+  "name" : "disconnect",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_disconnect",
-  "params"   : [
-    ["callback", "JsVar", "[optional] An `callback()` function to be called back on disconnection. The callback function receives no argument."]
+  "params" : [
+    ["callback","JsVar","[optional] An `callback()` function to be called back on disconnection. The callback function receives no argument."]
   ]
 }
 Disconnect the wifi station from an access point and disable the station mode.
@@ -206,12 +200,13 @@ re-enabled by calling `connect` or `scan`.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "stopAP",
+  "type" : "function",
+  "name" : "stopAP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_stopAP",
-  "params"   : [
-    ["callback", "JsVar", "[optional] An `callback()` function to be called back on successful stop. The callback function receives no argument."]
+  "params" : [
+    ["callback","JsVar","[optional] An `callback()` function to be called back on successful stop. The callback function receives no argument."]
   ]
 }
 Stop being an access point and disable the AP operation mode. AP mode can be
@@ -220,16 +215,16 @@ re-enabled by calling `startAP`.
 
 // TODO TypeScript: Is authMode an option?
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "connect",
+  "type" : "function",
+  "name" : "connect",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_connect",
-  "params"   : [
-    ["ssid", "JsVar", "The access point network id."],
-    ["options", "JsVar", "[optional] Connection options."],
-    ["callback", "JsVar", "A `callback(err)`  function to be called back on completion. `err` is null on success, or contains an error string on failure."]
-  ],
-  "typescript" : "function connect(ssid: string, options?: { password?: string, dnsServers?: string[], authMode?: string, channel?: number, bssid?: string }, callback?: (err: string | null) => void): void;"
+  "params" : [
+    ["ssid","JsVar","The access point network id."],
+    ["options","JsVar","[optional] Connection options."],
+    ["callback","JsVar","A `callback(err)`  function to be called back on completion. `err` is null on success, or contains an error string on failure."]
+  ]
 }
 Connect to an access point as a station. If there is an existing connection to
 an AP it is first disconnected if the SSID or password are different from those
@@ -262,16 +257,16 @@ Notes:
   use its own timeout and the `getDetails().status` field.
 * the `connect` call automatically enabled station mode, it can be disabled
   again by calling `disconnect`.
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "scan",
+  "type" : "function",
+  "name" : "scan",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_scan",
-  "params"   : [
-    ["callback", "JsVar", "A `callback(err, ap_list)` function to be called back on completion. `err==null` and `ap_list` is an array on success, or `err` is an error string and `ap_list` is undefined on failure."]
+  "params" : [
+    ["callback","JsVar","A `callback(err, ap_list)` function to be called back on completion. `err==null` and `ap_list` is an array on success, or `err` is an error string and `ap_list` is undefined on failure."]
   ]
 }
 Perform a scan for access points. This will enable the station mode if it is not
@@ -289,20 +284,19 @@ Notes:
 * in order to perform the scan the station mode is turned on and remains on, use
   Wifi.disconnect() to turn it off again, if desired.
 * only one scan can be in progress at a time.
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "startAP",
+  "type" : "function",
+  "name" : "startAP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_startAP",
-  "params"   : [
-    ["ssid", "JsVar", "The network id."],
-    ["options", "JsVar", "[optional] Configuration options."],
-    ["callback", "JsVar", "Optional `callback(err)` function to be called when the AP is successfully started. `err==null` on success, or an error string on failure."]
-  ],
-  "typescript" : "function startAP(ssid: string, options?: { password?: string, authMode?: \"open\" | \"wpa2\" | \"wpa\" | \"wpa_wpa2\", channel?: number, hidden?: boolean }, callback?: (err: string | null) => void): void;"
+  "params" : [
+    ["ssid","JsVar","The network id."],
+    ["options","JsVar","[optional] Configuration options."],
+    ["callback","JsVar","Optional `callback(err)` function to be called when the AP is successfully started. `err==null` on success, or an error string on failure."]
+  ]
 }
 Create a WiFi access point allowing stations to connect. If the password is NULL
 or an empty string the access point is open, otherwise it is encrypted. The
@@ -328,20 +322,20 @@ Notes:
   netmask, this is a future enhancement.
 * the `startAP` call automatically enables AP mode. It can be disabled again by
   calling `stopAP`.
-
 */
 
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getStatus",
+  "type" : "function",
+  "name" : "getStatus",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getStatus",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
-  "return"   : ["JsVar", "An object representing the current WiFi status, if available immediately."],
-  "params"   : [
-    ["callback", "JsVar", "Optional `callback(status)` function to be called back with the current Wifi status, i.e. the same object as returned directly."]
-  ]
+  "return" : ["JsVar","An object representing the current WiFi status, if available immediately."],
+  "params" : [
+    ["callback","JsVar","Optional `callback(status)` function to be called back with the current Wifi status, i.e. the same object as returned directly."]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 Retrieve the current overall WiFi configuration. This call provides general
 information that pertains to both station and access point modes. The getDetails
@@ -362,19 +356,19 @@ properties:
   no power saving is possible.
 * `savedMode` - The saved operation mode which will be applied at boot time:
   `off`, `sta`, `ap`, `sta+ap`.
-
 */
 
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "setConfig",
+  "type" : "function",
+  "name" : "setConfig",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_setConfig",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
-  "params"   : [
-    ["settings", "JsVar", "An object with the configuration settings to change."]
-  ]
+  "params" : [
+    ["settings","JsVar","An object with the configuration settings to change."]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 Sets a number of global wifi configuration settings. All parameters are optional
 and which are passed determines which settings are updated. The settings
@@ -393,15 +387,16 @@ which all set the esp8266 opmode indirectly.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getDetails",
+  "type" : "function",
+  "name" : "getDetails",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getDetails",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
-  "return"   : ["JsVar", "An object representing the wifi station details, if available immediately."],
-  "params"   : [
-    ["callback", "JsVar", "[optional] An `callback(details)` function to be called back with the wifi details, i.e. the same object as returned directly."]
-  ]
+  "return" : ["JsVar","An object representing the wifi station details, if available immediately."],
+  "params" : [
+    ["callback","JsVar","[optional] An `callback(details)` function to be called back with the wifi details, i.e. the same object as returned directly."]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 Retrieve the wifi station configuration and status details. The details object
 has the following properties:
@@ -420,19 +415,19 @@ has the following properties:
 * `authMode` - the authentication used: `open`, `wpa`, `wpa2`, `wpa_wpa2` (not
   currently supported).
 * `savedSsid` - the SSID to connect to automatically at boot time, null if none.
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getAPDetails",
+  "type" : "function",
+  "name" : "getAPDetails",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getAPDetails",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
-  "return"   : ["JsVar", "An object representing the current access point details, if available immediately."],
-  "params"   : [
-    ["callback", "JsVar", "[optional] A `callback(details)` function to be called back with the current access point details, i.e. the same object as returned directly."]
-  ]
+  "return" : ["JsVar","An object representing the current access point details, if available immediately."],
+  "params" : [
+    ["callback","JsVar","[optional] A `callback(details)` function to be called back with the current access point details, i.e. the same object as returned directly."]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 Retrieve the current access point configuration and status. The details object
 has the following properties:
@@ -449,18 +444,18 @@ has the following properties:
 * `maxConn` - Max number of station connections supported.
 * `savedSsid` - the SSID to broadcast automatically at boot time, null if the
   access point is to be disabled at boot.
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "save",
+  "type" : "function",
+  "name" : "save",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_save",
-  "#if" : "defined(ESP32) || defined(ESP8266)",
-  "params"   : [
-    ["what", "JsVar", "An optional parameter to specify what to save, on the esp8266 the two supported values are `clear` and `sta+ap`. The default is `sta+ap`"]
-  ]
+  "params" : [
+    ["what","JsVar","An optional parameter to specify what to save, on the esp8266 the two supported values are `clear` and `sta+ap`. The default is `sta+ap`"]
+  ],
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 On boards where this is not available, just issue the `connect` commands you
 need to run at startup from an `onInit` function.
@@ -475,27 +470,28 @@ boot. The saved configuration includes:
 * phy (11b/g/n)
 * powersave setting
 * DHCP hostname
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "restore",
+  "type" : "function",
+  "name" : "restore",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_restore",
-  "#if" : "defined(ESP32) || defined(ESP8266)"
+  "if" : "defined(ESP32) || defined(ESP8266)"
 }
 Restores the saved Wifi configuration from flash. See `Wifi.save()`.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getIP",
+  "type" : "function",
+  "name" : "getIP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getIP",
-  "return"   : ["JsVar", "An object representing the station IP information, if available immediately (**ONLY** on ESP8266/ESP32)."],
-  "params"   : [
-    ["callback", "JsVar", "[optional] A `callback(err, ipinfo)` function to be called back with the IP information."]
+  "return" : ["JsVar","An object representing the station IP information, if available immediately (**ONLY** on ESP8266/ESP32)."],
+  "params" : [
+    ["callback","JsVar","[optional] A `callback(err, ipinfo)` function to be called back with the IP information."]
   ]
 }
 Return the station IP information in an object as follows:
@@ -509,13 +505,14 @@ Note that the `ip`, `netmask`, and `gw` fields are omitted if no connection is e
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getAPIP",
+  "type" : "function",
+  "name" : "getAPIP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getAPIP",
-  "return"   : ["JsVar", "An object representing the esp8266's Access Point IP information, if available immediately (**ONLY** on ESP8266/ESP32)."],
-  "params"   : [
-    ["callback", "JsVar", "[optional] A `callback(err, ipinfo)` function to be called back with the the IP information."]
+  "return" : ["JsVar","An object representing the esp8266's Access Point IP information, if available immediately (**ONLY** on ESP8266/ESP32)."],
+  "params" : [
+    ["callback","JsVar","[optional] A `callback(err, ipinfo)` function to be called back with the the IP information."]
   ]
 }
 Return the access point IP information in an object which contains:
@@ -524,52 +521,53 @@ Return the access point IP information in an object which contains:
 * netmask - The interface netmask as string
 * gw - The network gateway as string
 * mac - The MAC address as string of the form 00:00:00:00:00:00
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getHostByName",
+  "type" : "function",
+  "name" : "getHostByName",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getHostByName",
-  "#if" : "defined(ESP8266)  || defined(ESP32)",
-  "params"   : [
-    ["hostname", "JsVar", "The hostname to lookup."],
-    ["callback", "JsVar", "The `callback(ip)` to invoke when the IP is returned. `ip==null` on failure."]
-  ]
+  "params" : [
+    ["hostname","JsVar","The hostname to lookup."],
+    ["callback","JsVar","The `callback(ip)` to invoke when the IP is returned. `ip==null` on failure."]
+  ],
+  "if" : "defined(ESP8266)  || defined(ESP32)"
 }
 Lookup the hostname and invoke a callback with the IP address as integer
 argument. If the lookup fails, the callback is invoked with a null argument.
 **Note:** only a single hostname lookup can be made at a time, concurrent
 lookups are not supported.
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "getHostname",
+  "type" : "function",
+  "name" : "getHostname",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_getHostname",
-  "#if" : "defined(ESP8266)  || defined(ESP32)",
-  "return"   : ["JsVar", "The currently configured hostname, if available immediately."],
-  "params"   : [
-    ["callback", "JsVar", "[optional] A `callback(hostname)` function to be called back with the hostname."]
-  ]
+  "return" : ["JsVar","The currently configured hostname, if available immediately."],
+  "params" : [
+    ["callback","JsVar","[optional] A `callback(hostname)` function to be called back with the hostname."]
+  ],
+  "if" : "defined(ESP8266)  || defined(ESP32)"
 }
 Returns the hostname announced to the DHCP server and broadcast via mDNS when
 connecting to an access point.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "setHostname",
+  "type" : "function",
+  "name" : "setHostname",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_setHostname",
-  "#if" : "defined(ESP8266) || defined(ESPRUINOWIFI) || defined(ESP32)",
-  "params"   : [
-    ["hostname", "JsVar", "The new hostname."],
-    ["callback", "JsVar", "[optional] A `callback()` function to be called back when the hostname is set"]
-  ]
+  "params" : [
+    ["hostname","JsVar","The new hostname."],
+    ["callback","JsVar","[optional] A `callback()` function to be called back when the hostname is set"]
+  ],
+  "if" : "defined(ESP8266) || defined(ESPRUINOWIFI) || defined(ESP32)"
 }
 Set the hostname. Depending on implementation, the hostname is sent with every
 DHCP request and is broadcast via mDNS. The DHCP hostname may be visible in the
@@ -580,15 +578,16 @@ includes an announcement for the "espruino" service.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "setSNTP",
+  "type" : "function",
+  "name" : "setSNTP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_setSNTP",
-  "#if" : "defined(ESP8266) || defined(ESP32)",  
-  "params"   : [
-    ["server", "JsVar", "The NTP server to query, for example, `us.pool.ntp.org`"],
-    ["tz_offset", "JsVar", "Local time zone offset in the range -11..13."]
-  ]
+  "params" : [
+    ["server","JsVar","The NTP server to query, for example, `us.pool.ntp.org`"],
+    ["tz_offset","JsVar","Local time zone offset in the range -11..13."]
+  ],
+  "if" : "defined(ESP8266) || defined(ESP32)"
 }
 Starts the SNTP (Simple Network Time Protocol) service to keep the clock
 synchronized with the specified server. Note that the time zone is really just
@@ -601,34 +600,35 @@ returns.
 
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "setIP",
+  "type" : "function",
+  "name" : "setIP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_setIP",
-  "#if" : "defined(ESP8266) || defined(ESPRUINOWIFI)",
-  "params"   : [
-    ["settings", "JsVar", "Configuration settings"],
-    ["callback", "JsVar", "A `callback(err)` function to invoke when ip is set. `err==null` on success, or a string on failure."]
-  ]
+  "params" : [
+    ["settings","JsVar","Configuration settings"],
+    ["callback","JsVar","A `callback(err)` function to invoke when ip is set. `err==null` on success, or a string on failure."]
+  ],
+  "if" : "defined(ESP8266) || defined(ESPRUINOWIFI)"
 }
 The `settings` object must contain the following properties.
 
 * `ip` IP address as string (e.g. "192.168.5.100")
 * `gw` The network gateway as string (e.g. "192.168.5.1")
 * `netmask` The interface netmask as string (e.g. "255.255.255.0")
-
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "setAPIP",
-  "#if"    : "defined(ESPRUINOWIFI) || defined(ESP8266)",
+  "type" : "function",
+  "name" : "setAPIP",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_setAPIP",
-  "params"   : [
-    ["settings", "JsVar", "Configuration settings"],
-    ["callback", "JsVar", "A `callback(err)` function to invoke when ip is set. `err==null` on success, or a string on failure."]
-  ]
+  "params" : [
+    ["settings","JsVar","Configuration settings"],
+    ["callback","JsVar","A `callback(err)` function to invoke when ip is set. `err==null` on success, or a string on failure."]
+  ],
+  "if" : "defined(ESPRUINOWIFI) || defined(ESP8266)"
 }
 The `settings` object must contain the following properties.
 
@@ -641,30 +641,32 @@ The `settings` object must contain the following properties.
 //----------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "ping",
-  "#if"    : "defined(ESPRUINOWIFI) || defined(ESP8266) || defined(ESP32)",
+  "type" : "function",
+  "name" : "ping",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate" : "jswrap_wifi_ping",
-  "params"   : [
-    ["hostname", "JsVar", "The host to ping"],
-    ["callback", "JsVar", "A `callback(time)` function to invoke when a ping is received"]
-  ]
+  "params" : [
+    ["hostname","JsVar","The host to ping"],
+    ["callback","JsVar","A `callback(time)` function to invoke when a ping is received"]
+  ],
+  "if" : "defined(ESPRUINOWIFI) || defined(ESP8266) || defined(ESP32)"
 }
 Issues a ping to the given host, and calls a callback with the time when the
 ping is received.
 */
 
 /*JSON{
-  "type"     : "staticmethod",
-  "class"    : "Wifi",
-  "name"     : "turbo",
-  "#if"    : "defined(ESPRUINOWIFI)",
+  "type" : "function",
+  "name" : "turbo",
+  "memberOf" : "Wifi",
+  "thisParam" : false,
   "generate_full" : "",
-  "params"   : [
-    ["enable", "JsVar", "true (or a baud rate as a number) to enable, false to disable"],
-    ["callback", "JsVar", "A `callback()` function to invoke when turbo mode has been set"]
-  ]
+  "params" : [
+    ["enable","JsVar","true (or a baud rate as a number) to enable, false to disable"],
+    ["callback","JsVar","A `callback()` function to invoke when turbo mode has been set"]
+  ],
+  "if" : "defined(ESPRUINOWIFI)"
 }
 Switch to using a higher communication speed with the WiFi module.
 

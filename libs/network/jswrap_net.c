@@ -23,7 +23,9 @@
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_net_idle"
-}*/
+}
+
+*/
 bool jswrap_net_idle() {
   JsNetwork net;
   if (!networkGetFromVar(&net)) return false;
@@ -36,15 +38,19 @@ bool jswrap_net_idle() {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_net_init"
-}*/
+}
+
+*/
 void jswrap_net_init() {
   socketInit();
 }
 
 /*JSON{
-  "type"     : "kill",
+  "type" : "kill",
   "generate" : "jswrap_net_kill"
-}*/
+}
+
+*/
 void jswrap_net_kill() {
   JsNetwork net;
   if (networkWasCreated()) {
@@ -61,8 +67,8 @@ void jswrap_net_kill() {
 // ---------------------------------------------------------------------------------
 
 /*JSON{
-  "type" : "class",
-  "class" : "url",
+  "type" : "object",
+  "name" : "url",
   "memberOf" : "global"
 }
 This class helps to convert URLs into Objects of information ready for
@@ -71,9 +77,10 @@ http.request/get
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "url",
+  "type" : "function",
   "name" : "parse",
+  "memberOf" : "url",
+  "thisParam" : false,
   "generate" : "jswrap_url_parse",
   "params" : [
     ["urlStr","JsVar","A URL to be parsed"],
@@ -216,7 +223,7 @@ JsVar *jswrap_url_parse(JsVar *url, bool parseQuery) {
 
 /*JSON{
   "type" : "library",
-  "class" : "net"
+  "name" : "net"
 }
 This library allows you to create TCPIP servers and clients
 
@@ -228,23 +235,23 @@ page for more information on how to use it.
 */
 
 /*JSON{
-  "type" : "class",
-  "class" : "Server",
+  "type" : "object",
+  "name" : "Server",
   "memberOf" : "global"
 }
 The socket server created by `require('net').createServer`
 */
 /*JSON{
-  "type" : "class",
-  "class" : "Socket",
+  "type" : "object",
+  "name" : "Socket",
   "memberOf" : "global"
 }
 An actual socket connection - allowing transmit/receive of TCP data
 */
 /*JSON{
   "type" : "event",
-  "class" : "Socket",
   "name" : "data",
+  "memberOf" : "Socket",
   "params" : [
     ["data","JsVar","A string containing one or more characters of received data"]
   ]
@@ -255,8 +262,8 @@ will be stored in an internal buffer, where it can be retrieved with `X.read()`
 */
 /*JSON{
   "type" : "event",
-  "class" : "Socket",
   "name" : "close",
+  "memberOf" : "Socket",
   "params" : [
     ["had_error","JsVar","A boolean indicating whether the connection had an error (use an error event handler to get error details)."]
   ]
@@ -265,8 +272,8 @@ Called when the connection closes.
 */
 /*JSON{
   "type" : "event",
-  "class" : "Socket",
   "name" : "error",
+  "memberOf" : "Socket",
   "params" : [
     ["details","JsVar","An error object with an error code (a negative integer) and a message."]
   ]
@@ -290,12 +297,12 @@ event is always followed by a close event. The error codes are:
 * -12: bad argument
 * -13: SSL handshake failed
 * -14: invalid SSL data
-
 */
 /*JSON{
-  "type" : "method",
-  "class" : "Socket",
+  "type" : "function",
   "name" : "available",
+  "memberOf" : "Socket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_stream_available",
   "return" : ["int","How many bytes are available"]
 }
@@ -303,9 +310,10 @@ Return how many bytes are available to read. If there is already a listener for
 data, this will always return 0.
 */
 /*JSON{
-  "type" : "method",
-  "class" : "Socket",
+  "type" : "function",
   "name" : "read",
+  "memberOf" : "Socket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_stream_read",
   "params" : [
     ["chars","int","The number of characters to read, or undefined/0 for all available"]
@@ -315,23 +323,24 @@ data, this will always return 0.
 Return a string containing characters that have been received
 */
 /*JSON{
-  "type" : "method",
-  "class" : "Socket",
+  "type" : "function",
   "name" : "pipe",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "Socket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_pipe",
   "params" : [
     ["destination","JsVar","The destination file/stream that will receive content from the source."],
     ["options","JsVar",["[optional] An object `{ chunkSize : int=32, end : bool=true, complete : function }`","chunkSize : The amount of data to pipe from source to destination at a time","complete : a function to call when the pipe activity is complete","end : call the 'end' function on the destination when the source is finished"]]
   ],
-  "typescript": "pipe(destination: any, options?: PipeOptions): void"
+  "typescript" : "pipe(destination: any, options?: PipeOptions): void",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Pipe this to a stream (an object with a 'write' method)
 */
 /*JSON{
   "type" : "event",
-  "class" : "Socket",
-  "name" : "drain"
+  "name" : "drain",
+  "memberOf" : "Socket"
 }
 An event that is fired when the buffer is empty and it can accept more data to
 send.
@@ -344,9 +353,10 @@ send.
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "net",
+  "type" : "function",
   "name" : "createServer",
+  "memberOf" : "net",
+  "thisParam" : false,
   "generate" : "jswrap_net_createServer",
   "params" : [
     ["callback","JsVar","A `function(connection)` that will be called when a connection is made"]
@@ -375,9 +385,10 @@ JsVar *jswrap_net_createServer(JsVar *callback) {
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "net",
+  "type" : "function",
   "name" : "connect",
+  "memberOf" : "net",
+  "thisParam" : false,
   "generate_full" : "jswrap_net_connect(options, callback, ST_NORMAL)",
   "params" : [
     ["options","JsVar","An object containing host,port fields"],
@@ -442,7 +453,7 @@ JsVar *jswrap_net_connect(JsVar *options, JsVar *callback, SocketType socketType
 
 /*JSON{
   "type" : "library",
-  "class" : "dgram"
+  "name" : "dgram"
 }
 This library allows you to create UDP/DATAGRAM servers and clients
 
@@ -454,9 +465,10 @@ page for more information on how to use it.
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "dgram",
+  "type" : "function",
   "name" : "createSocket",
+  "memberOf" : "dgram",
+  "thisParam" : false,
   "generate_full" : "jswrap_dgram_createSocket(type, callback)",
   "params" : [
     ["type","JsVar","Socket type to create e.g. 'udp4'. Or options object { type: 'udp4', reuseAddr: true, recvBufferSize: 1024 }"],
@@ -476,16 +488,17 @@ JsVar *jswrap_dgram_createSocket(JsVar *type, JsVar *callback) {
 }
 
 /*JSON{
-  "type" : "class",
-  "class" : "dgramSocket",
+  "type" : "object",
+  "name" : "dgramSocket",
   "memberOf" : "global"
 }
 An actual socket connection - allowing transmit/receive of TCP data
 */
 /*JSON{
-  "type" : "method",
-  "class" : "dgramSocket",
+  "type" : "function",
   "name" : "send",
+  "memberOf" : "dgramSocket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_dgram_socket_send",
   "params" : [
     ["buffer","JsVar","A string containing message to send"],
@@ -493,7 +506,9 @@ An actual socket connection - allowing transmit/receive of TCP data
     ["length","JsVar","Number of bytes in the message [optional]"],
     ["args","JsVarArray","Destination port number, Destination IP address string"]
   ]
-}*/
+}
+
+*/
 // There are futher arguments within the 'args' JsVarArray:
 //  ["port","JsVar","Destination port number to send the message to"],
 //  ["address","JsVar","Destination hostname or IP address string"]
@@ -533,8 +548,8 @@ void jswrap_dgram_socket_send(JsVar *parent, JsVar *buffer, JsVar *offset, JsVar
 
 /*JSON{
   "type" : "event",
-  "class" : "dgramSocket",
   "name" : "message",
+  "memberOf" : "dgramSocket",
   "params" : [
     ["msg","JsVar","A string containing the received message"],
     ["rinfo","JsVar","Sender address,port containing information"]
@@ -545,9 +560,10 @@ is defined with `X.on('message', function(msg) { ... })` then it will be called`
 */
 
 /*JSON{
-  "type" : "method",
-  "class" : "dgramSocket",
+  "type" : "function",
   "name" : "bind",
+  "memberOf" : "dgramSocket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_dgramSocket_bind",
   "params" : [
     ["port","int32","The port to bind at"],
@@ -555,6 +571,7 @@ is defined with `X.on('message', function(msg) { ... })` then it will be called`
   ],
   "return" : ["JsVar","The dgramSocket instance that 'bind' was called on"]
 }
+
 */
 JsVar *jswrap_dgramSocket_bind(JsVar *parent, unsigned short port, JsVar *callback) {
   parent = jsvLockAgain(parent); // we're returning the parent, so need to re-lock it
@@ -567,9 +584,10 @@ JsVar *jswrap_dgramSocket_bind(JsVar *parent, unsigned short port, JsVar *callba
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "dgramSocket",
+  "type" : "function",
   "name" : "close",
+  "memberOf" : "dgramSocket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_dgram_close"
 }
 Close the socket
@@ -583,15 +601,17 @@ void jswrap_dgram_close(JsVar *parent) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "dgramSocket",
+  "type" : "function",
   "name" : "addMembership",
+  "memberOf" : "dgramSocket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_dgram_addMembership",
   "params" : [
     ["group","JsVar","A string containing the group ip to join"],
     ["ip","JsVar","A string containing the ip to join with"]
   ]
 }
+
 */
 void jswrap_dgram_addMembership(JsVar *parent, JsVar *group, JsVar *ip) {
   JsNetwork net;
@@ -602,8 +622,8 @@ void jswrap_dgram_addMembership(JsVar *parent, JsVar *group, JsVar *ip) {
 
 /*JSON{
   "type" : "event",
-  "class" : "dgramSocket",
   "name" : "close",
+  "memberOf" : "dgramSocket",
   "params" : [
     ["had_error","JsVar","A boolean indicating whether the connection had an error (use an error event handler to get error details)."]
   ]
@@ -619,8 +639,8 @@ Called when the connection closes.
 
 /*JSON{
   "type" : "library",
-  "class" : "tls",
-  "ifdef" : "USE_TLS"
+  "name" : "tls",
+  "if" : "defined(USE_TLS)"
 }
 This library allows you to create TCPIP servers and clients using TLS encryption
 
@@ -632,9 +652,10 @@ page for more information on how to use it.
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "tls",
+  "type" : "function",
   "name" : "connect",
+  "memberOf" : "tls",
+  "thisParam" : false,
   "generate_full" : "jswrap_net_connect(options, callback, ST_NORMAL | ST_TLS)",
   "params" : [
     ["options","JsVar","An object containing host,port fields"],
@@ -642,7 +663,7 @@ page for more information on how to use it.
   ],
   "return" : ["JsVar","Returns a new net.Socket object"],
   "return_object" : "Socket",
-  "ifdef" : "USE_TLS"
+  "if" : "defined(USE_TLS)"
 }
 Create a socket connection using TLS
 
@@ -680,9 +701,10 @@ https://engineering.circle.com/https-authorized-certs-with-node-js/
 // ---------------------------------------------------------------------------------
 
 /*JSON{
-  "type" : "method",
-  "class" : "Server",
+  "type" : "function",
   "name" : "listen",
+  "memberOf" : "Server.prototype",
+  "thisParam" : true,
   "generate_full" : "jswrap_net_server_listen(parent, port, ST_NORMAL)",
   "params" : [
     ["port","int32","The port to listen on"]
@@ -703,9 +725,10 @@ JsVar *jswrap_net_server_listen(JsVar *parent, int port, SocketType socketType) 
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Server",
+  "type" : "function",
   "name" : "close",
+  "memberOf" : "Server.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_net_server_close"
 }
 Stop listening for new connections
@@ -724,9 +747,10 @@ void jswrap_net_server_close(JsVar *parent) {
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 /*JSON{
-  "type" : "method",
-  "class" : "Socket",
+  "type" : "function",
   "name" : "write",
+  "memberOf" : "Socket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_net_socket_write",
   "params" : [
     ["data","JsVar","A string containing data to send"]
@@ -765,9 +789,10 @@ bool jswrap_net_socket_write(JsVar *parent, JsVar *data) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Socket",
+  "type" : "function",
   "name" : "end",
+  "memberOf" : "Socket.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_net_socket_end",
   "params" : [
     ["data","JsVar","A string containing data to send"]

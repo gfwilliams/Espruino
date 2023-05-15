@@ -104,28 +104,94 @@ JshPinState jshVirtualPinGetState(Pin pin) {
   return JSHPINSTATE_UNDEFINED;
 }
 
-/*JSON{"type" : "variable", "name" : "MOS1", "generate_full" : "18", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "MOS2", "generate_full" : "19", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "MOS3", "generate_full" : "20", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "MOS4", "generate_full" : "21", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "IOEXT0", "generate_full" : "JSH_PORTV_OFFSET + 0", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "IOEXT1", "generate_full" : "JSH_PORTV_OFFSET + 1", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "IOEXT2", "generate_full" : "JSH_PORTV_OFFSET + 2", "return" : ["pin","A Pin"]
-}*/
-/*JSON{"type" : "variable", "name" : "IOEXT3", "generate_full" : "JSH_PORTV_OFFSET + 3", "return" : ["pin","A Pin"]
-}*/
+/*JSON{
+  "type" : "variable",
+  "name" : "MOS1",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "18",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "MOS2",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "19",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "MOS3",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "20",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "MOS4",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "21",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "IOEXT0",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "JSH_PORTV_OFFSET + 0",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "IOEXT1",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "JSH_PORTV_OFFSET + 1",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "IOEXT2",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "JSH_PORTV_OFFSET + 2",
+  "return" : ["pin","A Pin"]
+}
+
+*/
+/*JSON{
+  "type" : "variable",
+  "name" : "IOEXT3",
+  "memberOf" : "global",
+  "thisParam" : false,
+  "generate_full" : "JSH_PORTV_OFFSET + 3",
+  "return" : ["pin","A Pin"]
+}
+
+*/
 
 
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_thingy_init"
-}*/
+}
+
+*/
 void jswrap_thingy_init() {
   // Force the Thingy js module to be loaded to 'Thingy' global var
   jsvUnLock(jspEvaluate("global.Thingy=require(\"Thingy\");",true));
@@ -134,7 +200,9 @@ void jswrap_thingy_init() {
 /*JSON{
   "type" : "kill",
   "generate" : "jswrap_thingy_kill"
-}*/
+}
+
+*/
 void jswrap_thingy_kill() {
 
 }

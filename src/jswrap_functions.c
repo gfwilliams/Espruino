@@ -26,6 +26,8 @@
 /*JSON{
   "type" : "variable",
   "name" : "arguments",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_arguments",
   "return" : ["JsVar","An array containing all the arguments given to the function"]
 }
@@ -45,8 +47,7 @@ as in normal JavaScript. The length of the arguments array will never be less
 than the number of arguments specified in the function declaration:
 `(function(a){ return arguments.length; })() == 1`. Normal JavaScript
 interpreters would return `0` in the above case.
-
- */
+*/
 extern JsExecInfo execInfo;
 JsVar *jswrap_arguments() {
   JsVar *scope = 0;
@@ -75,7 +76,6 @@ JsVar *jswrap_arguments() {
 
 /*JSON{
   "type" : "constructor",
-  "class" : "Function",
   "name" : "Function",
   "generate" : "jswrap_function_constructor",
   "params" : [
@@ -84,7 +84,7 @@ JsVar *jswrap_arguments() {
   "return" : ["JsVar","A Number object"]
 }
 Creates a function
- */
+*/
 JsVar *jswrap_function_constructor(JsVar *args) {
   JsVar *fn = jsvNewWithFlags(JSV_FUNCTION);
   if (!fn) return 0;
@@ -127,6 +127,7 @@ JsVar *jswrap_function_constructor(JsVar *args) {
   "type" : "function",
   "name" : "eval",
   "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_eval",
   "params" : [
     ["code","JsVar",""]
@@ -134,7 +135,7 @@ JsVar *jswrap_function_constructor(JsVar *args) {
   "return" : ["JsVar","The result of evaluating the string"]
 }
 Evaluate a string containing JavaScript code
- */
+*/
 JsVar *jswrap_eval(JsVar *v) {
   if (!v) return 0;
   JsVar *s = jsvAsString(v); // get as a string
@@ -147,6 +148,7 @@ JsVar *jswrap_eval(JsVar *v) {
   "type" : "function",
   "name" : "parseInt",
   "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_parseInt",
   "params" : [
     ["string","JsVar",""],
@@ -155,7 +157,7 @@ JsVar *jswrap_eval(JsVar *v) {
   "return" : ["JsVar","The integer value of the string (or NaN)"]
 }
 Convert a string representing a number into an integer
- */
+*/
 JsVar *jswrap_parseInt(JsVar *v, JsVar *radixVar) {
   int radix = 0;
   if (jsvIsNumeric(radixVar))
@@ -194,6 +196,7 @@ JsVar *jswrap_parseInt(JsVar *v, JsVar *radixVar) {
   "type" : "function",
   "name" : "parseFloat",
   "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_parseFloat",
   "params" : [
     ["string","JsVar",""]
@@ -201,7 +204,7 @@ JsVar *jswrap_parseInt(JsVar *v, JsVar *radixVar) {
   "return" : ["float","The value of the string"]
 }
 Convert a string representing a number into an float
- */
+*/
 JsVarFloat jswrap_parseFloat(JsVar *v) {
   char buffer[JS_NUMBER_BUFFER_SIZE];
   jsvGetString(v, buffer, JS_NUMBER_BUFFER_SIZE);
@@ -222,6 +225,8 @@ JsVarFloat jswrap_parseFloat(JsVar *v) {
 /*JSON{
   "type" : "function",
   "name" : "isFinite",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_isFinite",
   "params" : [
     ["x","JsVar",""]
@@ -230,7 +235,7 @@ JsVarFloat jswrap_parseFloat(JsVar *v) {
 }
 Is the parameter a finite number or not? If needed, the parameter is first
 converted to a number.
- */
+*/
 bool jswrap_isFinite(JsVar *v) {
   JsVarFloat f = jsvGetFloat(v);
   return !isnan(f) && f!=INFINITY && f!=-INFINITY;
@@ -240,6 +245,7 @@ bool jswrap_isFinite(JsVar *v) {
   "type" : "function",
   "name" : "isNaN",
   "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_isNaN",
   "params" : [
     ["x","JsVar",""]
@@ -247,7 +253,7 @@ bool jswrap_isFinite(JsVar *v) {
   "return" : ["bool","True is the value is NaN, false if not."]
 }
 Whether the x is NaN (Not a Number) or not
- */
+*/
 bool jswrap_isNaN(JsVar *v) {
   if (jsvIsUndefined(v) ||
       jsvIsObject(v) ||
@@ -294,15 +300,16 @@ NO_INLINE static int jswrap_atob_decode(int c) {
   "type" : "function",
   "name" : "btoa",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH",
+  "thisParam" : false,
   "generate" : "jswrap_btoa",
   "params" : [
     ["binaryData","JsVar","A string of data to encode"]
   ],
-  "return" : ["JsVar","A base64 encoded string"]
+  "return" : ["JsVar","A base64 encoded string"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Encode the supplied string (or array) into a base64 string
- */
+*/
 JsVar *jswrap_btoa(JsVar *binaryData) {
   if (!jsvIsIterable(binaryData)) {
     jsExceptionHere(JSET_ERROR, "Expecting a string or array, got %t", binaryData);
@@ -353,15 +360,16 @@ JsVar *jswrap_btoa(JsVar *binaryData) {
   "type" : "function",
   "name" : "atob",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH",
+  "thisParam" : false,
   "generate" : "jswrap_atob",
   "params" : [
     ["base64Data","JsVar","A string of base64 data to decode"]
   ],
-  "return" : ["JsVar","A string containing the decoded data"]
+  "return" : ["JsVar","A string containing the decoded data"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Decode the supplied base64 string into a normal string
- */
+*/
 JsVar *jswrap_atob(JsVar *base64Data) {
   if (!jsvIsString(base64Data)) {
     jsExceptionHere(JSET_ERROR, "Expecting a string, got %t", base64Data);
@@ -422,16 +430,17 @@ JsVar *jswrap_atob(JsVar *base64Data) {
   "type" : "function",
   "name" : "encodeURIComponent",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH",
+  "thisParam" : false,
   "generate" : "jswrap_encodeURIComponent",
   "params" : [
     ["str","JsVar","A string to encode as a URI"]
   ],
-  "return" : ["JsVar","A string containing the encoded data"]
+  "return" : ["JsVar","A string containing the encoded data"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Convert a string with any character not alphanumeric or `- _ . ! ~ * ' ( )`
 converted to the form `%XY` where `XY` is its hexadecimal representation
- */
+*/
 JsVar *jswrap_encodeURIComponent(JsVar *arg) {
   JsVar *v = jsvAsString(arg);
   if (!v) return 0;
@@ -472,16 +481,17 @@ JsVar *jswrap_encodeURIComponent(JsVar *arg) {
   "type" : "function",
   "name" : "decodeURIComponent",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH",
+  "thisParam" : false,
   "generate" : "jswrap_decodeURIComponent",
   "params" : [
     ["str","JsVar","A string to decode from a URI"]
   ],
-  "return" : ["JsVar","A string containing the decoded data"]
+  "return" : ["JsVar","A string containing the decoded data"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Convert any groups of characters of the form '%ZZ', into characters with hex
 code '0xZZ'
- */
+*/
 JsVar *jswrap_decodeURIComponent(JsVar *arg) {
   JsVar *v = jsvAsString(arg);
   if (!v) return 0;
@@ -521,17 +531,19 @@ JsVar *jswrap_decodeURIComponent(JsVar *arg) {
 /*JSON{
   "type" : "function",
   "name" : "trace",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_trace",
   "params" : [
     ["root","JsVar","The symbol to output (optional). If nothing is specified, everything will be output"]
-  ]
+  ],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Output debugging information
 
 Note: This is not included on boards with low amounts of flash memory, or the
 Espruino board.
- */
+*/
 void jswrap_trace(JsVar *root) {
   #ifdef ESPRUINOBOARD
   // leave this function out on espruino board - we need to save as much flash as possible
@@ -549,6 +561,8 @@ void jswrap_trace(JsVar *root) {
 /*JSON{
   "type" : "function",
   "name" : "print",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_print",
   "params" : [
     ["text","JsVarArray",""]
@@ -560,11 +574,12 @@ Print the supplied string(s) to the console
  **you are not running a terminal app** then when you print data Espruino may
  pause execution and wait until the computer requests the data it is trying to
  print.
- */
+*/
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "console",
+  "type" : "function",
   "name" : "log",
+  "memberOf" : "console",
+  "thisParam" : false,
   "generate" : "jswrap_print",
   "params" : [
     ["text","JsVarArray","One or more arguments to print"]
@@ -576,7 +591,7 @@ Print the supplied string(s) to the console
  **you are not running a terminal app** then when you print data Espruino may
  pause execution and wait until the computer requests the data it is trying to
  print.
- */
+*/
 void jswrap_print(JsVar *v) {
   assert(jsvIsArray(v));
 

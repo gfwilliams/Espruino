@@ -19,8 +19,8 @@
 #include "jsserial.h"
 
 /*JSON{
-  "type" : "class",
-  "class" : "Serial",
+  "type" : "object",
+  "name" : "Serial",
   "memberOf" : "global"
 }
 This class allows use of the built-in USARTs
@@ -29,10 +29,9 @@ Methods may be called on the `USB`, `Serial1`, `Serial2`, `Serial3`, `Serial4`,
 `Serial5` and `Serial6` objects. While different processors provide different
 numbers of USARTs, on official Espruino boards you can always rely on at least
 `Serial1` being available
- */
+*/
 /*JSON{
   "type" : "constructor",
-  "class" : "Serial",
   "name" : "Serial",
   "generate" : "jswrap_serial_constructor",
   "return" : ["JsVar","A Serial object"]
@@ -41,14 +40,14 @@ Create a software Serial port. This has limited functionality (only low baud
 rates), but it can work on any pins.
 
 Use `Serial.setup` to configure this port.
- */
+*/
 JsVar *jswrap_serial_constructor() {
   return jspNewObject(0,"Serial");
 }
 /*JSON{
   "type" : "event",
-  "class" : "Serial",
   "name" : "data",
+  "memberOf" : "Serial",
   "params" : [
     ["data","JsVar","A string containing one or more characters of received data"]
   ]
@@ -56,12 +55,12 @@ JsVar *jswrap_serial_constructor() {
 The `data` event is called when data is received. If a handler is defined with
 `X.on('data', function(data) { ... })` then it will be called, otherwise data
 will be stored in an internal buffer, where it can be retrieved with `X.read()`
- */
+*/
 
 /*JSON{
   "type" : "event",
-  "class" : "Serial",
-  "name" : "framing"
+  "name" : "framing",
+  "memberOf" : "Serial"
 }
 The `framing` event is called when there was activity on the input to the UART
 but the `STOP` bit wasn't in the correct place. This is either because there was
@@ -75,11 +74,11 @@ passed to the `data` handler.
 
 **Note:** This only works on STM32 and NRF52 based devices (e.g. all official
 Espruino boards)
- */
+*/
 /*JSON{
   "type" : "event",
-  "class" : "Serial",
-  "name" : "parity"
+  "name" : "parity",
+  "memberOf" : "Serial"
 }
 The `parity` event is called when the UART was configured with a parity bit, and
 this doesn't match the bits that have actually been received.
@@ -92,13 +91,14 @@ passed to the `data` handler.
 
 **Note:** This only works on STM32 and NRF52 based devices (e.g. all official
 Espruino boards)
- */
+*/
 // this is created in jsiIdle based on EV_SERIALx_STATUS ecents
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "find",
+  "memberOf" : "Serial",
+  "thisParam" : false,
   "generate_full" : "jshGetDeviceObjectFor(JSH_USART1, JSH_USARTMAX, pin)",
   "params" : [
     ["pin","pin","A pin to search with"]
@@ -115,102 +115,103 @@ May return undefined if no device can be found.
 /*JSON{
   "type" : "object",
   "name" : "USB",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "ifdef" : "USB"
+  "if" : "defined(USB)"
 }
 The USB Serial port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial1",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=1"
+  "if" : "USART_COUNT>=1"
 }
 The first Serial (USART) port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial2",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=2"
+  "if" : "USART_COUNT>=2"
 }
 The second Serial (USART) port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial3",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=3"
+  "if" : "USART_COUNT>=3"
 }
 The third Serial (USART) port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial4",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=4"
+  "if" : "USART_COUNT>=4"
 }
 The fourth Serial (USART) port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial5",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=5"
+  "if" : "USART_COUNT>=5"
 }
 The fifth Serial (USART) port
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Serial6",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "USART_COUNT>=6"
+  "if" : "USART_COUNT>=6"
 }
 The sixth Serial (USART) port
- */
+*/
 
 /*JSON{
   "type" : "object",
   "name" : "LoopbackA",
-  "memberOf" : "global",
-  "instanceof" : "Serial"
+  "instanceOf" : "Serial",
+  "memberOf" : "global"
 }
 A loopback serial device. Data sent to `LoopbackA` comes out of `LoopbackB` and
 vice versa
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "LoopbackB",
-  "memberOf" : "global",
-  "instanceof" : "Serial"
+  "instanceOf" : "Serial",
+  "memberOf" : "global"
 }
 A loopback serial device. Data sent to `LoopbackA` comes out of `LoopbackB` and
 vice versa
- */
+*/
 /*JSON{
   "type" : "object",
   "name" : "Telnet",
+  "instanceOf" : "Serial",
   "memberOf" : "global",
-  "instanceof" : "Serial",
-  "#if" : "defined(USE_TELNET)"
+  "if" : "defined(USE_TELNET)"
 }
 A telnet serial device that maps to the built-in telnet console server (devices
 that have built-in wifi only).
- */
+*/
 
 
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "setConsole",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_setConsole",
   "params" : [
     ["force","bool","Whether to force the console to this port"]
@@ -222,7 +223,7 @@ Unless `force` is set to true, changes in the connection state of the board (for
 instance plugging in USB) will cause the console to change.
 
 See `E.setConsole` for a more flexible version of this function.
- */
+*/
 void jswrap_serial_setConsole(JsVar *parent, bool force) {
   IOEventFlags device = jsiGetDeviceFromClass(parent);
   if (DEVICE_IS_SERIAL(device)) {
@@ -233,9 +234,10 @@ void jswrap_serial_setConsole(JsVar *parent, bool force) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "setup",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_setup",
   "params" : [
     ["baudrate","JsVar","The baud rate - the default is 9600"],
@@ -357,11 +359,12 @@ void jswrap_serial_setup(JsVar *parent, JsVar *baud, JsVar *options) {
 }
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "unsetup",
-  "generate" : "jswrap_serial_unsetup"
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
+  "generate" : "jswrap_serial_unsetup",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 If the serial (or software serial) device was set up, uninitialise it.
 */
@@ -402,7 +405,9 @@ void jswrap_serial_unsetup(JsVar *parent) {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_serial_idle"
-}*/
+}
+
+*/
 bool jswrap_serial_idle() {
 #ifndef SAVE_ON_FLASH
   return jsserialEventCallbackIdle();
@@ -427,9 +432,10 @@ void _jswrap_serial_print(JsVar *parent, JsVar *arg, bool isPrint, bool newLine)
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "print",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_print",
   "params" : [
     ["string","JsVar","A String to print"]
@@ -439,11 +445,12 @@ Print a string to the serial port - without a line feed
 
  **Note:** This function replaces any occurrences of `\n` in the string with
  `\r\n`. To avoid this, use `Serial.write`.
- */
+*/
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "println",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_println",
   "params" : [
     ["string","JsVar","A String to print"]
@@ -454,7 +461,7 @@ Print a line to the serial port with a newline (`\r\n`) at the end of it.
  **Note:** This function converts data to a string first, e.g.
  `Serial.print([1,2,3])` is equivalent to `Serial.print("1,2,3"). If you'd like
  to write raw bytes, use `Serial.write`.
- */
+*/
 void jswrap_serial_print(JsVar *parent, JsVar *str) {
   _jswrap_serial_print(parent, str, true, false);
 }
@@ -462,9 +469,10 @@ void jswrap_serial_println(JsVar *parent,  JsVar *str) {
   _jswrap_serial_print(parent, str, true, true);
 }
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "write",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_write",
   "params" : [
     ["data","JsVarArray","One or more items to write. May be ints, strings, arrays, or special objects (see `E.toUint8Array` for more info)."]
@@ -475,20 +483,21 @@ Write a character or array of data to the serial port
 This method writes unmodified data, e.g. `Serial.write([1,2,3])` is equivalent to
 `Serial.write("\1\2\3")`. If you'd like data converted to a string first, use
 `Serial.print`.
- */
+*/
 void jswrap_serial_write(JsVar *parent, JsVar *args) {
   _jswrap_serial_print(parent, args, false, false);
 }
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "inject",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_serial_inject",
   "params" : [
     ["data","JsVarArray","One or more items to write. May be ints, strings, arrays, or special objects (see `E.toUint8Array` for more info)."]
-  ]
+  ],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Add data to this device as if it came directly from the input - it will be
 returned via `serial.on('data', ...)`;
@@ -501,7 +510,7 @@ Serial1.inject('Hello World');
 
 This is most useful if you wish to send characters to Espruino's REPL (console)
 while it is on another device.
- */
+*/
 static void _jswrap_serial_inject_cb(int data, void *userData) {
   IOEventFlags device = *(IOEventFlags*)userData;
   jshPushIOCharEvent(device, (char)data);
@@ -513,20 +522,22 @@ void jswrap_serial_inject(JsVar *parent, JsVar *args) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "available",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_stream_available",
   "return" : ["int","How many bytes are available"]
 }
 Return how many bytes are available to read. If there is already a listener for
 data, this will always return 0.
- */
+*/
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "read",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_stream_read",
   "params" : [
     ["chars","int","The number of characters to read, or undefined/0 for all available"]
@@ -534,33 +545,35 @@ data, this will always return 0.
   "return" : ["JsVar","A string containing the required bytes."]
 }
 Return a string containing characters that have been received
- */
+*/
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "pipe",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_pipe",
   "params" : [
     ["destination","JsVar","The destination file/stream that will receive content from the source."],
     ["options","JsVar",["[optional] An object `{ chunkSize : int=32, end : bool=true, complete : function }`","chunkSize : The amount of data to pipe from source to destination at a time","complete : a function to call when the pipe activity is complete","end : call the 'end' function on the destination when the source is finished"]]
   ],
-  "typescript": "pipe(destination: any, options?: PipeOptions): void"
+  "typescript" : "pipe(destination: any, options?: PipeOptions): void",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Pipe this USART to a stream (an object with a 'write' method)
- */
+*/
 
 
 /*JSON{
-  "type" : "method",
-  "class" : "Serial",
+  "type" : "function",
   "name" : "flush",
-  "ifndef" : "SAVE_ON_FLASH",
-  "generate" : "jswrap_serial_flush"
+  "memberOf" : "Serial.prototype",
+  "thisParam" : true,
+  "generate" : "jswrap_serial_flush",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Flush this serial stream (pause execution until all data has been sent)
- */
+*/
 void jswrap_serial_flush(JsVar *parent) {
   IOEventFlags device = jsiGetDeviceFromClass(parent);
   if (device == EV_NONE) return;

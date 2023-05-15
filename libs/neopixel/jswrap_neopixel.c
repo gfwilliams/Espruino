@@ -40,7 +40,7 @@ bool neopixelWrite(Pin pin, unsigned char *rgbData, size_t rgbSize);
 
 /*JSON{
   "type" : "library",
-  "class" : "neopixel"
+  "name" : "neopixel"
 }
 This library allows you to write to Neopixel/WS281x/APA10x/SK6812 LED strips
 
@@ -49,12 +49,13 @@ implementation on some devices - hence this library to simplify things.
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "neopixel",
+  "type" : "function",
   "name" : "write",
+  "memberOf" : "neopixel",
+  "thisParam" : false,
   "generate" : "jswrap_neopixel_write",
   "params" : [
-    ["pin", "pin", "The Pin the LEDs are connected to"],
+    ["pin","pin","The Pin the LEDs are connected to"],
     ["data","JsVar","The data to write to the LED strip (must be a multiple of 3 bytes long)"]
   ]
 }

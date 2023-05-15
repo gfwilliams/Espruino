@@ -268,10 +268,10 @@ static JsVar *matchhere(char *regexp, JsvStringIterator *txtIt, matchInfo info) 
 }
 
 /*JSON{
-  "type" : "class",
-  "class" : "RegExp",
+  "type" : "object",
+  "name" : "RegExp",
   "memberOf" : "global",
-  "ifndef" : "SAVE_ON_FLASH"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 The built-in class for handling Regular Expressions
 
@@ -282,8 +282,6 @@ basics.
 
 /*JSON{
   "type" : "constructor",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "RegExp",
   "name" : "RegExp",
   "generate" : "jswrap_regexp_constructor",
   "params" : [
@@ -291,10 +289,11 @@ basics.
     ["flags","JsVar","Flags for the regular expression as a string"]
   ],
   "return" : ["JsVar","A RegExp object"],
-  "return_object" : "RegExp"
+  "return_object" : "RegExp",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Creates a RegExp object, for handling Regular Expressions
- */
+*/
 JsVar *jswrap_regexp_constructor(JsVar *str, JsVar *flags) {
   if (!jsvIsString(str)) {
     jsExceptionHere(JSET_TYPEERROR, "Expecting String as first argument, got %t", str);
@@ -313,15 +312,16 @@ JsVar *jswrap_regexp_constructor(JsVar *str, JsVar *flags) {
 }
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "RegExp",
+  "type" : "function",
   "name" : "exec",
+  "memberOf" : "RegExp.prototype",
+  "thisParam" : true,
   "params" : [
     ["str","JsVar","A string to match on"]
   ],
   "generate" : "jswrap_regexp_exec",
-  "return" : ["JsVar","A result array, or null"]
+  "return" : ["JsVar","A result array, or null"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Test this regex on a string - returns a result array on success, or `null`
 otherwise.
@@ -346,8 +346,7 @@ Or with groups `/W(o)rld/.exec("Hello World")` returns:
  "input": "Hello World"
 ]
 ```
-
- */
+*/
 JsVar *jswrap_regexp_exec(JsVar *parent, JsVar *arg) {
   JsVar *str = jsvAsString(arg);
   JsVarInt lastIndex = jsvGetIntegerAndUnLock(jsvObjectGetChildIfExists(parent, "lastIndex"));
@@ -384,19 +383,20 @@ JsVar *jswrap_regexp_exec(JsVar *parent, JsVar *arg) {
 }
 
 /*JSON{
-  "type" : "method",
-  "ifndef" : "SAVE_ON_FLASH",
-  "class" : "RegExp",
+  "type" : "function",
   "name" : "test",
+  "memberOf" : "RegExp.prototype",
+  "thisParam" : true,
   "params" : [
     ["str","JsVar","A string to match on"]
   ],
   "generate" : "jswrap_regexp_test",
-  "return" : ["bool","true for a match, or false"]
+  "return" : ["bool","true for a match, or false"],
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Test this regex on a string - returns `true` on a successful match, or `false`
 otherwise
- */
+*/
 bool jswrap_regexp_test(JsVar *parent, JsVar *str) {
   JsVar *v = jswrap_regexp_exec(parent, str);
   bool r = v && !jsvIsNull(v);

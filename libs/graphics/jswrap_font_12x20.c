@@ -343,9 +343,10 @@ static const unsigned char fontWidths[] = {
 
 
 /*JSON{
-  "type" : "method",
-  "class" : "Graphics",
+  "type" : "function",
   "name" : "setFont12x20",
+  "memberOf" : "Graphics.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_graphics_setFont12x20",
   "params" : [
     ["scale","int","[optional] If >1 the font will be scaled up by that amount"]

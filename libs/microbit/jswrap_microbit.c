@@ -140,7 +140,9 @@ void mb_i2c_read(unsigned int addr, int count, unsigned char *data) {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_microbit_init"
-}*/
+}
+
+*/
 void jswrap_microbit_init() {
   // enable I2C (for accelerometers, etc)
 #ifndef MICROBIT2
@@ -203,9 +205,11 @@ void jswrap_microbit_init() {
 }
 
 /*JSON{
-  "type"     : "kill",
+  "type" : "kill",
   "generate" : "jswrap_microbit_kill"
-}*/
+}
+
+*/
 void jswrap_microbit_kill() {
   jswrap_microbit_stopDisplay();
 #ifdef MICROBIT2
@@ -217,11 +221,13 @@ void jswrap_microbit_kill() {
 /*JSON{
   "type" : "function",
   "name" : "show",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_show",
   "params" : [
-     ["image","JsVar","The image to show"]
+    ["image","JsVar","The image to show"]
   ],
-  "ifdef" : "MICROBIT"
+  "if" : "defined(MICROBIT)"
 }
 **Note:** This function is only available on the [BBC micro:bit](/MicroBit)
 board
@@ -253,7 +259,6 @@ var g = Graphics.createArrayBuffer(5,5,1)
 g.drawString("E",0,0)
 show(g.buffer)
 ```
-
 */
 void jswrap_microbit_show_raw(uint32_t newState) {
   if ((newState!=0) && (microbitLEDState==0)) {
@@ -328,9 +333,11 @@ JsVar *getXYZ(int x, int y, int z, JsVarFloat range) {
 /*JSON{
   "type" : "function",
   "name" : "acceleration",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_acceleration",
-  "return" : ["JsVar", "An object with x, y, and z fields in it"],
-  "ifdef" : "MICROBIT"
+  "return" : ["JsVar","An object with x, y, and z fields in it"],
+  "if" : "defined(MICROBIT)"
 }
 **Note:** This function is only available on the [BBC micro:bit](/MicroBit)
 board
@@ -368,9 +375,11 @@ JsVar *jswrap_microbit_acceleration() {
 /*JSON{
   "type" : "function",
   "name" : "compass",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_compass",
-  "return" : ["JsVar", "An object with x, y, and z fields in it"],
-  "ifdef" : "MICROBIT"
+  "return" : ["JsVar","An object with x, y, and z fields in it"],
+  "if" : "defined(MICROBIT)"
 }
 **Note:** This function is only available on the [BBC micro:bit](/MicroBit)
 board
@@ -527,84 +536,94 @@ void jswrap_microbit_accelHandler() {
 
 
 /*JSON{
-  "type" : "staticproperty",
-  "class" : "Microbit",
+  "type" : "variable",
   "name" : "SPEAKER",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate_full" : "SPEAKER_PIN",
-  "ifdef" : "MICROBIT2",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(MICROBIT2)"
 }
 The micro:bit's speaker pin
 */
 /*JSON{
-  "type" : "staticproperty",
-  "class" : "Microbit",
+  "type" : "variable",
   "name" : "MIC",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate_full" : "MIC_PIN",
-  "ifdef" : "MICROBIT2",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(MICROBIT2)"
 }
 The micro:bit's microphone pin
 
 `MIC_ENABLE` should be set to 1 before using this
 */
 /*JSON{
-  "type" : "staticproperty",
-  "class" : "Microbit",
+  "type" : "variable",
   "name" : "MIC_ENABLE",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate_full" : "MIC_ENABLE_PIN",
-  "ifdef" : "MICROBIT2",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(MICROBIT2)"
 }
 The micro:bit's microphone enable pin
 */
 
 /*JSON{
-    "type": "class",
-    "class" : "Microbit",
-    "ifdef" : "MICROBIT"
+  "type" : "object",
+  "name" : "Microbit",
+  "if" : "defined(MICROBIT)"
 }
 Class containing [micro:bit's](https://www.espruino.com/MicroBit) utility
 functions.
 */
 /*JSON{
   "type" : "event",
-  "class" : "Microbit",
   "name" : "gesture",
+  "memberOf" : "Microbit",
   "params" : [
     ["gesture","JsVar","An Int8Array containing the accelerations (X,Y,Z) from the last gesture detected by the accelerometer"]
   ],
-  "ifdef" : "MICROBIT2"
+  "if" : "defined(MICROBIT2)"
 }
 Called when the Micro:bit is moved in a deliberate fashion, and includes data on
 the detected gesture.
- */
+*/
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Microbit",
+  "type" : "function",
   "name" : "mag",
-  "ifdef" : "MICROBIT",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_compass",
-  "return" : ["JsVar", "An Object `{x,y,z}` of magnetometer readings as integers" ]
-}*/
+  "return" : ["JsVar","An Object `{x,y,z}` of magnetometer readings as integers"],
+  "if" : "defined(MICROBIT)"
+}
+
+*/
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Microbit",
+  "type" : "function",
   "name" : "accel",
-  "ifdef" : "MICROBIT",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_acceleration",
-  "return" : ["JsVar", "An Object `{x,y,z}` of acceleration readings in G" ]
-}*/
+  "return" : ["JsVar","An Object `{x,y,z}` of acceleration readings in G"],
+  "if" : "defined(MICROBIT)"
+}
+
+*/
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Microbit",
+  "type" : "function",
   "name" : "accelWr",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_accelWr",
   "params" : [
-     ["addr","int","Accelerometer address"],
-     ["data","int","Data to write"]
+    ["addr","int","Accelerometer address"],
+    ["data","int","Data to write"]
   ],
-  "ifdef" : "MICROBIT2"
+  "if" : "defined(MICROBIT2)"
 }
 **Note:** This function is only available on the [BBC micro:bit](/MicroBit)
 board
@@ -626,11 +645,12 @@ void jswrap_microbit_accelWr(int a, int data) {
 
 #ifdef MICROBIT2
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Microbit",
+  "type" : "function",
   "name" : "accelOn",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_accelOn",
-  "ifdef" : "MICROBIT2"
+  "if" : "defined(MICROBIT2)"
 }
 Turn on the accelerometer, and create `Microbit.accel` and `Microbit.gesture`
 events.
@@ -647,11 +667,12 @@ void jswrap_microbit_accelOn() {
 }
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "Microbit",
+  "type" : "function",
   "name" : "accelOff",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
   "generate" : "jswrap_microbit_accelOff",
-  "ifdef" : "MICROBIT2"
+  "if" : "defined(MICROBIT2)"
 }
 Turn off events from the accelerometer (started with `Microbit.accelOn`)
 */
@@ -663,30 +684,32 @@ void jswrap_microbit_accelOff() {
 }
 #endif
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Microbit",
-    "name" : "play",
-    "generate_js" : "libs/js/microbit/microbit_play.js",
-    "params" : [
-      ["waveform","JsVar","An array of data to play (unsigned 8 bit)"],
-      ["samplesPerSecond","JsVar","The number of samples per second for playback default is 4000"],
-      ["callback","JsVar","A function to call when playback is finished"]
-    ],
-    "ifdef" : "MICROBIT2"
+  "type" : "function",
+  "name" : "play",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
+  "generate_js" : "libs/js/microbit/microbit_play.js",
+  "params" : [
+    ["waveform","JsVar","An array of data to play (unsigned 8 bit)"],
+    ["samplesPerSecond","JsVar","The number of samples per second for playback default is 4000"],
+    ["callback","JsVar","A function to call when playback is finished"]
+  ],
+  "if" : "defined(MICROBIT2)"
 }
 Play a waveform on the Micro:bit's speaker
 */
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Microbit",
-    "name" : "record",
-    "generate_js" : "libs/js/microbit/microbit_record.js",
-    "params" : [
-      ["samplesPerSecond","JsVar","The number of samples per second for recording - 4000 is recommended"],
-      ["callback","JsVar","A function to call with the result of recording (unsigned 8 bit ArrayBuffer)"],
-      ["samples","JsVar","[optional] How many samples to record (6000 default)"]
-    ],
-    "ifdef" : "MICROBIT2"
+  "type" : "function",
+  "name" : "record",
+  "memberOf" : "Microbit",
+  "thisParam" : false,
+  "generate_js" : "libs/js/microbit/microbit_record.js",
+  "params" : [
+    ["samplesPerSecond","JsVar","The number of samples per second for recording - 4000 is recommended"],
+    ["callback","JsVar","A function to call with the result of recording (unsigned 8 bit ArrayBuffer)"],
+    ["samples","JsVar","[optional] How many samples to record (6000 default)"]
+  ],
+  "if" : "defined(MICROBIT2)"
 }
 Records sound from the micro:bit's onboard microphone and returns the result
 */

@@ -23,8 +23,8 @@
 /*JSON{
   "type" : "object",
   "name" : "Terminal",
-  "instanceof" : "Serial",
-  "ifdef" : "USE_TERMINAL"
+  "instanceOf" : "Serial",
+  "if" : "defined(USE_TERMINAL)"
 }
 A simple VT100 terminal emulator.
 
@@ -201,7 +201,9 @@ void terminalSendChar(char chn) {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_terminal_init"
-}*/
+}
+
+*/
 void jswrap_terminal_init() {
   terminalControlCharsReset();
   terminalX = 0;
@@ -211,7 +213,9 @@ void jswrap_terminal_init() {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_terminal_idle"
-}*/
+}
+
+*/
 bool jswrap_terminal_idle() {
   if (terminalNeedsFlip) {
 #ifdef ESPR_GRAPHICS_INTERNAL

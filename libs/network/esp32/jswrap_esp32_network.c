@@ -684,9 +684,10 @@ static void sendWifiCompletionCB(
 } // End of sendWifiCompletionCB
 
 /*JSON{
-  "type":"init",
-  "generate":"jswrap_esp32_wifi_soft_init"
+  "type" : "init",
+  "generate" : "jswrap_esp32_wifi_soft_init"
 }
+
 */
 
 /**

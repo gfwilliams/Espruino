@@ -148,8 +148,10 @@ static bool handlePipe(JsVar *arr, JsvObjectIterator *it, JsVar* pipe) {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_pipe_idle",
-  "ifndef" : "SAVE_ON_FLASH"
-}*/
+  "if" : "!defined(SAVE_ON_FLASH)"
+}
+
+*/
 bool jswrap_pipe_idle() {
   bool wasBusy = false;
   JsVar *arr = pipeGetArray(false);
@@ -171,8 +173,10 @@ bool jswrap_pipe_idle() {
 /*JSON{
   "type" : "kill",
   "generate" : "jswrap_pipe_kill",
-  "ifndef" : "SAVE_ON_FLASH"
-}*/
+  "if" : "!defined(SAVE_ON_FLASH)"
+}
+
+*/
 void jswrap_pipe_kill() {
   // now remove all pipes...
   JsVar *arr = pipeGetArray(false);
@@ -244,18 +248,20 @@ type PipeOptions = {
 */
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "fs",
+  "type" : "function",
   "name" : "pipe",
-  "ifndef" : "SAVE_ON_FLASH",
+  "memberOf" : "fs",
+  "thisParam" : false,
   "generate" : "jswrap_pipe",
   "params" : [
     ["source","JsVar","The source file/stream that will send content."],
     ["destination","JsVar","The destination file/stream that will receive content from the source."],
     ["options","JsVar",["[optional] An object `{ chunkSize : int=64, end : bool=true, complete : function }`","chunkSize : The amount of data to pipe from source to destination at a time","complete : a function to call when the pipe activity is complete","end : call the 'end' function on the destination when the source is finished"]]
   ],
-  "typescript": "pipe(destination: any, options?: PipeOptions): void"
-}*/
+  "if" : "!defined(SAVE_ON_FLASH)"
+}
+
+*/
 void jswrap_pipe(JsVar* source, JsVar* dest, JsVar* options) {
   if (!source || !dest) return;
   JsVar *pipe = jspNewObject(0, "Pipe");

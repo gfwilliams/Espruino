@@ -22,8 +22,8 @@
 
 /*JSON{
   "type" : "library",
-  "class" : "heatshrink",
-  "ifndef" : "SAVE_ON_FLASH"
+  "name" : "heatshrink",
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
 Simple library for compression/decompression using
 [heatshrink](https://github.com/atomicobject/heatshrink), an
@@ -40,17 +40,19 @@ memory at the same time.
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "heatshrink",
+  "type" : "function",
   "name" : "compress",
+  "memberOf" : "heatshrink",
+  "thisParam" : false,
   "generate" : "jswrap_heatshrink_compress",
   "params" : [
     ["data","JsVar","The data to compress"]
   ],
   "return" : ["JsVar","Returns the result as an ArrayBuffer"],
   "return_object" : "ArrayBuffer",
-  "ifndef" : "SAVE_ON_FLASH"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
+
 */
 JsVar *jswrap_heatshrink_compress(JsVar *data) {
   if (!jsvIsIterable(data)) {
@@ -83,17 +85,19 @@ JsVar *jswrap_heatshrink_compress(JsVar *data) {
 
 
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "heatshrink",
+  "type" : "function",
   "name" : "decompress",
+  "memberOf" : "heatshrink",
+  "thisParam" : false,
   "generate" : "jswrap_heatshrink_decompress",
   "params" : [
     ["data","JsVar","The data to decompress"]
   ],
   "return" : ["JsVar","Returns the result as an ArrayBuffer"],
   "return_object" : "ArrayBuffer",
-  "ifndef" : "SAVE_ON_FLASH"
+  "if" : "!defined(SAVE_ON_FLASH)"
 }
+
 */
 JsVar *jswrap_heatshrink_decompress(JsVar *data) {
   if (!jsvIsIterable(data)) {

@@ -35,19 +35,20 @@
 const Pin PIXL_IO_PINS[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
 
 /*JSON{
-    "type": "class",
-    "class" : "Pixl"
+  "type" : "object",
+  "name" : "Pixl"
 }
 Class containing utility functions for
 [Pixl.js](http://www.espruino.com/Pixl.js)
 */
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Pixl",
-    "name" : "getBatteryPercentage",
-    "generate" : "jswrap_espruino_getBattery",
-    "return" : ["int", "A percentage between 0 and 100" ]
+  "type" : "function",
+  "name" : "getBatteryPercentage",
+  "memberOf" : "Pixl",
+  "thisParam" : false,
+  "generate" : "jswrap_espruino_getBattery",
+  "return" : ["int","A percentage between 0 and 100"]
 }
 DEPRECATED - Please use `E.getBattery()` instead.
 
@@ -68,9 +69,11 @@ JsVarInt jswrap_pixljs_getBattery() {
 /*JSON{
   "type" : "variable",
   "name" : "SDA",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "JSH_PORTA_OFFSET + 4",
-  "ifdef" : "PIXLJS",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(PIXLJS)"
 }
 The pin marked SDA on the Arduino pin footprint. This is connected directly to
 pin A4.
@@ -78,9 +81,11 @@ pin A4.
 /*JSON{
   "type" : "variable",
   "name" : "SCL",
+  "memberOf" : "global",
+  "thisParam" : false,
   "generate_full" : "JSH_PORTA_OFFSET + 5",
-  "ifdef" : "PIXLJS",
-  "return" : ["pin",""]
+  "return" : ["pin",""],
+  "if" : "defined(PIXLJS)"
 }
 The pin marked SDA on the Arduino pin footprint. This is connected directly to
 pin A5.
@@ -161,13 +166,14 @@ void lcd_flip(JsVar *parent, bool all) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Pixl",
-    "name" : "setContrast",
-    "generate" : "jswrap_pixljs_setContrast",
-    "params" : [
-      ["c","float","Contrast between 0 and 1"]
-    ]
+  "type" : "function",
+  "name" : "setContrast",
+  "memberOf" : "Pixl",
+  "thisParam" : false,
+  "generate" : "jswrap_pixljs_setContrast",
+  "params" : [
+    ["c","float","Contrast between 0 and 1"]
+  ]
 }
 Set the LCD's contrast
 */
@@ -183,13 +189,14 @@ void jswrap_pixljs_setContrast(JsVarFloat c) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Pixl",
-    "name" : "setLCDPower",
-    "generate" : "jswrap_pixljs_setLCDPower",
-    "params" : [
-      ["isOn","bool","True if the LCD should be on, false if not"]
-    ]
+  "type" : "function",
+  "name" : "setLCDPower",
+  "memberOf" : "Pixl",
+  "thisParam" : false,
+  "generate" : "jswrap_pixljs_setLCDPower",
+  "params" : [
+    ["isOn","bool","True if the LCD should be on, false if not"]
+  ]
 }
 This function can be used to turn Pixl.js's LCD off or on.
 
@@ -210,13 +217,14 @@ void jswrap_pixljs_setLCDPower(bool isOn) {
 }
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Pixl",
-    "name" : "lcdw",
-    "generate" : "jswrap_pixljs_lcdw",
-    "params" : [
-      ["c","int",""]
-    ]
+  "type" : "function",
+  "name" : "lcdw",
+  "memberOf" : "Pixl",
+  "thisParam" : false,
+  "generate" : "jswrap_pixljs_lcdw",
+  "params" : [
+    ["c","int",""]
+  ]
 }
 Writes a command directly to the ST7567 LCD controller
 */
@@ -346,7 +354,9 @@ static bool pixl_selfTest() {
 /*JSON{
   "type" : "init",
   "generate" : "jswrap_pixljs_init"
-}*/
+}
+
+*/
 void jswrap_pixljs_init() {
   // LCD Init 1
   jshPinOutput(LCD_SPI_CS,0);
@@ -472,7 +482,9 @@ void jswrap_pixljs_init() {
 /*JSON{
   "type" : "kill",
   "generate" : "jswrap_pixljs_kill"
-}*/
+}
+
+*/
 void jswrap_pixljs_kill() {
 
 }
@@ -480,22 +492,24 @@ void jswrap_pixljs_kill() {
 /*JSON{
   "type" : "idle",
   "generate" : "jswrap_pixljs_idle"
-}*/
+}
+
+*/
 bool jswrap_pixljs_idle() {
   return false;
 }
 
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "Pixl",
-    "name" : "menu",
-    "generate" : "gen_jswrap_E_showMenu",
-    "params" : [
-      ["menu","JsVar","An object containing name->function mappings to to be used in a menu"]
-    ],
-    "return" : ["JsVar", "A menu object with `draw`, `move` and `select` functions" ],
-    "typescript" : "menu(menu: Menu): MenuInstance;"
+  "type" : "function",
+  "name" : "menu",
+  "memberOf" : "Pixl",
+  "thisParam" : false,
+  "generate" : "gen_jswrap_E_showMenu",
+  "params" : [
+    ["menu","JsVar","An object containing name->function mappings to to be used in a menu"]
+  ],
+  "return" : ["JsVar","A menu object with `draw`, `move` and `select` functions"]
 }
 Display a menu on Pixl.js's screen, and set up the buttons to navigate through
 it.
@@ -572,18 +586,15 @@ type MenuInstance = {
 */
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "E",
-    "name" : "showMenu",
-    "generate_js" : "libs/js/pixljs/E_showMenu.min.js",
-    "params" : [
-      ["menu","JsVar","An object containing name->function mappings to to be used in a menu"]
-    ],
-    "return" : ["JsVar", "A menu object with `draw`, `move` and `select` functions" ],
-    "typescript": [
-      "showMenu(menu: Menu): MenuInstance;",
-      "showMenu(): void;"
-    ]
+  "type" : "function",
+  "name" : "showMenu",
+  "memberOf" : "E",
+  "thisParam" : false,
+  "generate_js" : "libs/js/pixljs/E_showMenu.min.js",
+  "params" : [
+    ["menu","JsVar","An object containing name->function mappings to to be used in a menu"]
+  ],
+  "return" : ["JsVar","A menu object with `draw`, `move` and `select` functions"]
 }
 Display a menu on the screen, and set up the buttons to navigate through it.
 
@@ -629,18 +640,17 @@ See http://www.espruino.com/graphical_menu for more detailed information.
 */
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "E",
-    "name" : "showMessage",
-    "generate_js" : "libs/js/pixljs/E_showMessage.min.js",
-    "params" : [
-      ["message","JsVar","A message to display. Can include newlines"],
-      ["title","JsVar","[optional] a title for the message"]
-    ],
-    "ifdef" : "PIXLJS",
-    "typescript" : "showMessage(message: string, title?: string): void;"
+  "type" : "function",
+  "name" : "showMessage",
+  "memberOf" : "E",
+  "thisParam" : false,
+  "generate_js" : "libs/js/pixljs/E_showMessage.min.js",
+  "params" : [
+    ["message","JsVar","A message to display. Can include newlines"],
+    ["title","JsVar","[optional] a title for the message"]
+  ],
+  "if" : "defined(PIXLJS)"
 }
-
 A utility function for displaying a full screen message on the screen.
 
 Draws to the screen and returns immediately.
@@ -651,22 +661,18 @@ E.showMessage("These are\nLots of\nLines","My Title")
 */
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "E",
-    "name" : "showPrompt",
-    "generate_js" : "libs/js/pixljs/E_showPrompt.min.js",
-    "params" : [
-      ["message","JsVar","A message to display. Can include newlines"],
-      ["options","JsVar","[optional] an object of options (see below)"]
-    ],
-    "return" : ["JsVar","A promise that is resolved when 'Ok' is pressed"],
-    "ifdef" : "PIXLJS",
-    "typescript" : [
-      "showPrompt<T = boolean>(message: string, options?: { title?: string, buttons?: { [key: string]: T } }): Promise<T>;",
-      "showPrompt(): void;"
-    ]
+  "type" : "function",
+  "name" : "showPrompt",
+  "memberOf" : "E",
+  "thisParam" : false,
+  "generate_js" : "libs/js/pixljs/E_showPrompt.min.js",
+  "params" : [
+    ["message","JsVar","A message to display. Can include newlines"],
+    ["options","JsVar","[optional] an object of options (see below)"]
+  ],
+  "return" : ["JsVar","A promise that is resolved when 'Ok' is pressed"],
+  "if" : "defined(PIXLJS)"
 }
-
 Displays a full screen prompt on the screen, with the buttons requested (or
 `Yes` and `No` for defaults).
 
@@ -700,19 +706,18 @@ The second `options` argument can contain:
 */
 
 /*JSON{
-    "type" : "staticmethod",
-    "class" : "E",
-    "name" : "showAlert",
-    "generate_js" : "libs/js/pixljs/E_showAlert.min.js",
-    "params" : [
-      ["message","JsVar","A message to display. Can include newlines"],
-      ["options","JsVar","[optional] a title for the message"]
-    ],
-    "return" : ["JsVar","A promise that is resolved when 'Ok' is pressed"],
-    "ifdef" : "PIXLJS",
-    "typescript" : "showAlert(message?: string, options?: string): Promise<void>;"
+  "type" : "function",
+  "name" : "showAlert",
+  "memberOf" : "E",
+  "thisParam" : false,
+  "generate_js" : "libs/js/pixljs/E_showAlert.min.js",
+  "params" : [
+    ["message","JsVar","A message to display. Can include newlines"],
+    ["options","JsVar","[optional] a title for the message"]
+  ],
+  "return" : ["JsVar","A promise that is resolved when 'Ok' is pressed"],
+  "if" : "defined(PIXLJS)"
 }
-
 Displays a full screen prompt on the screen, with a single 'Ok' button.
 
 When the button is pressed the promise is resolved.

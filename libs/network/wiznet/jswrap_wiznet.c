@@ -66,23 +66,24 @@ uint8_t wizchip_read() {
 
 /*JSON{
   "type" : "library",
-  "class" : "WIZnet",
-  "ifdef" : "USE_WIZNET"
+  "name" : "WIZnet",
+  "if" : "defined(USE_WIZNET)"
 }
 Library for communication with the WIZnet Ethernet module
 */
 /*JSON{
-  "type" : "staticmethod",
-  "class" : "WIZnet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "connect",
+  "memberOf" : "WIZnet",
+  "thisParam" : false,
   "generate" : "jswrap_wiznet_connect",
   "params" : [
-    ["spi", "JsVar", "Device to use for SPI (or undefined to use the default)"],
-    ["cs", "pin", "The pin to use for Chip Select"]
+    ["spi","JsVar","Device to use for SPI (or undefined to use the default)"],
+    ["cs","pin","The pin to use for Chip Select"]
   ],
   "return" : ["JsVar","An Ethernet Object"],
-  "return_object" : "Ethernet"
+  "return_object" : "Ethernet",
+  "if" : "defined(USE_WIZNET)"
 }
 Initialise the WIZnet module and return an Ethernet object
 */
@@ -163,23 +164,24 @@ JsVar *jswrap_wiznet_connect(JsVar *spi, Pin cs) {
 }
 
 /*JSON{
-  "type" : "class",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET"
+  "type" : "object",
+  "name" : "Ethernet",
+  "if" : "defined(USE_WIZNET)"
 }
 An instantiation of an Ethernet network adaptor
 */
 
 /*JSON{
-  "type" : "method",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "getIP",
+  "memberOf" : "Ethernet.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_ethernet_getIP",
   "params" : [
     ["options","JsVar","[optional] An `callback(err, ipinfo)` function to be called back with the IP information."]
   ],
-  "return" : ["JsVar",""]
+  "return" : ["JsVar",""],
+  "if" : "defined(USE_WIZNET)"
 }
 Get the current IP address, subnet, gateway and mac address.
 */
@@ -234,16 +236,17 @@ static void _eth_getIP_set_address(JsVar *options, char *name, unsigned char *pt
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "setIP",
+  "memberOf" : "Ethernet.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_ethernet_setIP",
   "params" : [
     ["options","JsVar","Object containing IP address options `{ ip : '1.2.3.4', subnet : '...', gateway: '...', dns:'...', mac:':::::'  }`, or do not supply an object in order to force DHCP."],
     ["callback","JsVar","[optional] An `callback(err)` function to invoke when ip is set. `err==null` on success, or a string on failure."]
   ],
-  "return" : ["bool","True on success"]
+  "return" : ["bool","True on success"],
+  "if" : "defined(USE_WIZNET)"
 }
 Set the current IP address or get an IP from DHCP (if no options object is
 specified)
@@ -323,16 +326,17 @@ bool jswrap_ethernet_setIP(JsVar *wlanObj, JsVar *options, JsVar *callback) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "setHostname",
+  "memberOf" : "Ethernet.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_ethernet_setHostname",
   "params" : [
     ["hostname","JsVar","hostname as string"],
     ["callback","JsVar","[optional] An `callback(err)` function to be called back with null or error text."]
   ],
-  "return" : ["bool","True on success"]
+  "return" : ["bool","True on success"],
+  "if" : "defined(USE_WIZNET)"
 }
 Set hostname used during the DHCP request. Minimum 8 and maximum 12 characters,
 best set before calling `eth.setIP()`. Default is WIZnet010203, 010203 is the
@@ -363,15 +367,16 @@ bool jswrap_ethernet_setHostname(JsVar *wlanObj, JsVar *jsHostname, JsVar *callb
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "getHostname",
+  "memberOf" : "Ethernet.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_ethernet_getHostname",
   "params" : [
     ["callback","JsVar","[optional] An `callback(err,hostname)` function to be called back with the status information."]
   ],
-  "return" : ["JsVar" ]
+  "return" : ["JsVar"],
+  "if" : "defined(USE_WIZNET)"
 }
 Returns the hostname
 */
@@ -392,18 +397,18 @@ JsVar * jswrap_ethernet_getHostname(JsVar *wlanObj, JsVar *callback) {
 }
 
 /*JSON{
-  "type" : "method",
-  "class" : "Ethernet",
-  "ifdef" : "USE_WIZNET",
+  "type" : "function",
   "name" : "getStatus",
+  "memberOf" : "Ethernet.prototype",
+  "thisParam" : true,
   "generate" : "jswrap_ethernet_getStatus",
   "params" : [
     ["options","JsVar","[optional] An `callback(err, status)` function to be called back with the status information."]
   ],
-  "return" : ["JsVar" ]
+  "return" : ["JsVar"],
+  "if" : "defined(USE_WIZNET)"
 }
 Get the current status of the ethernet device
-
 */
 JsVar * jswrap_ethernet_getStatus( JsVar *wlanObj, JsVar *callback) {
   NOT_USED(wlanObj);
