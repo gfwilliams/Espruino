@@ -35,7 +35,7 @@ if len(sys.argv)<2 or sys.argv[len(sys.argv)-2][:2]!="-B" or sys.argv[len(sys.ar
 	print("           path/to/modulename.js               ; include a JS module called modulename")
 	print("           modulename:path/to/modulesource.js  ; include a JS module called modulename")
 	print("           _:bootcode                          ; JS code to be executed at boot time")
-	print("             ; These can be specified in the JSMODULESOURCES environment variable")  
+	print("             ; These can be specified in the JSMODULESOURCES environment variable")
 	exit(1)
 
 boardName = sys.argv[len(sys.argv)-2]
@@ -506,7 +506,7 @@ for jsondata in jsondatas:
   # Include JavaScript functions
   if ("generate_js" in jsondata):
     gen_name = "gen_jswrap"
-    if "class" in jsondata: gen_name = gen_name + "_" + jsondata["class"];
+    if "memberOf" in jsondata: gen_name = gen_name + "_" + jsondata["memberOf"].replace(".","_");
     gen_name = gen_name + "_" + jsondata["name"];
     jsondata["generate"] = gen_name
 
@@ -575,7 +575,7 @@ codeOut('');
 codeOut('// -----------------------------------------------------------------------------------------');
 codeOut('// -----------------------------------------------------------------------------------------');
 
-# In jswBinarySearch we used to use READ_FLASH_UINT16 for sym->strOffset and sym->functionSpec for ESP8266 
+# In jswBinarySearch we used to use READ_FLASH_UINT16 for sym->strOffset and sym->functionSpec for ESP8266
 # (where unaligned reads broke) but despite being packed, the structure JswSymPtr is still always an multiple
 # of 2 in length so they will always be halfword aligned.
 codeOut("""
@@ -593,7 +593,7 @@ JsVar *jswBinarySearch(const JswSymList *symbolsPtr, JsVar *parent, const char *
   uint8_t symbolCount = READ_FLASH_UINT8(&symbolsPtr->symbolCount);
   int searchMin = 0;
   int searchMax = symbolCount - 1;
-  while (searchMin <= searchMax) {  
+  while (searchMin <= searchMax) {
     int idx = (searchMin+searchMax) >> 1;
     const JswSymPtr *sym = &symbolsPtr->symbols[idx];
     int cmp = FLASH_STRCMP(name, &symbolsPtr->symbolChars[sym->strOffset]);
