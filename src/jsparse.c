@@ -557,7 +557,9 @@ NO_INLINE JsVar *jspeFunctionCall(JsVar *function, JsVar *functionName, JsVar *t
             argPtr = newArgPtr;
             argPtrSize = newArgPtrSize;
           }
-          argPtr[argCount++] = jsvSkipNameAndUnLock(jspeAssignmentExpression());
+          JsVar *arg = jspeAssignmentExpression();
+          argPtr[argCount++] = jsvSkipNameWithParent(arg, true, 0);
+          jsvUnLock(arg);
           if (lex->tk!=')') JSP_MATCH_WITH_CLEANUP_AND_RETURN(',',jsvUnLockMany((unsigned)argCount, argPtr);jsvUnLock(thisVar);, 0);
         }
 
@@ -1022,10 +1024,13 @@ JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
     jspEnsureIsPrototype(object, child);
     jsvUnLock(proto);
   }
-  jsvUnLock(object);
-  // FIXME below
-  if (returnName) return child;
-  else return jsvSkipNameAndUnLock(child);
+  if (returnName) {
+    jsvUnLock(object);
+    return child;
+  }
+  JsVar *c = jsvSkipNameWithParent(child, false, object);
+  jsvUnLock2(object, child);
+  return c;
 }
 
 /// see jspGetNamedField - note that nameVar should have had jsvAsArrayIndex called on it first
@@ -1049,13 +1054,14 @@ JsVar *jspGetVarNamedField(JsVar *object, JsVar *nameVar, bool returnName) {
         child = jsvNewStringOfLength(1, &ch);
       } else if (returnName)
         child = jsvCreateNewChild(object, nameVar, 0); // just return *something* to show this is handled
-    } else {
+    } else { // if the name was a string, jsvFindChildFromVar already found it above
       // get the name as a string
       char name[JSLEX_MAX_TOKEN_LENGTH];
-      jsvGetString(nameVar, name, JSLEX_MAX_TOKEN_LENGTH);
+      size_t l = jsvGetString(nameVar, name, JSLEX_MAX_TOKEN_LENGTH);
       // try and find it in parents
-      // TODO: jspGetNamedField will do a jsvFindChildFromVar again
-      child = jspGetNamedField(object, name, returnName);
+      // TODO: jspGetNamedField will do a jsvFindChildFromVar again (we had a special jspGetNamedFieldInParents before real_proto_chain branch)
+      if (l==strlen(name)) // FIXME - quick hack to stop us searching if the name contains \0 so the search won't work
+        child = jspGetNamedField(object, name, returnName);
     }
   }
 
@@ -2135,6 +2141,7 @@ NO_INLINE JsVar *__jspeAssignmentExpression(JsVar *lhs) {
 
     if (JSP_SHOULD_EXECUTE && lhs) {
       if (op=='=') {
+        //jsvTrace(lhs, 2);
         jsvReplaceWithOrAddToRoot(lhs, rhs);
       } else {
         if (op==LEX_PLUSEQUAL) op='+';

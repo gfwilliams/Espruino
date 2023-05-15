@@ -2360,14 +2360,11 @@ void jsvCheckReferenceError(JsVar *a) {
 }
 
 
-
 /** If a is a name skip it and go to what it points to - and so on (if repeat=true).
  * ALWAYS locks - so must unlock what it returns. It MAY
  * return 0. Throws a ReferenceError if variable is not defined,
- * but you can check if it will with jsvIsReferenceError.
- * If a 'getter' needs to be executed, 'parent' is the object that
- * gets used unless a NewChild overwrites it */
-JsVar *jsvSkipNameWithParent(JsVar *a, bool repeat, JsVar *parent) {
+ * but you can check if it will with jsvIsReferenceError. */
+JsVar *jsvSkipNameMultiple(JsVar *a, bool repeat) {
   if (!a) return 0;
   if (jsvIsArrayBufferName(a)) return jsvArrayBufferGetFromName(a);
   if (jsvIsNameInt(a)) return jsvNewFromInteger((JsVarInt)jsvGetFirstChildSigned(a));
@@ -2385,6 +2382,17 @@ JsVar *jsvSkipNameWithParent(JsVar *a, bool repeat, JsVar *parent) {
     assert(pa!=a);
     if (!repeat) break;
   }
+  return pa;
+}
+
+/** If a is a name skip it and go to what it points to - and so on (if repeat=true).
+ * ALWAYS locks - so must unlock what it returns. It MAY
+ * return 0. Throws a ReferenceError if variable is not defined,
+ * but you can check if it will with jsvIsReferenceError.
+ * If a 'getter' needs to be executed, 'parent' is the object that
+ * gets used unless a NewChild overwrites it */
+JsVar *jsvSkipNameWithParent(JsVar *a, bool repeat, JsVar *parent) {
+  JsVar *pa = jsvSkipNameMultiple(a, repeat);
 #ifndef SAVE_ON_FLASH
   if (jsvIsGetterOrSetter(pa)) {
     JsVar *getterParent = jsvIsNewChild(a)?jsvLock(jsvGetNextSibling(a)):0;
@@ -2401,7 +2409,7 @@ JsVar *jsvSkipNameWithParent(JsVar *a, bool repeat, JsVar *parent) {
  * return 0. Throws a ReferenceError if variable is not defined,
  * but you can check if it will with jsvIsReferenceError */
 JsVar *jsvSkipName(JsVar *a) {
-  return jsvSkipNameWithParent(a, true, 0);
+  return jsvSkipNameMultiple(a, true);
 }
 
 /** If a is a name skip it and go to what it points to.
@@ -2409,7 +2417,7 @@ JsVar *jsvSkipName(JsVar *a) {
  * return 0. Throws a ReferenceError if variable is not defined,
  * but you can check if it will with jsvIsReferenceError */
 JsVar *jsvSkipOneName(JsVar *a) {
-  return jsvSkipNameWithParent(a, false, 0);
+  return jsvSkipNameMultiple(a, false);
 }
 
 /** If a is a's child is a name skip it and go to what it points to.
