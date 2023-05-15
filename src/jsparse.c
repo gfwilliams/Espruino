@@ -881,23 +881,31 @@ JsVar *jspGetNamedVariable(const char *tokenName) {
   if (!JSP_SHOULD_EXECUTE) return 0;
 
   JsVar *a = jspeiFindInScopes(tokenName);
+  // Variable already exists - pass it back
   if (a) return a;
 
+  // Check if it's a built-in variable
   a = jswFindBuiltIn(execInfo.root, execInfo.root, tokenName);
-  // Variable exists - we just need to give it a
   if (a) {
     // Get rid of existing name
     a = jsvSkipNameAndUnLock(a); // FIXME is this ever a name?
     // create a 'New Child' name, so we can add it to global
     // scope if we assign to it
-    JsVar *nameVar = jsvNewFromString(tokenName);
-    JsVar *newChild = jsvCreateNewChild(execInfo.root, nameVar, a);
-    jsvUnLock2(nameVar, a);
-    return newChild;
-  } else {
+    //JsVar *nameVar = jsvNewFromString(tokenName);
+    //JsVar *newChild = jsvCreateNewChild(execInfo.root, nameVar, a);
+    //jsvUnLock2(nameVar, a);
+    //return newChild;
+
+    // Is it built-in? If so we should add it to root
+    if (jswIsBuiltInObject(tokenName)) {
+      JsVar *obj = a;
+      a = jsvAddNamedChild(execInfo.root, obj, tokenName);
+      jsvUnLock(obj);
+    }
+  } else { // not a built-in!
     /* Variable doesn't exist! JavaScript says we should create it
      * (we won't add it here. This is done in the assignment operator)*/
-    a = jsvMakeIntoVariableName(jsvNewFromString(tokenName), 0);
+    a = jsvNewNameFromString(tokenName);
   }
   return a;
 }
@@ -1000,7 +1008,6 @@ JsVar *jspGetNamedFieldInProtoChain(JsVar *objectInstance, JsVar *objectName, Js
  * passing a char* rather than a JsVar it's because we're looking up via
  * a symbol rather than a variable. To handle these use jspGetVarNamedField  */
 JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
-  jsiConsolePrintf("jspGetNamedField> %s\n", name);
   JsVar *object = jsvSkipName(objectName);
   JsVar *child = jspGetNamedFieldInProtoChain(object, objectName, object, name, returnName);
 
@@ -1016,7 +1023,6 @@ JsVar *jspGetNamedField(JsVar *objectName, const char* name, bool returnName) {
     jsvUnLock(proto);
   }
   jsvUnLock(object);
-  jsiConsolePrintf("jspGetNamedField< %s %x\n", name, child);
   // FIXME below
   if (returnName) return child;
   else return jsvSkipNameAndUnLock(child);
@@ -1030,7 +1036,6 @@ JsVar *jspGetVarNamedField(JsVar *object, JsVar *nameVar, bool returnName) {
   if (jsvHasChildren(object))
     child = jsvFindChildFromVar(object, nameVar, false);
 
-
   if (!child) {
     if (jsvIsArrayBuffer(object) && jsvIsInt(nameVar)) {
       // for array buffers, we actually create a NAME, and hand that back - then when we assign (or use SkipName) we pull out the correct data
@@ -1040,8 +1045,8 @@ JsVar *jspGetVarNamedField(JsVar *object, JsVar *nameVar, bool returnName) {
     } else if (jsvIsString(object) && jsvIsInt(nameVar)) {
       JsVarInt idx = jsvGetInteger(nameVar);
       if (idx>=0 && idx<(JsVarInt)jsvGetStringLength(object)) {
-        child = jsvNewStringOfLength(1, NULL);
-        if (child) child->varData.str[0] = jsvGetCharInString(object, (size_t)idx);
+        char ch = jsvGetCharInString(object, (size_t)idx);
+        child = jsvNewStringOfLength(1, &ch);
       } else if (returnName)
         child = jsvCreateNewChild(object, nameVar, 0); // just return *something* to show this is handled
     } else {
@@ -1069,7 +1074,7 @@ NO_INLINE JsVar *jspeFactorMember(JsVar *a, JsVar **parentResult) {
         if (JSP_SHOULD_EXECUTE) {
           // Note: name will go away when we parse something else!
           const char *name = jslGetTokenValueAsString();
-
+          jsvCommitIfNewChild(a);
           JsVar *aVar = jsvSkipNameWithParent(a,true,parent);
           JsVar *child = 0;
           if (aVar)
@@ -1105,6 +1110,7 @@ NO_INLINE JsVar *jspeFactorMember(JsVar *a, JsVar **parentResult) {
       JSP_MATCH_WITH_CLEANUP_AND_RETURN(']', jsvUnLock2(parent, index);, a);
       if (JSP_SHOULD_EXECUTE) {
         index = jsvAsArrayIndexAndUnLock(index);
+        jsvCommitIfNewChild(a);
         JsVar *aVar = jsvSkipNameWithParent(a,true,parent);
         JsVar *child = 0;
         if (aVar)
@@ -1114,14 +1120,16 @@ NO_INLINE JsVar *jspeFactorMember(JsVar *a, JsVar **parentResult) {
           if (jsvHasChildren(aVar)) {
             // if no child found, create a pointer to where it could be
             // as we don't want to allocate it until it's written
-            child = jsvCreateNewChild(a, index, 0);
+            child = jsvCreateNewChild(aVar, index, 0);
           } else {
             jsExceptionHere(JSET_ERROR, "Field or method %q does not already exist, and can't create it on %t", index, aVar);
           }
         }
-        jsvUnLock2(parent, aVar);
-        parent = a;
+        jsvUnLock(parent);
+        parent = jsvLockAgainSafe(aVar);
+        jsvUnLock(a);
         a = child;
+        jsvUnLock(aVar);
       }
       jsvUnLock(index);
     } else {
@@ -1140,7 +1148,6 @@ static JsVar *jspeCreateObjectFromFunction(JsVar *func) {
   // Make sure the function has a 'prototype' var
   JsVar *prototypeName = jspGetNamedField(func, JSPARSE_PROTOTYPE_VAR, true);
   jspEnsureIsPrototype(func, prototypeName); // make sure it's an object
-  JsVar *prototypeVar = jsvSkipName(prototypeName);
   jsvAddNamedChildAndUnLock(thisObj, jsvSkipNameAndUnLock(prototypeName), JSPARSE_INHERITS_VAR);
   return thisObj;
 }
@@ -1464,7 +1471,7 @@ NO_INLINE JsVar *jspeFactorTypeOf() {
 NO_INLINE JsVar *jspeFactorDelete() {
   JSP_ASSERT_MATCH(LEX_R_DELETE);
   JsVar *parent = 0;
-  JsVar *a = jsvSkipNameAndUnLock(jspeFactorMember(jspeFactor(), &parent));
+  JsVar *a = jspeFactorMember(jspeFactor(), &parent);
   JsVar *result = 0;
   if (JSP_SHOULD_EXECUTE) {
     bool ok = false;
@@ -2028,14 +2035,18 @@ NO_INLINE JsVar *__jspeBinaryExpression(JsVar *a, unsigned int lastPrecedence) {
           bool inst = false;
           JsVar *av = jsvSkipName(a);
           JsVar *bv = jsvSkipName(b);
-          if (!jsvIsFunction(bv)) {
-            jsExceptionHere(JSET_ERROR, "Expecting a function on RHS in instanceof check, got %t", bv);
+          if (!jsvIsFunction(bv) && !jsvIsNativeObject(bv) ) {
+            jsExceptionHere(JSET_ERROR, "Expecting a function/native object on RHS in instanceof check, got %t", bv);
           } else {
             if (jsvIsObject(av) || jsvIsFunction(av)) {
               JsVar *bproto = jspGetNamedField(bv, JSPARSE_PROTOTYPE_VAR, false);
               JsVar *proto = jsvObjectGetChildIfExists(av, JSPARSE_INHERITS_VAR);
               while (jsvHasChildren(proto)) { // proto could have been set to anything (null/number/etc) #2363
-                if (proto == bproto) inst=true;
+                if ((proto == bproto) ||
+                    (jsvIsNativeObject(proto) && jsvIsNativeObject(bproto) && proto->varData.nativeObject==bproto->varData.nativeObject)) {
+                  inst=true;
+                  break;
+                }
                 // search prototype chain
                 JsVar *childProto = jsvObjectGetChildIfExists(proto, JSPARSE_INHERITS_VAR);
                 jsvUnLock(proto);
@@ -3008,14 +3019,12 @@ NO_INLINE JsVar *jspeStatement() {
 /// Create a new Class of the given instance and return its prototype (as a name 'prototype')
 NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
   JsVar *objFuncName = jsvFindChildFromString(execInfo.root, instanceOf, true);
-  jsiConsolePrintf("jspNewPrototype: jsvFindChildFromString %s %x\n", instanceOf, objFuncName);
   if (!objFuncName) // out of memory
     return 0;
 
   JsVar *objFunc = jsvSkipName(objFuncName);
   if (!objFunc) {
     objFunc = jswFindBuiltIn(execInfo.root, execInfo.root, instanceOf);
-    jsiConsolePrintf("jspNewPrototype: jswFindBuiltIn %s %x\n", instanceOf, objFunc);
     if (!objFunc) { // out of memory
       jsvUnLock(objFuncName);
       return 0;
@@ -3026,7 +3035,6 @@ NO_INLINE JsVar *jspNewPrototype(const char *instanceOf) {
   }
 
   JsVar *prototypeName = jspGetNamedField(objFunc, JSPARSE_PROTOTYPE_VAR, true);
-  jsiConsolePrintf("jspNewPrototype: getNamedField %s %x\n", JSPARSE_PROTOTYPE_VAR, prototypeName);
   jspEnsureIsPrototype(objFunc, prototypeName); // make sure it's an object
   jsvUnLock2(objFunc, objFuncName);
 
@@ -3105,20 +3113,6 @@ JsVar *jspGetPrototype(JsVar *object) {
   if (jsvIsObject(proto))
     return proto;
   jsvUnLock(proto);
-  return 0;
-}
-
-/** Get the constructor of the given object, or return 0 if not found, or not a function */
-JsVar *jspGetConstructor(JsVar *object) {
-  JsVar *proto = jspGetPrototype(object);
-  if (proto) {
-    JsVar *constr = jsvObjectGetChildIfExists(proto, JSPARSE_CONSTRUCTOR_VAR);
-    if (jsvIsFunction(constr)) {
-      jsvUnLock(proto);
-      return constr;
-    }
-    jsvUnLock2(constr, proto);
-  }
   return 0;
 }
 

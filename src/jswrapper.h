@@ -80,8 +80,9 @@ const char *jswGetBuiltInLibraryNames();
 JsVar *jswCallFunctionHack(void *function, JsnArgumentType argumentSpecifier, JsVar *thisParam, JsVar **paramData, int paramCount);
 #endif
 
+// These are used for checking objects are the correct type
 extern const JswSymList *jswSymbolTable_Object_prototype;
-
+extern const JswSymList *jswSymbolTable_Promise_prototype;
 
 
 /** Given the index of some item in the symbol table, create a 'Native Object'
@@ -95,5 +96,6 @@ JsVar *jswCreateFromSymbolTable(int symbolIndex);
 
 extern const unsigned char jswSymbolIndex_AES;
 extern const unsigned char jswSymbolIndex_HASH;
+
 
 #endif // JSWRAPPER_H_

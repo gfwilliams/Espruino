@@ -44,9 +44,9 @@ void _jswrap_promise_queuereject(JsVar *promise, JsVar *data);
 void _jswrap_promise_add(JsVar *parent, JsVar *callback, bool resolve);
 
 bool _jswrap_promise_is_promise(JsVar *promise) {
-  JsVar *constr = jspGetConstructor(promise);
-  bool isPromise = constr && (void*)constr->varData.native.ptr==(void*)jswrap_promise_constructor;
-  jsvUnLock(constr);
+  JsVar *prototype = jspGetPrototype(promise);
+  bool isPromise = jsvIsNativeObject(prototype) && (void*)prototype->varData.nativeObject==jswSymbolTable_Promise_prototype;
+  jsvUnLock(prototype);
   return isPromise;
 }
 

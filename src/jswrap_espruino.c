@@ -41,6 +41,16 @@ after booting, `__FILE__` is not set.
 *//*Documentation only*/
 
 /*JSON{
+  "type" : "variable",
+  "name" : "global",
+  "memberOf" : "global",
+  "generate_full" : "jsvLockAgain(execInfo.root)",
+  "return" : ["JsVar","An Object"]
+}
+This references the global scope. For instance `global.print == print`
+*/
+
+/*JSON{
   "type" : "object",
   "name" : "E",
   "memberOf" : "global"

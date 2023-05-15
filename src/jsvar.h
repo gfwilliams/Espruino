@@ -611,6 +611,11 @@ void jsvExecuteSetter(JsVar *parent, JsVar *getset, JsVar *value);
 void jsvAddGetterOrSetter(JsVar *obj, JsVar *varName, bool isGetter, JsVar *method);
 #endif
 
+/** NewChild vars exist so that we can reference something like Array.foo without
+ * actually adding it to the symbol table. If given a NewChild this function makes
+ * sure it's added to the symbol table, otherwise it does nothing. */
+void jsvCommitIfNewChild(JsVar *dst);
+
 /* Set the value of the given variable. This is sort of like
  * jsvSetValueOfName except it deals with all the non-standard
  * stuff like ArrayBuffers, variables that haven't been allocated

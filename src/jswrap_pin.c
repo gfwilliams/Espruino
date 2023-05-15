@@ -18,7 +18,7 @@
 #include "jstimer.h"
 
 /* We use sortorder ensure sort position for Pin class *and at least one non-static member function*
-  is before that of 'Number', so that jswGetBasicObjectName/jswFindBuiltInFunction/jswGetSymbolListForObjectProto 
+  is before that of 'Number', so that jswGetBasicObjectName/jswFindBuiltInFunction/jswGetSymbolListForObjectProto
   check first (Pin is also Numeric) */
 
 
@@ -26,7 +26,8 @@
   "type" : "object",
   "name" : "Pin",
   "memberOf" : "global",
-  "check" : "jsvIsPin(var)"
+  "check" : "jsvIsPin(var)",
+  "sortorder" : -1
 }
 This is the built-in class for Pins, such as D0,D1,LED1, or BTN
 
@@ -166,7 +167,7 @@ void jswrap_pin_writeAtTime(JsVar *parent, bool value, JsVarFloat time) {
 Return the current mode of the given pin. See `pinMode` for more information.
 */
 JsVar *jswrap_pin_getMode(JsVar *parent) {
-  return jswrap_io_getPinMode(jshGetPinFromVar(parent));  
+  return jswrap_io_getPinMode(jshGetPinFromVar(parent));
 }
 
 /*JSON{

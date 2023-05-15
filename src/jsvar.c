@@ -2178,6 +2178,34 @@ void jsvAddGetterOrSetter(JsVar *obj, JsVar *varName, bool isGetter, JsVar *meth
 }
 #endif
 
+/** NewChild vars exist so that we can reference something like Array.foo without
+ * actually adding it to the symbol table. If given a NewChild this function makes
+ * sure it's added to the symbol table, otherwise it does nothing. */
+void jsvCommitIfNewChild(JsVar *dst) {
+  if (!jsvIsNewChild(dst)) return;
+  /* If dst is flagged as a new child, it means that
+   * it was previously undefined, and we need to add it to
+   * the given object when it is set.
+   */
+  // Get what it should have been a child of
+  JsVar *parent = jsvLock(jsvGetNextSibling(dst));
+  if (!jsvIsString(parent)) {
+    // if we can't find a char in a string we still return a NewChild,
+    // but we can't add character back in
+    if (!jsvHasChildren(parent)) {
+      jsExceptionHere(JSET_ERROR, "Field or method \"%v\" does not already exist, and can't create it on %t", dst, parent);
+    } else {
+      // Remove the 'new child' flagging
+      jsvUnRef(parent);
+      jsvSetNextSibling(dst, 0);
+      jsvUnRef(parent);
+      jsvSetPrevSibling(dst, 0);
+      // Add to the parent
+      jsvAddName(parent, dst);
+    }
+  }
+  jsvUnLock(parent);
+}
 
 /* Set the value of the given variable. This is sort of like
  * jsvSetValueOfName except it deals with all the non-standard
@@ -2213,30 +2241,11 @@ void jsvReplaceWith(JsVar *dst, JsVar *src) {
   jsvUnLock(v);
 #endif
   jsvSetValueOfName(dst, src);
-  /* If dst is flagged as a new child, it means that
-   * it was previously undefined, and we need to add it to
-   * the given object when it is set.
+  /* If DST is a NewChild, it means that it was previously undefined, and we need to add it to
+   the given object when it is set. We just call this function anyway and it'll exit if
+   dst wasn't a new child.
    */
-  if (jsvIsNewChild(dst)) {
-    // Get what it should have been a child of
-    JsVar *parent = jsvLock(jsvGetNextSibling(dst));
-    if (!jsvIsString(parent)) {
-      // if we can't find a char in a string we still return a NewChild,
-      // but we can't add character back in
-      if (!jsvHasChildren(parent)) {
-        jsExceptionHere(JSET_ERROR, "Field or method \"%v\" does not already exist, and can't create it on %t", dst, parent);
-      } else {
-        // Remove the 'new child' flagging
-        jsvUnRef(parent);
-        jsvSetNextSibling(dst, 0);
-        jsvUnRef(parent);
-        jsvSetPrevSibling(dst, 0);
-        // Add to the parent
-        jsvAddName(parent, dst);
-      }
-    }
-    jsvUnLock(parent);
-  }
+  jsvCommitIfNewChild(dst);
 }
 
 /* See jsvReplaceWith - this does the same but will
