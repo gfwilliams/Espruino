@@ -38,6 +38,9 @@ const JswSymList *jswGetSymbolListForObjectProto(JsVar *parent);
 /// Given the name of an Object, see if we should set it up as a builtin or not
 bool jswIsBuiltInObject(const char *name);
 
+/// Called when we free a NativeObject as we might have to update our mapping to remove it
+void jsvNativeObjectFreed(JsVar *var);
+
 /** Given a variable, return the basic object name of it */
 const char *jswGetBasicObjectName(JsVar *var);
 

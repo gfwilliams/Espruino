@@ -262,8 +262,7 @@ void jsvCreateEmptyVarList() {
   jsvSetNextSibling(&firstVar, 0);
   JsVar *lastEmpty = &firstVar;
 
-  JsVarRef i;
-  for (i=1;i<=jsVarsSize;i++) {
+  for (JsVarRef i=1;i<=jsVarsSize;i++) {
     JsVar *var = jsvGetAddressOf(i);
     if ((var->flags&JSV_VARTYPEMASK) == JSV_UNUSED) {
       jsvSetNextSibling(lastEmpty, i);
@@ -659,6 +658,9 @@ ALWAYS_INLINE void jsvFreePtr(JsVar *var) {
       jsvIsRefUsedForData(var) ||  // UNLESS we're part of a string and nextSibling/prevSibling are used for string data
       (jsvIsName(var) && (jsvGetNextSibling(var)==jsvGetPrevSibling(var)))); // UNLESS we're signalling that we're jsvild
 
+  // If it's a native object we need to tell jsWrap - it stores references to the,
+  if (jsvIsNativeObject(var))
+    jsvNativeObjectFreed(var);
   // Names that Link to other things
   if (jsvIsNameWithValue(var)) {
 #ifdef CLEAR_MEMORY_ON_FREE

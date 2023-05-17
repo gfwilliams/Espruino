@@ -928,8 +928,8 @@ JsVar *jspGetNamedFieldInObject(JsVar *objectInstance, JsVar *objectName, JsVar 
 
     // For speed, check built-in functions on objects first (not standards compliant)
     child = jswFindInObjectProto(object, name);
-    // don't check returnName, because we don't want anyone trying to alter this
-    if (child) return child;
+    // don't check returnName, because we don't want anyone trying to alter this unless it's __proto__
+    if (child && strcmp(name, JSPARSE_INHERITS_VAR)) return child;
   }
 
   if (child) {
@@ -2046,8 +2046,7 @@ NO_INLINE JsVar *__jspeBinaryExpression(JsVar *a, unsigned int lastPrecedence) {
               JsVar *bproto = jspGetNamedField(bv, JSPARSE_PROTOTYPE_VAR, false);
               JsVar *proto = jsvObjectGetChildIfExists(av, JSPARSE_INHERITS_VAR);
               while (jsvHasChildren(proto)) { // proto could have been set to anything (null/number/etc) #2363
-                if ((proto == bproto) ||
-                    (jsvIsNativeObject(proto) && jsvIsNativeObject(bproto) && proto->varData.nativeObject==bproto->varData.nativeObject)) {
+                if (proto == bproto) {
                   inst=true;
                   break;
                 }

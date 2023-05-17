@@ -558,8 +558,10 @@ for name in symbolTables:
   codeOutSymbolTable(symbolTables[name]);
 codeOut('');
 codeOut('');
-
-codeOut('const JswSymList jswSymbolTables[] = {');
+codeOut('// If anything in our symbol table has been instantiated already, the ref to it is in here ');
+codeOut('JsVarRef jswSymbolTableInstantiations['+str(len(symbolTables))+'];');
+codeOut('// The classes/prototypes in our symbol table');
+codeOut('const JswSymList jswSymbolTables['+str(len(symbolTables))+'] = {');
 for name in symbolTables:
   tab = symbolTables[name]
   codeOut("  {"+", ".join([tab["symbolListName"], tab["symbolTableCount"], tab["symbolTableChars"], tab["constructorPtr"], tab["constructorSpec"]])+"}, // "+tab["indexName"]+", "+name);
@@ -580,9 +582,28 @@ codeOut('// --------------------------------------------------------------------
 # of 2 in length so they will always be halfword aligned.
 codeOut("""
 JsVar *jswCreateFromSymbolTable(int tableIndex) {
-  JsVar *v = jsvNewWithFlags(JSV_OBJECT | JSV_NATIVE);
-  if (v) v->varData.nativeObject = &jswSymbolTables[tableIndex];
+  JsVar *v;
+  if (jswSymbolTableInstantiations[tableIndex]) {
+    v = jsvLock(jswSymbolTableInstantiations[tableIndex]);
+    if (jsvIsNativeObject(v) && v->varData.nativeObject == &jswSymbolTables[tableIndex]) {
+      return v;
+    } else {
+      assert(0);
+      jswSymbolTableInstantiations[tableIndex] = 0; // uh oh!
+    }
+  }
+  v = jsvNewWithFlags(JSV_OBJECT | JSV_NATIVE);
+  if (v) {
+    v->varData.nativeObject = &jswSymbolTables[tableIndex];
+    jswSymbolTableInstantiations[tableIndex] = jsvGetRef(v);
+  }
   return v;
+}
+
+void jsvNativeObjectFreed(JsVar *var) {
+  assert(jsvIsNativeObject(var));
+  int idx = (int)(var->varData.nativeObject - jswSymbolTables);
+  jswSymbolTableInstantiations[idx] = 0;
 }
 
 """);
@@ -758,6 +779,16 @@ codeOut('')
 
 codeOut("/** Tasks to run on Initialisation (eg boot/load/reset/after save/etc) */")
 codeOut('void jswInit() {')
+codeOut('// Ensure we set up our list of instantiated builtins')
+codeOut('unsigned int varsSize = jsvGetMemoryTotal();')
+codeOut('for (JsVarRef i=1;i<=varsSize;i++) {')
+codeOut('  JsVar *var = _jsvGetAddressOf(i);')
+codeOut('  if (jsvIsNativeObject(var)) {')
+codeOut('    int idx = (int)(var->varData.nativeObject - jswSymbolTables);')
+codeOut('    jswSymbolTableInstantiations[idx] = i;')
+codeOut('  }')
+codeOut('}')
+codeOut("// call other libraries' init methods");
 if jsbootcode!=False:
   codeOut('  jsvUnLock(jspEvaluate('+json.dumps(jsbootcode)+', true/*static*/));')
 for jsondata in jsondatas:
@@ -770,9 +801,12 @@ codeOut('')
 
 codeOut("/** Tasks to run on Deinitialisation (eg before save/reset/etc) */")
 codeOut('void jswKill() {')
+codeOut("  // call other libraries' init methods")
 for jsondata in jsondatas:
   if "type" in jsondata and jsondata["type"]=="kill":
     codeOut("  "+jsondata["generate"]+"();")
+codeOut("  // reset our list of instantiated builtins")
+codeOut('  memset(jswSymbolTableInstantiations, 0, sizeof(jswSymbolTableInstantiations));')
 codeOut('}')
 
 codeOut("/** Tasks to run when a character event is received */")
