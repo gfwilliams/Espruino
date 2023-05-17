@@ -19,6 +19,7 @@
 #include "jsparse.h"
 #include "jsinteractive.h"
 #include "jswrap_arraybuffer.h"
+#include "jswrapper.h"
 #include "tensorflow.h"
 
 /*JSON{
@@ -41,6 +42,9 @@ void *jswrap_tfmicrointerpreter_getTFMI(JsVar *parent) {
   return tfPtr;
 }
 
+// Used to create the TFMicroInterpreter as it's not a publically accessible class
+extern const unsigned char jswSymbolIndex_TFMicroInterpreter_prototype;
+
 /*JSON{
   "type" : "function",
   "name" : "create",
@@ -54,7 +58,6 @@ void *jswrap_tfmicrointerpreter_getTFMI(JsVar *parent) {
   "return" : ["JsVar","A tensorflow instance"],
   "return_object" : "TFMicroInterpreter"
 }
-
 */
 JsVar *jswrap_tensorflow_create(int arena_size, JsVar *model) {
   if (arena_size<512) {
@@ -69,8 +72,11 @@ JsVar *jswrap_tensorflow_create(int arena_size, JsVar *model) {
     return 0;
   }
 
-  JsVar *tfmi = jspNewObject(NULL,"TFMicroInterpreter");
+  /* Create new instance of TFMicroInterpreter - we can't use jspNewObject here because the
+  instance isn't public, it's part of the library... Maybe this should be abstracted somehow? */
+  JsVar *tfmi = jsvNewObject();
   if (!tfmi) return 0;
+  jsvObjectSetChildAndUnLock(tfmi, JSPARSE_INHERITS_VAR, jswCreateFromSymbolTable(jswSymbolIndex_TFMicroInterpreter_prototype));
 
   size_t tfSize = tf_get_size((size_t)arena_size, modelPtr);
   JsVar *mi = jsvNewFlatStringOfLength(tfSize+15); // need +15 in case the flast string isn't 16 bytes aligned

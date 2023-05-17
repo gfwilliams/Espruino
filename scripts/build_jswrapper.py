@@ -627,7 +627,7 @@ JsVar *jswBinarySearch(const JswSymList *symbolsPtr, JsVar *parent, const char *
       if ((functionSpec & JSWAT_CALLINFO_MASK) == JSWAT_EXECUTE_IMMEDIATELY)
         return jsnCallFunction(sym->functionPtr, functionSpec, parent, 0, 0);
       if ((functionSpec & JSWAT_CALLINFO_MASK) == JSWAT_SYMBOL_TABLE)
-        return jswCreateFromSymbolTable((int)sym->functionPtr);
+        return jswCreateFromSymbolTable((int)(size_t)sym->functionPtr);
       return jsvNewNativeFunction(sym->functionPtr, functionSpec);
     } else {
       if (cmp<0) {
