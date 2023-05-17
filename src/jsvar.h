@@ -169,9 +169,12 @@ typedef enum {
   JSWAT_MASK = NEXT_POWER_2(JSWAT__LAST)-1,
 
   // should this just be executed right away and the value returned? Used to encode constants in the symbol table
-  // We encode this by setting all bits in the last argument, but leaving the second-last argument as zero
+  // We encode this by setting bits in the last argument, but leaving the second-last argument as zero
   JSWAT_EXECUTE_IMMEDIATELY = 0x7000,
-  JSWAT_EXECUTE_IMMEDIATELY_MASK = 0x7E00,
+  // should the pointer be interpreted as an index in jswSymbolTables, and jswCreateFromSymbolTable called on it?
+  // We encode this by setting bits in the last argument, but leaving the second-last argument as zero
+  JSWAT_SYMBOL_TABLE = 0x6000,
+  JSWAT_CALLINFO_MASK = 0x7E00,
 
   JSWAT_THIS_ARG    = 0x8000, ///< whether a 'this' argument should be tacked onto the start
   JSWAT_ARGUMENTS_MASK = 0xFFFF ^ (JSWAT_MASK | JSWAT_THIS_ARG) ///< mask for the arguments (excluding return type)
