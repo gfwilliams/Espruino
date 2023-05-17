@@ -856,6 +856,7 @@ argSpecs = []
 for jsondata in jsondatas:
   if "generate" in jsondata:
     argSpec = getArgumentSpecifier(jsondata)
+    if ("JSWAT_EXECUTE_IMMEDIATELY" in argSpec) or ("JSWAT_SYMBOL_TABLE" in argSpec): continue;
     if not argSpec in argSpecs:
       argSpecs.append(argSpec)
       params = getParams(jsondata)
