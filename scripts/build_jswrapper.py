@@ -628,8 +628,9 @@ codeOut('  if (jsvIsNativeObject(var)) {');
 codeOut('    assert(var->varData.nativeObject);');
 codeOut('    return (int)(var->varData.nativeObject-jswSymbolTables);'); # fixme - why not store int??
 codeOut('  }');
+codeOut('  //FIXME: should group jsvIsArrayBuffer tests')
 for className in objectChecks.keys():
-  if className!="Function": # FIXME: This breaks `function Foo();Foo.prototype.toString=something;`
+  if not (className+".prototype") in symbolTables: # eg it's not in jswGetSymbolIndexForObjectProto
     codeOut("  if ("+objectChecks[className]+") return jswSymbolIndex_"+className+";")
 codeOut("  return -1;")
 codeOut('}')
@@ -664,7 +665,11 @@ const JswSymList *jswGetSymbolListForObjectProto(JsVar *var) {
 // For instances of builtins like Pin, String, etc, search in X.prototype
 JsVar *jswFindInObjectProto(JsVar *parent, const char *name) {
   int symIdx = jswGetSymbolIndexForObjectProto(parent);
-  if (symIdx>=0) return jswBinarySearch(&jswSymbolTables[symIdx], parent, name);
+  if (symIdx>=0) {
+    if (!strcmp(name,"__proto__")) // we're actually looking for the prototype itself! just return it
+      return jswCreateFromSymbolTable(symIdx);
+    return jswBinarySearch(&jswSymbolTables[symIdx], parent, name);
+  }
   return 0;
 }
 
