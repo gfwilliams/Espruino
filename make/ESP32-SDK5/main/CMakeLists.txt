@@ -73,11 +73,6 @@ idf_component_register(
 							"../../../libs/network/js/jswrap_jsnetwork.c"
 							"../../../libs/network/js/network_js.c"
 							"../../../libs/network/http/jswrap_http.c"
-							"../../../libs/filesystem/jswrap_file.c"
-							"../../../libs/filesystem/jswrap_fs.c"
-							"../../../libs/filesystem/fat_sd/ff.c"
-							"../../../libs/filesystem/fat_sd/spi_diskio.c"
-							"../../../libs/filesystem/fat_sd/option/ccsbcs.c"
 							"../../../libs/graphics/graphics.c"
 							"../../../libs/graphics/jswrap_graphics.c"
 							"../../../libs/graphics/lcd_js.c"
@@ -88,6 +83,7 @@ idf_component_register(
 							"../../../gen/jspininfo.c"
 							"../../../gen/jswrapper.c"
 						INCLUDE_DIRS
+							"../../../"						
 							"../../../src/"
 							"../../../gen/"
 							"../../../targets/esp32/"
@@ -102,6 +98,9 @@ idf_component_register(
 							"../../../libs/graphics"
 					  )
 
+  
+  target_compile_options(${COMPONENT_TARGET} PUBLIC -DESP_IDF_VERSION_5)
+
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DESP_PLATFORM -DESP32=1 -DJSVAR_MALLOC -DUSE_ESP32 -DESP_STACK_SIZE=25000)
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_DEBUGGER -DUSE_TAB_COMPLETE -DUSE_HEATSHRINK)
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_MATH -DESP32 -DEMBEDDED)
@@ -109,11 +108,15 @@ idf_component_register(
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_GRAPHICS -DUSE_FONT_6X8)
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_NET -DUSE_TELNET -DUSE_CRYPTO -DMBEDTLS_CIPHER_MODE_CTR)
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DMBEDTLS_CIPHER_MODE_CBC -DMBEDTLS_CIPHER_MODE_CFB -DUSE_SHA256)
-	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_SHA512 -DUSE_TLS -DUSE_AES)
 	target_compile_options(${COMPONENT_TARGET} PUBLIC -DESPR_DEFINES_ON_COMMANDLINE)	
 	
+# no TLS until we move espruino to new mbedtls version	
+#	target_compile_options(${COMPONENT_TARGET} PUBLIC -DUSE_SHA512 -DUSE_TLS -DUSE_AES)	
+	
 
-target_compile_options(${COMPONENT_TARGET} PUBLIC -Og -fno-strict-aliasing -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -fgnu89-inline  -nostdlib -MMD -MP -std=gnu99 )
+target_compile_options(${COMPONENT_TARGET} PUBLIC -Og -fno-strict-aliasing -ffunction-sections -fdata-sections -fstrict-volatile-bitfields -fgnu89-inline  -nostdlib -MMD -MP -Wno-enum-compare)
+# -Wno-enum-compare for heatshrink
+# -std=gnu99 now allowed on SDK5
 # -mlongcalls -mfix-esp32-psram-cache-issue fails? 
 
 # esta configuracion en el ESP-IDF por defecto convierte estos warnings en errores, analizarlos y corregir el codigo mejor
