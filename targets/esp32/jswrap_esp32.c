@@ -11,6 +11,7 @@
  * ESP32 specific exposed components.
  * ----------------------------------------------------------------------------
  */
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "jswrap_esp32.h"

@@ -1,4 +1,4 @@
-/*
+#/*
  * This file is designed to support FREERTOS functions in Espruino,
  * a JavaScript interpreter for Microcontrollers designed by Gordon Williams
  *
@@ -15,6 +15,10 @@
  * ----------------------------------------------------------------------------
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "jsinteractive.h"
 #include "jstimer.h"
  
@@ -24,8 +28,7 @@
 #include "soc/timer_group_struct.h"
 #include "driver/timer.h"
 
-#include <stdio.h>
-#include <string.h>
+
 
 // implementation of simple queue oriented commands. see header file for more info.
 void queues_init(){
@@ -154,18 +157,17 @@ void taskWaitNotify(){
 #define TIMER_INTR_SEL TIMER_INTR_LEVEL  /*!< Timer level interrupt */
 #define TIMER_GROUP    TIMER_GROUP_0     /*!< Test on timer group 0 */
 #define TIMER_DIVIDER  80               /*!< Hardware timer clock divider */
-#define TIMER_SCALE    (TIMER_BASE_CLK / TIMER_DIVIDER)  /*!< used to calculate counter value */
-#define TIMER_FINE_ADJ   (1.4*(TIMER_BASE_CLK / TIMER_DIVIDER)/1000000) /*!< used to compensate alarm value */
+#define TIMER_FINE_ADJ   (1.4*(esp_clk_apb_freq() / TIMER_DIVIDER)/1000000) /*!< used to compensate alarm value */
 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 void IRAM_ATTR espruino_isr(void *para){
   int idx = (int) para;
   if(idx == 0){
-    TIMERG0.hw_timer[TIMER_0].update = 1;
-    TIMERG0.int_clr_timers.t0 = 1;
+    TIMERG0.hw_timer[TIMER_0].update.tx_update = 1;
+    TIMERG0.int_clr_timers.t0_int_clr = 1;
   }
   else{
-    TIMERG0.hw_timer[TIMER_1].update = 1;
-    TIMERG0.int_clr_timers.t1 = 1;
+    TIMERG0.hw_timer[TIMER_1].update.tx_update = 1;
+    TIMERG0.int_clr_timers.t1_int_clr = 1;
   }
   jstUtilTimerInterruptHandler();
 }
@@ -173,12 +175,12 @@ void IRAM_ATTR test_isr(void *para){
   int idx = (int) para;
   printf("x\n");
   if(idx == 0){
-    TIMERG0.hw_timer[TIMER_0].update = 1;
-    TIMERG0.int_clr_timers.t0 = 1;
+    TIMERG0.hw_timer[TIMER_0].update.tx_update = 1;
+    TIMERG0.int_clr_timers.t0_int_clr = 1;
   }
   else{
-    TIMERG0.hw_timer[TIMER_1].update = 1;
-    TIMERG0.int_clr_timers.t1 = 1;
+    TIMERG0.hw_timer[TIMER_1].update.tx_update = 1;
+    TIMERG0.int_clr_timers.t1_int_clr = 1;
   }
 }
 
@@ -207,7 +209,7 @@ int timer_Init(char *timerName,int group,int index,int isr_idx){
     ESP32Timers[i].group = group;
     ESP32Timers[i].index = index;
       timer_config_t config;
-      config.alarm_en = 1;
+      config.alarm_en.tx_en = 1;
       config.auto_reload = 1;
       config.counter_dir = TIMER_COUNT_UP;
       config.divider = TIMER_DIVIDER;
@@ -232,12 +234,12 @@ int timer_Init(char *timerName,int group,int index,int isr_idx){
 void timer_Start(int idx,uint64_t duration){
   timer_enable_intr(ESP32Timers[idx].group, ESP32Timers[idx].index);
   timer_set_alarm_value(ESP32Timers[idx].group, ESP32Timers[idx].index, duration - TIMER_FINE_ADJ);
-  TIMERG0.hw_timer[idx].config.alarm_en = 1;
+  TIMERG0.hw_timer[idx].config.alarm_en.tx_en = 1;
   timer_start(ESP32Timers[idx].group, ESP32Timers[idx].index);
 }
 void timer_Reschedule(int idx,uint64_t duration){
   timer_set_alarm_value(ESP32Timers[idx].group, ESP32Timers[idx].index, duration - TIMER_FINE_ADJ);
-  TIMERG0.hw_timer[idx].config.alarm_en = 1;
+  TIMERG0.hw_timer[idx].config.alarm_en.tx_en = 1;
 }
 void timer_List(){
   int i;

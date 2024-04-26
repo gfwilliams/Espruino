@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "freertos/FreeRTOS.h"
 #include "esp_wifi.h"
 #include "esp_system.h"
@@ -5,7 +8,6 @@
 #include "esp_event_loop.h"
 #include "nvs_flash.h"
 
-#include <stdio.h>
 #include <jsdevices.h>
 #include <jsinteractive.h>
 #include "rtosutil.h"
